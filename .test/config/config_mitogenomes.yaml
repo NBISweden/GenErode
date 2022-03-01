@@ -1,0 +1,520 @@
+#################################################################
+#################################################################
+# Configuration settings for the GenErode pipeline 0.4.0        #
+# for ancient or historical samples, and modern samples         #
+#################################################################
+#################################################################
+
+#################################################################
+#################################################################
+# Check the GitHub WIKI page for the full documentation:        #
+# https://github.com/NBISweden/GenErode/wiki                    #
+#################################################################
+#################################################################
+
+
+#################################################################
+#################################################################
+# 1) Full path to reference genome assembly.
+# Reference genome has to be checked for short and concise FASTA 
+# headers without special characters and has to be uncompressed. 
+# The file name will be reused by the pipeline and can have the file 
+# name extensions *.fasta, *.fa or *.fna.
+ref_path: ".test/data/references/sumatran_rhino.fasta"
+#################################################################
+
+
+#################################################################
+# 2) Relative paths (from the main snakemake directory) to metadata 
+# files with sample information.
+# Example files can be found in "config/"
+historical_samples: ".test/config/historical_paths.txt" # leave empty ("") if not run for historical samples.
+modern_samples: "" # leave empty ("") if not run for modern samples. 
+#################################################################
+#################################################################
+
+
+
+#################################################################
+#################################################################
+# 3) Pipeline steps to be run and related parameters. 
+# If a step is set to True, all previous steps it depends on will 
+# be loaded automatically.
+# Only one step should be set to True at a time, results and reports 
+# should be double checked before continuing.
+
+
+#################################################################
+#################################################################
+# Rules for data processing (required for downstream analyses)  #
+#################################################################
+
+#####
+# Repeat element de novo prediction and repeat masking of the 
+# reference genome.
+# Generates BED files of repeats and repeat-masked regions for 
+# the reference genome.
+# Output files will be placed into the same directory as the 
+# reference genome FASTA file (as specified above).
+# That way, this step is run only once for a given reference genome.
+reference_repeat_identification: False
+#####
+
+
+#####
+# FastQC on raw reads, adapter and quality trimming (incl. read merging 
+# for historical samples) using fastp, FastQC on trimmed reads.
+# Adapter sequences are automatically detected.
+# Automatic detection of NovaSeq or NextSeq samples and activation of
+# poly-G tail trimming.
+fastq_processing: False
+
+# Minimum read length.
+# Historical samples (after trimming and read merging)
+hist_readlength: "30" # recommended setting: 30 bp
+
+# Modern samples (after trimming)
+mod_readlength: "30"
+#####
+
+
+#####
+# OPTIONAL: 
+# Map historical reads to mitochondrial genomes from human and 
+# several animal species that may be a contamination source. 
+# Specify mitochondrial genome of target species ("species_mt").
+# This step does not produce any files required for any of the 
+# downstream steps and is therefore not included when running 
+# any of the following downstream steps.
+map_historical_to_mitogenomes: True
+
+# Full path including file name of mitochondrial genome FASTA of 
+# the species under investigation, or that of a closely related species.
+# The FASTA file has to be uncompressed. The file name will be 
+# reused by the pipeline and can have the file name extensions 
+# *.fasta, *.fa or *.fna.
+# Variable can be left empty ("") if not run.
+species_mt_path: ".test/data/references/rhino_NC_012684.fasta" # e.g. "/path/to/speciesname_accession_number.fasta"
+
+# Per default, only merged historical reads are mapped to the 
+# different mitochondrial genomes.
+# If both merged and unmerged reads should be mapped, set the 
+# following variable to True.
+map_unmerged_reads: False 
+#####
+
+
+#####
+# Map historical and modern reads to reference genome assembly (specified above).
+mapping: False
+#####
+
+
+#####
+# BAM file processing: merge samples from different lanes per PCR/index, 
+# remove duplicates, merge BAM files per sample, realign indels, 
+# calculate average genome-wide depth of coverage for depth filtering
+# of BAM and VCF files.
+bam_rmdup_realign_indels: False
+
+# Parameters related to depth filtering of BAM and VCF files.
+# After BAM file processing, the average genome-wide depth is calculated 
+# per sample, from which minimum and maximum depth thresholds for quality 
+# filtering are determined.
+# In the calculation of the average genome-wide depth of coverage, 
+# sites with missing data (i.e. zero coverage) can be included or excluded.
+# Set to True if sites with missing data (zero coverage) should be 
+# included in the average depth calculation.
+# Set to False if sites with missing data (zero coverage) should be 
+# excluded from the average depth calculation.
+zerocoverage: False
+
+# Minimum depth threshold calculation per sample.
+# Will be applied to mlRho analysis and in VCF file filtering.
+# Factor by which the average genome-wide depth should be multiplied 
+# to set a minimum depth threshold. For ultra low coverage samples, a 
+# minimum hard threshold of 3X is applied that overrides this parameter.
+# A minimum depth of 6X should be aimed for.
+minDP: 0.33
+
+# Maximum depth threshold calculation per sample.
+# Will be applied to mlRho analysis and in VCF file filtering.
+# Factor by which the average genome-wide depth should be multiplied 
+# to set a maximum depth threshold.
+maxDP: 10
+#####
+
+
+#####
+# CHECKPOINT:
+# Depth histograms with minimum and maximum depth thresholds and 
+# average genome-wide depth as vertical lines and multiQC reports
+# are available in the GenErode pipeline report.
+# Carefully check the histograms and multiQC reports and adjust 
+# the depth parameters above if necessary before moving on.
+#####
+
+
+#####
+# OPTIONAL: 
+# Run mapDamage2 on historical samples specified in the list 
+# "historical_rescaled_samplenames" below.
+# Will rescale base qualities at potentially damaged sites and 
+# calculate statistics on DNA damage patterns in realigned BAM 
+# files.
+historical_bam_mapDamage: False
+
+# List of historical samples on which mapDamage2 should be run. 
+# Sample names without lane or index number in quotation marks, 
+# separated by commas (e.g. ["VK01", "VK02", "VK03"]).
+# List has to be left empty ([]) if mapDamage2 is not run.
+# Keep the list of sample names for the entire pipeline run 
+# if rescaled BAM files should be used in downstream analyses.
+historical_rescaled_samplenames: []
+#####
+
+
+#####
+# OPTIONAL: 
+# Subsample BAM files to a certain average genome-wide depth of 
+# coverage to reduce biases in downstream analyses.
+bam_subsampling: False
+
+# Depth to which BAM files should be subsampled.
+# Check the GenErode pipeline report to screen the dataset for an 
+# appropriate depth for subsampling.
+# Has to be lower than or equal to the average depth of the sample 
+# with the lowest depth in the list below.
+# Keep the variable for the entire pipeline run so that the correct 
+# files are used for downstream analyses.
+# Has to be set to False if not run.
+subsampling_depth: False
+
+# Combined list of modern and historical samples that should be 
+# subsampled to a common depth.
+# Provide the sample names without lane or index number in 
+# quotation marks, separated by commas (e.g. ["VK01", "VK02", "VK03"]). 
+# List has to be left empty ([]) if subsampling is not run.
+# Keep the list of sample names for the entire pipeline run 
+# if subsampled BAM files should be used in downstream analyses.
+subsampling_samplenames: []
+#####
+
+
+#####
+# Call variants per sample from BAM files processed with mandatory 
+# (and optional, if chosen) steps listed above. 
+# Required for CpG filtering of BAM files for mlRho, ROH estimation, 
+# PCA plotting, SNP annotation, and relative mutational load calculations 
+# (from GERP scores).
+genotyping: False
+#####
+
+
+#####
+# OPTIONAL:
+# Identify CpG sites for removal from VCF files and from 
+# downstream analyses and define samples to be CpG filtered. 
+# Three different methods are available to identify CpG sites.
+
+# This step will generate several BED files containing genome 
+# coordinates of CpG sites (file names ending with: "*.CpG_method.bed"), 
+# all genome regions outside of CpG sites ("*.noCpG_method.bed"), 
+# as well as intersected BED files of coordinates of CpG sites 
+# and repeat elements ("*.CpG_method.repeats.bed") and regions 
+# outside of CpG sites and repeat elements ("*.noCpG_method.repma.bed").
+
+# Set CpG_identification and one of the three methods listed 
+# below to True and specify samples in the list below in 
+# which CpG sites should be identified and/or from which 
+# CpG sites should be removed.
+CpG_identification: False
+
+# Method 1: 
+# Identify CpG sites in single-individual VCF files of samples 
+# listed below. BED files with CpG sites from all samples are 
+# merged into one file for CpG site filtering. Only genotype 
+# information is considered for CpG site identification.
+# Has to be kept at True for the rest of the pipeline, if chosen 
+# method for CpG identification, so that the correct files are 
+# used for downstream analyses.
+CpG_from_vcf: False
+
+# Method 2: 
+# Identify CpG sites in the reference genome.
+# Ignores genotype information of samples mapped to the reference 
+# genome.
+# Has to be kept at True for the rest of the pipeline, if chosen 
+# method for CpG identification, so that the correct files are 
+# used for downstream analyses.
+CpG_from_reference: False
+
+# Method 3: 
+# Identify CpG sites in single-individual VCF files and in the 
+# reference genome. BED files with CpG sites from all samples 
+# and from the reference genome are merged into one file for 
+# CpG site filtering.
+# Has to be kept at True for the rest of the pipeline, if chosen 
+# method for CpG identification, so that the correct files are 
+# used for downstream analyses.
+CpG_from_vcf_and_reference: False
+
+# Combined list of modern and historical samples in which CpG sites 
+# should be identified if CpG_from_vcf or CpG_from_vcf_and_reference 
+# is set to True, and from which CpG sites should be removed based 
+# on any of the three available CpG identification methods chosen above.
+# Sample names without lane or index number in quotation marks, 
+# separated by commas (e.g. ["VK01", "VK02", "VK03"]).
+# List has to be left empty ([]) if neither CpG identification nor 
+# CpG site filtering is run.
+# Keep the list of sample names for the entire pipeline run 
+# so that the correct files are used for downstream analyses.
+CpG_samplenames: []
+#####
+
+
+#################################################################
+#################################################################
+# Rules for BAM file processing for mlRho, and mlRho            #
+#################################################################
+
+#####
+# OPTIONAL: 
+# Generate BED files of autosomes and sex chromosomes for mlRho 
+# analyses, in case these should be analyzed separately from each 
+# other (see below for further options).
+# Includes intersecting of the new chromosome-specific BED files 
+# with CpG- and repeat-masking BED files for downstream filtering.
+autosome_sexchromosome_bed_files: False
+
+# Relative path (from the main pipeline directory) to file listing 
+# scaffolds/contigs linked to sex chromosomes (one scaffold/contig 
+# name per line).
+# Leave empty ("") if identity of sex chromosomes is unknown and/or 
+# if mlRho should be run on all scaffolds/contigs of the genome.
+# Keep the path to the file when running the next step (mlRho) 
+# separately for autosomes and sex chromosomes or only for autosomes.
+sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
+#####
+
+
+#####
+# Run mlRho 2.9 on filtered BAM files.
+# Automatically generates a PDF file with a plot of genome-wide 
+# theta (with confidence intervals from mlRho) for each sample 
+# (split up into autosomes and sex-chromosomes if specified below) 
+# that can be retrieved from the GenErode pipeline report.
+# Default filters: quality, depth (based on parameters set above) 
+# and repeat elements.
+# Requires sample lists and parameters for any desired optional 
+# data filtering step (as described above).
+mlRho: False
+
+# There are three options how to run mlRho:
+# 1) If the identity of sex-chromosomal contigs/scaffolds is unknown 
+# and/or mlRho should be run on all contigs/scaffolds,
+# set mlRho_autosomes_sexchromosomes to False and do not provide 
+# a path to a text file with sex-chromosomal contigs/scaffolds 
+# above when running mlRho.
+#
+# 2) If the identity of sex-chromosomal contigs/scaffolds is known, 
+# mlRho analyses can be run for autosomes and sex chromosomes 
+# separately from each other. 
+# In that case, set mlRho_autosomes_sexchromosomes to True and 
+# provide the path to the file with sex-chromosomal contigs/scaffolds 
+# above when running mlRho.
+#
+# 3) If the identity of sex-chromosomal contigs/scaffolds is known, 
+# sex-chromosomal contigs/scaffolds can be entirely excluded from 
+# the analysis.
+# In that case, set mlRho_autosomes_sexchromosomes to False and 
+# provide the path to the file with sex-chromosomal contigs/scaffolds 
+# above when running mlRho.
+mlRho_autosomes_sexchromosomes: False
+#####
+#################################################################
+#################################################################
+
+
+
+#################################################################
+#################################################################
+# Rules for VCF file processing for PCA plots, ROH estimation,  #
+# SNP annotation, and relative mutational load calculations     #
+#################################################################
+
+#####
+# OPTIONAL: 
+# Remove CpG sites from BCF files of of historical and modern samples 
+# specified in the list "CpG_samplenames" under "CpG_identification".
+vcf_CpG_filtering: False
+#####
+
+
+#####
+# Filter BCF files of historical and modern samples for quality, 
+# depth (based on parameters set above), indels, allelic imbalance, 
+# and remove repeat regions that were identified in the reference genome.
+vcf_qual_repeat_filtering: False
+#####
+
+
+#####
+# Merge BCF files into a BCF file containing all samples and remove all 
+# sites that are not biallelic and with missing data across all samples 
+# up to a certain threshold as defined below.
+# Extract 1. all historical and 2. all modern samples from the merged and 
+# filtered BCF file.
+# Create a BED file of sites that remain after filtering across all samples
+# to be used for downstream filtering of individual BCF files.
+merge_vcfs_per_dataset: False
+
+# Maximum allowed fraction of missing genotypes across all samples for a 
+# site to be kept in the BCF and BED file, to ensure that the same sites 
+# are compared between historical and modern samples.
+f_missing: 0.1 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
+#####
+
+#################################################################
+#################################################################
+
+
+
+#################################################################
+#################################################################
+# Rules for PCA, ROH estimation and SNP annotation              #
+#################################################################
+
+#####
+# Plot PCAs for 1) all historical, 2) all modern, and 3) all modern 
+# and historical samples combined based on the merged BCF files.
+# Automatically generates PDF files with plots of PC1 vs. PC2 and 
+# PC1 vs. PC3 that can be retrieved from the GenErode pipeline report.
+# Requires sample lists and parameters for any desired optional 
+# data filtering step (as described above).
+pca: False
+#####
+
+
+#####
+# Run plink 1.9 on merged BCF files to estimate runs of homozygosity.
+# Automatically generates PDF files with plots of F(ROH) larger than
+# 2 Mb in each sample that can be retrieved from the GenErode pipeline report.
+# Requires sample lists and parameters for any desired optional 
+# data filtering step (as described above).
+ROH: False
+
+# Parameters:
+# Set a fixed combination of the following parameters for a given run. 
+# See https://www.cog-genomics.org/plink/1.9/ibd#homozyg for more details.
+
+# Minimum SNP count. For example, 10, 25. Abbreviation in file name: homsnp.
+homozyg-snp: 25
+# Minimum size of ROH in kilobases. Abbreviation in file name: homkb.
+homozyg-kb: 1000 
+# Window size for ROH estimation. For example, 20, 50, 100, 1000. 
+# Abbreviation in file name: homwinsnp.
+homozyg-window-snp: 1000 
+# Maximum number of heterozygote sites per window. 
+# For example, 1 for a stringent analysis, 3 for a relaxed setting. 
+# Abbreviation in file name: homwinhet.
+homozyg-window-het: 1 
+# Maximum number of missing sites per window. 
+# For example, 1 or 5 for a stringent analysis, 
+# 10 for intermediate filtering and 15 for relaxed filtering. 
+# Abbreviation in file name: homwinmis.
+homozyg-window-missing: 5 
+# Maximum number of heterozygote sites per ROH. 
+# For example, 1 for a stringent analysis, 
+# 3 as a relaxed setting. Disable this parameter by setting it to 999. 
+# Abbreviation in file name: homhet.
+homozyg-het: 999 
+#####
+
+
+#####
+# Run snpEff v4.3.1 on per-sample BCF files to annotate SNPs
+# in protein-coding regions.
+# Automatically generates a PDF file with a plot of the numbers of 
+# SNPs with high, moderate, low, and modifier effects for each sample 
+# that can be retrieved from the GenErode pipeline report.
+# Sites from the BED file not passing the missingness and biallelic sites
+# filter across all samples are removed per default from the per-sample
+# BCF files.
+# Requires sample lists and parameters for any desired optional 
+# data filtering step (as described above). 
+snpEff: False
+
+# Full path to GTF file (GTF format version 2.2) with gene model predictions 
+# for the reference genome specified at the top of this config file.
+# Read here about tools for file format conversions from GFF to GTF: 
+# https://github.com/NBISweden/GAAS/blob/master/annotation/knowledge/gff_to_gtf.md
+# Output files from building the snpEff database will be placed into the 
+# same directory as the GTF file.
+# That way, the database has to be built only once for a given GTF file.
+gtf_path: ""
+#################################################################
+#################################################################
+
+
+#################################################################
+#################################################################
+# Rules for GERP score and relative mutational load calculations#
+#################################################################
+
+#####
+# Estimate GERP scores for the reference genome of the target species,
+# based on at least 30 outgroup genomes and a dated phylogenetic tree,
+# and (optionally) calculate relative mutational load per sample from 
+# GERP scores and counts of derived alleles per site and sample from 
+# filtered per-sample BCF files (homozygous sites counted as 2 derived alleles 
+# and heterozygous sites as 1 derived allele). Sites from the BED file not 
+# passing the missingness and biallelic sites filter across all samples 
+# are removed per default from the per-sample BCF files. 
+# Relative mutational load is calculated per sample for all sites with 
+# GERP scores within "min_gerp" and "max_gerp" (specified below) based on 
+# the counts of derived alleles for these sites.
+# Automatically generates a PDF file with a histogram of GERP scores
+# that can be used to choose minimum and maximum GERP score thresholds, and
+# a PDF file with a plot of relative mutational load estimates per sample 
+# that can be retrieved from the GenErode pipeline report.
+# Requires path to reference genome as provided at the top of this 
+# config file. If relative mutational load should be calculated per sample, 
+# metadata files with historical and/or modern samples are required.
+# If metadata files are provided, sample lists and parameters for any 
+# desired optional data filtering step (as described above) are required. 
+gerp: False
+
+# Full path to directory containing reference genomes of outgroup species in 
+# FASTA format for GERP++ score estimation.
+# Files must be gzipped and FASTA file name extensions can be 
+# ".fa.gz", ".fasta.gz" or ".fna.gz".
+gerp_ref_path: ""
+
+# Full path to phylogenetic tree of all species included in the analysis 
+# (including the target species) in NEWICK format and including divergence 
+# time estimates.
+# Divergence time estimates must be in billions of years for correct scaling 
+# of GERP scores (see dated phylogenetic trees from www.timetree.org).
+# Species names in the tree must be identical to the FASTA file names 
+# without ".fa.gz", ".fasta.gz" or ".fna.gz".
+tree: ""
+
+# Minimum and maximum GERP score for a site to be included into calculations 
+# of relative mutational load.
+# Positive values indicate purifying selection.
+min_gerp: 0
+max_gerp: 1000
+
+#####
+# NOTE:
+# The GERP step produces a large number of large intermediate files,
+# so several TB of storage space may required during a pipeline run.
+# The required storage space for intermediate files scales with the 
+# numbers of outgroup genomes and samples.
+# The number of intermediate files scales additionally with the level of
+# fragmentation of the reference genome (i.e. with the number of contigs/
+# scaffolds).
+#####
+
+#####

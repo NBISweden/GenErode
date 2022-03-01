@@ -1,0 +1,285 @@
+# cluster.yaml - cluster configuration file for GenErode pipeline
+__default__:
+  account: # fill in your compute account on your HPC system (if applicable)
+  partition: core
+  time: 02:00:00
+  ntasks: 1
+  cpus-per-task: 1
+### repeat identification
+repeatmodeler:
+  time: 06-00:00:00
+  cpus-per-task: 16
+repeatclassifier:
+  time: 01-00:00:00
+  cpus-per-task: 2
+repeatmasker:
+  time: 10-00:00:00
+  cpus-per-task: 16
+### fastq processing
+historical_fastq_before_group:
+  time: 09:00:00
+  cpus-per-task: 2
+fastqc_historical_raw:
+  cpus-per-task: 2
+fastqc_modern_raw:
+  cpus-per-task: 2
+fastp_historical:
+  time: 09:00:00
+  cpus-per-task: 4
+fastp_modern:
+  time: 09:00:00
+  cpus-per-task: 4
+fastqc_historical_merged:
+  cpus-per-task: 2
+fastqc_historical_unmerged:
+  cpus-per-task: 2
+fastqc_modern_trimmed:
+  cpus-per-task: 2
+### map to mitochondrial genomes
+map_historical_merged_to_mito:
+  time: 06:00:00
+map_historical_unmerged_to_mito:
+  time: 06:00:00
+historical_mito_bams_group:
+  time: 2-00:00:00
+merge_historical_mitogenome_bams_per_sample:
+  time: 2-00:00:00
+historical_merged_mito_bams_group:
+  time: 2-00:00:00
+### map to reference genome
+map_historical:
+  time: 10-00:00:00
+  cpus-per-task: 8
+convert_historical_sam:
+  time: 10-00:00:00
+  cpus-per-task: 8
+map_modern:
+  time: 10-00:00:00
+  cpus-per-task: 8
+sorted_bam_stats_group:
+  time: 4-00:00:00
+  cpus-per-task: 8
+### process bam files
+merge_historical_bams_per_index:
+  time: 2-00:00:00
+  cpus-per-task: 2
+merge_modern_bams_per_index:
+  time: 2-00:00:00
+  cpus-per-task: 2
+merged_index_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 8
+rmdup_historical_bams:
+  time: 3-00:00:00
+  cpus-per-task: 6
+rmdup_modern_bams:
+  time: 3-00:00:00
+  cpus-per-task: 2
+rmdup_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 8
+merge_historical_bams_per_sample:
+  time: 2-00:00:00
+  cpus-per-task: 2
+merge_modern_bams_per_sample:
+  time: 2-00:00:00
+  cpus-per-task: 2
+merged_sample_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 8
+indel_realigner_targets:
+  time: 5-00:00:00
+  cpus-per-task: 8
+indel_realigner:
+  time: 5-00:00:00
+  cpus-per-task: 8
+realigned_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 8
+realigned_bam_group:
+  time: 2-00:00:00
+  cpus-per-task: 2
+### rescale bam files
+rescale_historical:
+  time: 3-00:00:00
+  cpus-per-task: 4
+rescaled_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 8
+rescaled_bam_group:
+  time: 09:00:00
+  cpus-per-task: 2
+### subsample bam files
+filter_bam_mapped_mq:
+  time: 1-00:00:00
+subsample_bams:
+  time: 4-00:00:00
+  cpus-per-task: 2
+subsampled_bam_qualimap:
+  time: 4-00:00:00
+  cpus-per-task: 6
+subsampled_bam_group:
+  time: 2-00:00:00
+### genotyping
+variant_calling:
+  time: 2-00:00:00
+  cpus-per-task: 3
+sort_vcfs:
+  time: 1-00:00:00
+### identify CpG sites
+sorted_bcf2vcf:
+  time: 05:00:00
+make_CpG_genotype_bed:
+  time: 1-00:00:00
+CpG_genotype_bed_formatting_group:
+  time: 1-00:00:00
+  cpus-per-task: 4
+all_CpG_bed_formatting_group:
+  time: 1-00:00:00
+  cpus-per-task: 2
+make_noCpG_bed:
+  time: 05:00:00
+  cpus-per-task: 2
+CpG_repeats_bed_formatting_group:
+  time: 1-00:00:00
+  cpus-per-task: 2
+merge_noCpG_noRepeats_beds:
+  time: 05:00:00
+  cpus-per-task: 2
+make_noCpG_repma_bed:
+  time: 05:00:00
+  cpus-per-task: 2
+### create chromosome bed files
+make_autosomes_bed:
+  time: 05:00:00
+intersect_sexchr_repma_beds:
+  time: 05:00:00
+  cpus-per-task: 2
+intersect_autos_repma_beds:
+  time: 05:00:00
+  cpus-per-task: 2
+intersect_sexchr_CpG_repma_beds:
+  time: 05:00:00
+  cpus-per-task: 2
+intersect_autos_CpG_repma_beds:
+  time: 05:00:00
+  cpus-per-task: 2
+### mlRho
+bam2pro_autos:
+  time: 1-00:00:00
+bam2pro_sexchr:
+  time: 1-00:00:00
+bam2pro_all:
+  time: 1-00:00:00
+### CpG filter VCF files
+remove_CpG_vcf:
+  time: 05:00:00
+  cpus-per-task: 6
+CpG_vcf2bcf:
+  time: 05:00:00
+  cpus-per-task: 2
+### process VCF files
+remove_snps_near_indels:
+  time: 05:00:00
+  cpus-per-task: 2
+filter_vcfs_qual_dp:
+  time: 05:00:00
+  cpus-per-task: 2
+filter_vcfs_allelic_balance:
+  time: 05:00:00
+  cpus-per-task: 2
+remove_repeats_vcf:
+  time: 05:00:00
+  cpus-per-task: 6
+filtered_vcf2bcf:
+  time: 05:00:00
+  cpus-per-task: 2
+### merge and process VCF files
+merge_all_vcfs:
+  time: 3-00:00:00
+  cpus-per-task: 6
+filter_vcf_biallelic:
+  time: 1-00:00:00
+  cpus-per-task: 2
+filter_vcf_missing:
+  time: 1-00:00:00
+  cpus-per-task: 2
+extract_historical_samples:
+  time: 05:00:00
+extract_modern_samples:
+  time: 05:00:00
+### PCA
+vcf2plink_pca:
+  time: 05:00:00
+  cpus-per-task: 2
+### runs of homozygosity
+filter_vcf_hwe:
+  time: 05:00:00
+  cpus-per-task: 2
+vcf2plink_hwe:
+  time: 05:00:00
+  cpus-per-task: 2
+### snpEff
+repmasked_bcf2vcf_snpEff:
+  time: 05:00:00
+  cpus-per-task: 2
+filter_biallelic_missing_vcf_snpEff:
+  time: 1-00:00:00
+  cpus-per-task: 6
+annotate_vcf:
+  time: 05:00:00
+### gerp
+outgroups2fastq:
+  time: 1-00:00:00
+outgroup_fastqc:
+  cpus-per-task: 2
+align2target:
+  time: 3-00:00:00
+  cpus-per-task: 8
+bam2fasta:
+  time: 1-00:00:00
+  cpus-per-task: 2
+split_ref_contigs:
+  time: 1-00:00:00
+concatenate_fasta_per_contig:
+  time: 1-00:00:00
+  cpus-per-task: 2
+compute_gerp:
+  time: 1-00:00:00
+  cpus-per-task: 4
+gerp2coords:
+  time: 1-00:00:00
+  cpus-per-task: 2
+get_ancestral_state:
+  time: 1-00:00:00
+  cpus-per-task: 2
+produce_contig_out:
+  time: 1-00:00:00
+  cpus-per-task: 2
+merge_per_chunk:
+  time: 1-00:00:00
+  cpus-per-task: 2
+merge_gerp_gz:
+  time: 1-00:00:00
+  cpus-per-task: 2
+repmasked_bcf2vcf_gerp:
+  time: 05:00:00
+  cpus-per-task: 2
+filter_biallelic_missing_vcf_gerp:
+  time: 1-00:00:00
+  cpus-per-task: 6
+split_vcf_files:
+  time: 05:00:00
+gerp_derived_alleles:
+  time: 10-00:00:00
+  cpus-per-task: 2
+merge_gerp_alleles_per_chunk:
+  time: 1-00:00:00
+  cpus-per-task: 4
+merge_gerp_alleles_gz:
+  time: 1-00:00:00
+  cpus-per-task: 4
+relative_mutational_load_per_sample:
+  time: 10-00:00:00
+  cpus-per-task: 4
+###
