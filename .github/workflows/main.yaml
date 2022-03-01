@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/docker'
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: eWaterCycle/setup-singularity@v5
+        with:
+          singularity-version: 3.6.4
+
+      - uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          activate-conda: true
+      - name: conda_environment
+        run: |
+          conda env update -n base -f environment.yml
+
+      - name: mitogenome_mapping_dry
+        run: |
+          snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+
+      - name: mitogenome_mapping
+        run: |
+          snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+
+      - name: mlRho_options_dry
+        run: |
+          snakemake -npr --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
+
+      - name: mlRho_options
+        run: |
+          snakemake --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
+
+      - name: pca_roh_dry
+        run: |
+          snakemake -npr --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
+
+      - name: pca_roh
+        run: |
+          snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
+
+      - name: snpEff_gerp_dry
+        run: |
+          snakemake -npr --configfile .test/config/config_snpEff_gerp.yaml -j 4 --cores 1 --use-singularity
+
+      - name: snpEff_gerp
+        run: |
+          snakemake --configfile .test/config/config_snpEff_gerp.yaml -j 4 --cores 1 --use-singularity

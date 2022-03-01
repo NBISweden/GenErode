@@ -1,0 +1,31 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+description: Metadata schema definition
+type: object
+properties:
+  samplename_index_lane:
+    type: string
+    pattern: (^[A-Za-z0-9]+_[A-Za-z0-9]+_[A-Za-z0-9]+$)
+    description: sample identifier. Must contain sample id, library index and lane number, separated by underscore.
+  readgroup_id:
+    type: string
+    description: readgroup ID
+  readgroup_platform:
+    type: string
+    description: Platform (e.g. illumina).
+  path_to_R1_fastq_file:
+    type: string
+    format: uri
+    description: fastq file containing forward reads
+    pattern: .*(.fastq.gz|.fq.gz)$
+  path_to_R2_fastq_file:
+    type: string
+    format: uri
+    description: fastq file containing reverse reads
+    pattern: .*(.fastq.gz|.fq.gz)$
+
+required:
+  - samplename_index_lane
+  - readgroup_id
+  - readgroup_platform
+  - path_to_R1_fastq_file
+  - path_to_R2_fastq_file
