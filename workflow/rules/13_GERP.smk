@@ -60,6 +60,7 @@ def historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     elif config["CpG_from_reference"] == True:
         rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -75,6 +76,7 @@ def historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
         rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -90,7 +92,7 @@ def historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
-    outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     return outlist
 
 def modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
@@ -111,6 +113,7 @@ def modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_reference"] == True:
         not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -119,6 +122,7 @@ def modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
         not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -127,7 +131,7 @@ def modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
-    outlist += (not_subsampled_CpG + subsampled_CpG)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     return outlist
 
 def rel_load_table_inputs(wildcards):
@@ -180,6 +184,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
+            outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
         elif config["CpG_from_reference"] == True:
             rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -203,6 +208,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
+            outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
         elif config["CpG_from_vcf_and_reference"] == True:
             rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -226,7 +232,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+            outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     if os.path.exists(config["modern_samples"]):
         not_subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
@@ -252,6 +258,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
+            outlist += (not_subsampled_CpG + subsampled_CpG)
         elif config["CpG_from_reference"] == True:
             not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -264,6 +271,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
+            outlist += (not_subsampled_CpG + subsampled_CpG)
         elif config["CpG_from_vcf_and_reference"] == True:
             not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -276,7 +284,7 @@ def rel_load_table_inputs(wildcards):
                 fmiss=config["f_missing"],
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+            outlist += (not_subsampled_CpG + subsampled_CpG)
     return outlist
 
 def all_GERP_outputs(wildcards):
