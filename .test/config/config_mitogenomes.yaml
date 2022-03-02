@@ -363,7 +363,7 @@ vcf_qual_repeat_filtering: False
 # Merge BCF files into a BCF file containing all samples and remove all 
 # sites that are not biallelic and with missing data across all samples 
 # up to a certain threshold as defined below.
-# Extract 1. all historical and 2. all modern samples from the merged and 
+# Extract 1) all historical and 2) all modern samples from the merged and 
 # filtered BCF file.
 # Create a BED file of sites that remain after filtering across all samples
 # to be used for downstream filtering of individual BCF files.
@@ -488,7 +488,7 @@ gerp: False
 # Full path to directory containing reference genomes of outgroup species in 
 # FASTA format for GERP++ score estimation.
 # Files must be gzipped and FASTA file name extensions can be 
-# ".fa.gz", ".fasta.gz" or ".fna.gz".
+# "*.fa.gz", "*.fasta.gz" or "*.fna.gz".
 gerp_ref_path: ""
 
 # Full path to phylogenetic tree of all species included in the analysis 
