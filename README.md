@@ -15,13 +15,16 @@ The full pipeline documentation can be found on the [repository wiki](https://gi
 
 ## Pipeline overview
 
-<img src="docs/source/img/figure_1a_generode_pipeline_v6.png" alt="processing" width="75%"/>
-<img src="docs/source/img/figure_1b_generode_pipeline_v6.png" alt="analysis" width="75%"/>
+<img src="docs/source/img/figure_1_generode_pipeline_v7.png" alt="processing" width="75%"/>
 
-Figure 1: GenErode pipeline schematic. a) Overview of the main data processing 
-tracks, including input and output files formats, dependencies between steps, 
-and main software used. Optional steps are highlighted in red. b) Overview of 
-the data analysis tracks of the pipeline and the final reports.
+Figure 1: Overview of the GenErode pipeline data processing tracks. Input 
+and output files formats, dependencies between steps, and main software used
+are shown. Optional steps are highlighted in red. 
+
+<img src="docs/source/img/figure_2_generode_pipeline_v7.png" alt="analysis" width="75%"/>
+
+Figure 2: Overview of the GenErode pipeline data analysis tracks and final reports.
+Input file formats and main software used are shown.
 
 
 ## Licence information
