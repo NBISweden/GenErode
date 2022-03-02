@@ -53,6 +53,7 @@ def historical_snpEff_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     elif config["CpG_from_reference"] == True:
         rescaled_not_subsampled_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.csv",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -68,6 +69,7 @@ def historical_snpEff_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
         rescaled_not_subsampled_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.csv",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -83,7 +85,7 @@ def historical_snpEff_multiqc_inputs(wildcards):
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
-    outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     return outlist
 
 def modern_snpEff_multiqc_inputs(wildcards):
@@ -104,6 +106,7 @@ def modern_snpEff_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_reference"] == True:
         not_subsampled_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.csv",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -112,6 +115,7 @@ def modern_snpEff_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
         not_subsampled_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.csv",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -120,7 +124,7 @@ def modern_snpEff_multiqc_inputs(wildcards):
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],)
-    outlist += (not_subsampled_CpG + subsampled_CpG)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
     return outlist
 
 
