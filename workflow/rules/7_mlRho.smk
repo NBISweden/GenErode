@@ -119,7 +119,6 @@ def all_mlRho_outputs(wildcards):
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
                     rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.{chr}.mlRho.txt",
                         sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -135,7 +134,6 @@ def all_mlRho_outputs(wildcards):
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.{chr}.mlRho.txt",
                         sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -151,7 +149,7 @@ def all_mlRho_outputs(wildcards):
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
+                outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
             elif config["mlRho_autosomes_sexchromosomes"] == False:
                 rescaled_not_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.repma.autos.mlRho.txt",
                     sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
@@ -175,7 +173,6 @@ def all_mlRho_outputs(wildcards):
                     not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.autos.mlRho.txt",
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
                     rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.autos.mlRho.txt",
                         sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
@@ -187,7 +184,6 @@ def all_mlRho_outputs(wildcards):
                     not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.autos.mlRho.txt",
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.autos.mlRho.txt",
                         sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
@@ -199,7 +195,7 @@ def all_mlRho_outputs(wildcards):
                     not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.autos.mlRho.txt",
                         sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
+                outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
         elif len(sexchromosomeList) == 0:
             rescaled_not_subsampled_not_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.repma.all.mlRho.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
@@ -223,7 +219,6 @@ def all_mlRho_outputs(wildcards):
                 not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.all.mlRho.txt",
                     sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
             elif config["CpG_from_reference"] == True:
                 rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.all.mlRho.txt",
                     sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
@@ -235,7 +230,6 @@ def all_mlRho_outputs(wildcards):
                 not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.all.mlRho.txt",
                     sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
             elif config["CpG_from_vcf_and_reference"] == True:
                 rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.all.mlRho.txt",
                     sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
@@ -247,7 +241,7 @@ def all_mlRho_outputs(wildcards):
                 not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.all.mlRho.txt",
                     sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
+            outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
     if os.path.exists(config["modern_samples"]):
         if len(sexchromosomeList) > 0:
             if config["mlRho_autosomes_sexchromosomes"] == True:
@@ -267,7 +261,6 @@ def all_mlRho_outputs(wildcards):
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
                     not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.{chr}.mlRho.txt",
                         sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -276,7 +269,6 @@ def all_mlRho_outputs(wildcards):
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.{chr}.mlRho.txt",
                         sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
@@ -285,7 +277,7 @@ def all_mlRho_outputs(wildcards):
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],
                         chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
+                outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
             elif config["mlRho_autosomes_sexchromosomes"] == False:
                 not_subsampled_not_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.autos.mlRho.txt",
                     sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
@@ -299,21 +291,19 @@ def all_mlRho_outputs(wildcards):
                     subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.autos.mlRho.txt",
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
                     not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.autos.mlRho.txt",
                         sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
                     subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.autos.mlRho.txt",
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.autos.mlRho.txt",
                         sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
                     subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.autos.mlRho.txt",
                         sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                         DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
+                outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
         elif len(sexchromosomeList) == 0:
             not_subsampled_not_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.all.mlRho.txt",
                 sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
@@ -327,21 +317,19 @@ def all_mlRho_outputs(wildcards):
                 subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.all.mlRho.txt",
                     sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
             elif config["CpG_from_reference"] == True:
                 not_subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.all.mlRho.txt",
                     sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
                 subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.all.mlRho.txt",
                     sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
             elif config["CpG_from_vcf_and_reference"] == True:
                 not_subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.all.mlRho.txt",
                     sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
                 subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.all.mlRho.txt",
                     sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                     DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
+            outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
     return outlist
 
 

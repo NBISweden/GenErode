@@ -14,7 +14,6 @@ on:
       - 'workflow/docker'
     branches:
       - main
-      - dev
 
 jobs:
   test:
@@ -59,10 +58,10 @@ jobs:
         run: |
           snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
-      - name: snpeff_gerp_dry
+      - name: snpEff_gerp_dry
         run: |
-          snakemake -npr --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake -npr --configfile .test/config/config_snpEff_gerp.yaml -j 4 --cores 1 --use-singularity
 
-      - name: snpeff_gerp
+      - name: snpEff_gerp
         run: |
-          snakemake --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake --configfile .test/config/config_snpEff_gerp.yaml -j 4 --cores 1 --use-singularity
