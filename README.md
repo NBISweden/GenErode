@@ -12,6 +12,11 @@ study patterns of genome erosion.
 
 The full pipeline documentation can be found on the [repository wiki](https://github.com/NBISweden/GenErode/wiki).
 
+## Citation
+
+If you've used GenErode to produce results, please cite our bioRxiv article:
+
+Kutschera VE, Kierczak M, van der Valk T, von Seth J, Dussex N, Lord E, Dehasque M, Stanton DWG, Emami P, Nystedt B, Dalén L, Díez-del-Molino D. GenErode: a bioinformatics pipeline to investigate genome erosion in endangered and extinct species. bioRxiv 2022. https://doi.org/10.1101/2022.03.04.482637
 
 ## Pipeline overview
 
