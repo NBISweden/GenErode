@@ -35,38 +35,47 @@ jobs:
           auto-activate-base: false
 
       - name: conda_environment
+        shell: bash -l {0}
         run: |
           conda info
           conda list
 
       - name: mitogenome_mapping_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
       - name: mitogenome_mapping
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
       - name: mlRho_options_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
 
       - name: mlRho_options
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
 
       - name: pca_roh_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
       - name: pca_roh
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
       - name: snpeff_gerp_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
 
       - name: snpeff_gerp
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
