@@ -23,46 +23,59 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - uses: eWaterCycle/setup-singularity@v5
+      - uses: eWaterCycle/setup-singularity@v7
         with:
-          singularity-version: 3.6.4
+          singularity-version: 3.8.3
 
-      - uses: s-weigand/setup-conda@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          update-conda: true
-          activate-conda: true
+          mamba-version: "*"
+          activate-environment: generode
+          environment-file: environment.yml
+          auto-activate-base: false
+
       - name: conda_environment
+        shell: bash -l {0}
         run: |
-          conda env update -n base -f environment.yml
+          conda info
+          conda list
 
       - name: mitogenome_mapping_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
       - name: mitogenome_mapping
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
       - name: mlRho_options_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
 
       - name: mlRho_options
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
 
       - name: pca_roh_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
       - name: pca_roh
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
       - name: snpeff_gerp_dry
+        shell: bash -l {0}
         run: |
           snakemake -npr --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
 
       - name: snpeff_gerp
+        shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
