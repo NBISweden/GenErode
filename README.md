@@ -2,8 +2,6 @@
 
 <img src="docs/source/img/logga_viridis2.png" alt="logo" width="25%"/> 
 
-<sub>_(C) Jonas Söderberg_</sub>
-
 GitHub repository for GenErode, a Snakemake pipeline for the analysis 
 of whole-genome sequencing data from historical and modern samples to 
 study patterns of genome erosion.
@@ -16,7 +14,7 @@ The full pipeline documentation can be found on the [repository wiki](https://gi
 
 If you've used GenErode to produce results, please cite our paper:
 
-Kutschera VE, Kierczak M, van der Valk T, von Seth J, Dussex N, Lord E, Dehasque M, Stanton DWG, Emami P, Nystedt B, Dalén L, Díez-del-Molino D. GenErode: a bioinformatics pipeline to investigate genome erosion in endangered and extinct species. BMC Bioinformatics 23, 228 (2022). https://doi.org/10.1186/s12859-022-04757-0
+Kutschera VE, Kierczak M, van der Valk T, von Seth J, Dussex N, Lord E, Dehasque M, Stanton DWG, Emami P, Nystedt B, Dalén L, Díez-del-Molino D (2022) GenErode: a bioinformatics pipeline to investigate genome erosion in endangered and extinct species. BMC Bioinformatics 23, 228 https://doi.org/10.1186/s12859-022-04757-0
 
 ## Pipeline overview
 
@@ -50,3 +48,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+Logo: Jonas Söderberg
