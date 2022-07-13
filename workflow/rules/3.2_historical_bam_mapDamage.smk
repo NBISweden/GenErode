@@ -49,7 +49,7 @@ rule index_rescaled_bams:
     input:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam",
     output:
-        index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai"),
+        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{dataset}/{sample}_index_rescaled_bams.log",
     group:

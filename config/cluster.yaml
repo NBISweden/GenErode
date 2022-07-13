@@ -280,6 +280,6 @@ merge_gerp_alleles_gz:
   time: 1-00:00:00
   cpus-per-task: 4
 relative_mutational_load_per_sample:
-  time: 10-00:00:00
-  cpus-per-task: 4
+  time: 1-00:00:00
+  cpus-per-task: 2
 ###
