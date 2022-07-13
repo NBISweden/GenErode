@@ -2,7 +2,7 @@
 # This is the Snakefile of the GenErode pipeline for historical or       #
 # ancient and modern samples to study patterns of genome erosion         #
 #                                                                        #
-# Pipeline version 0.4.1                                                 #
+# Pipeline version 0.4.2                                                 #
 #                                                                        #
 # Written by Verena Kutschera, Marcin Kierczak and Tom van der Valk      #
 # Email: generode@nbis.se                                                #
