@@ -994,7 +994,7 @@ rule relative_mutational_load_per_sample:
         max_gerp=config["max_gerp"],
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
-    threads: 4
+    threads: 2
     shell:
         """
         python3 workflow/scripts/gerp_rel_mut_load_sample.py {input.gerp_out} {params.min_gerp} {params.max_gerp} {output.mut_load} 2> {log}
