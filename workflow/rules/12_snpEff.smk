@@ -199,6 +199,7 @@ rule build_snpEff_db:
         config=rules.update_snpEff_config.output.config,
     output:
         db=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEffectPredictor.bin",
+    threads: 1
     params:
         ref_name=REF_NAME,
         abs_gtf=lambda wildcards, input: os.path.abspath(input.gtf),
@@ -212,9 +213,10 @@ rule build_snpEff_db:
         "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
     shell:
         """
+        mem=$(((6 * {threads}) - 2))
         cd {params.abs_db_dir}
-        snpEff build -gtf22 -c {params.abs_config} -dataDir {params.abs_data_dir} -treatAllAsProteinCoding \
-        -v {params.ref_name} 2> {log}
+        java -jar -Xmx${{mem}}g /usr/local/share/snpeff-4.3.1t-3/snpEff.jar build -gtf22 -c {params.abs_config} \
+        -dataDir {params.abs_data_dir} -treatAllAsProteinCoding -v {params.ref_name} 2> {log}
         """
 
 
@@ -264,6 +266,7 @@ rule annotate_vcf:
         ann="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.ann.vcf",
         csv="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.csv",
         html="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}_stats.html",
+    threads: 1
     params:
         ref_name=REF_NAME,
         abs_config=lambda wildcards, input: os.path.abspath(input.config),
@@ -274,7 +277,8 @@ rule annotate_vcf:
         "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
     shell:
         """
-        snpEff -c {params.abs_config} -dataDir {params.abs_data_dir} -s {output.html} -csvStats {output.csv} \
+        mem=$(((6 * {threads}) - 2))
+        java -jar -Xmx${{mem}}g /usr/local/share/snpeff-4.3.1t-3/snpEff.jar  -c {params.abs_config} -dataDir {params.abs_data_dir} -s {output.html} -csvStats {output.csv} \
         -treatAllAsProteinCoding -v -d -lof {params.ref_name} {input.vcf} > {output.ann} 2> {log}
         """
 
