@@ -107,7 +107,7 @@ rule remove_CpG_vcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}

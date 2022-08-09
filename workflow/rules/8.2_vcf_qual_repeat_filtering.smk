@@ -367,7 +367,7 @@ rule remove_repeats_vcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_repeats_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}
