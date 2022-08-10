@@ -810,7 +810,7 @@ rule filter_biallelic_missing_vcf_gerp:
         bed=rules.filtered_vcf2bed.output.bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf"),
+        filtered=temp("results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz"),
     threads: 6
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/vcf/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
@@ -818,14 +818,14 @@ rule filter_biallelic_missing_vcf_gerp:
         "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}
+        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
         """
 
 
 rule biallelic_missing_filtered_vcf_gerp_stats:
     """Obtain summary stats of filtered vcf file"""
     input:
-        filtered="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf",
+        filtered="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
     output:
         stats="results/gerp/{dataset}/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
     log:
@@ -879,7 +879,7 @@ rule modern_biallelic_missing_filtered_vcf_gerp_multiqc:
 rule split_vcf_files:
     """Split the VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf",
+        vcf="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:

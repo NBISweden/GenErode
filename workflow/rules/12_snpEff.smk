@@ -244,7 +244,7 @@ rule filter_biallelic_missing_vcf_snpEff:
         bed=rules.filtered_vcf2bed.output.bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf"),
+        filtered=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz"),
     threads: 6
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
@@ -252,7 +252,7 @@ rule filter_biallelic_missing_vcf_snpEff:
         "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}
+        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
         """
 
 

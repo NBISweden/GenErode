@@ -102,7 +102,7 @@ rule remove_CpG_vcf:
         bed=rules.make_noCpG_bed.output.no_CpG_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.vcf"),
+        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.vcf.gz"),
     threads: 6
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
@@ -110,7 +110,7 @@ rule remove_CpG_vcf:
         "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}
+        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
         """
 
 
