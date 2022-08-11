@@ -66,9 +66,9 @@ else:
     widthscale = len(data_df['sample'].unique()) * 1.5
 fig.set_figwidth(widthscale)
 
-fig.supylabel('relative mutational load') # y axis label
+fig.supylabel('relative mutational load', fontsize=12) # y axis label
 fig.align_labels() # align axis labels
 
-plt.tight_layout() # fix figure layout
+plt.tight_layout(rect=[0.01, 0, 1, 1]) # fix figure layout, allowing for more space between supylabel and ylabel
 
 fig.savefig(outplot, bbox_inches='tight', format='pdf') # save the figure
