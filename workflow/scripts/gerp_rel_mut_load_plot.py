@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Script to plot numbers of variants of different effects from snpEff analysis, for historical and modern samples.
+Script to plot relative mutational load as obtained from GERP analyses, for historical and modern samples.
 
 Input and output files refer to Snakemake directives.
 
