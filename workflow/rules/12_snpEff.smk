@@ -249,7 +249,7 @@ rule filter_biallelic_missing_vcf_snpEff:
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}

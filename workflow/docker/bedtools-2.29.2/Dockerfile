@@ -17,14 +17,14 @@ RUN apt update -y && apt install -y \
 WORKDIR /bedtools
 
 RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.29.2/bedtools.static.binary && \
-        mv bedtools.static.binary /bedtools/bedtools && \
-        chmod a+x /bedtools/bedtools
+		mv bedtools.static.binary /bedtools/bedtools && \
+		chmod a+x /bedtools/bedtools
 
 FROM ubuntu:18.04 AS production
 RUN apt update -y && apt install -y \
 	libcurl4-gnutls-dev
-# COPY --from=nbisweden/generode-htslib-1.15.1:latest /htslib/bgzip /usr/bin
-# COPY --from=nbisweden/generode-htslib-1.15.1:latest /htslib/tabix /usr/bin
-COPY --from=verku/htslib-1.15.1:latest /htslib/bgzip /usr/bin
-COPY --from=verku/htslib-1.15.1:latest /htslib/tabix /usr/bin
+COPY --from=nbisweden/generode-htslib-1.15.1:latest /htslib/bgzip /usr/bin
+COPY --from=nbisweden/generode-htslib-1.15.1:latest /htslib/tabix /usr/bin
+# COPY --from=verku/htslib-1.15.1:latest /htslib/bgzip /usr/bin # container used for development
+# COPY --from=verku/htslib-1.15.1:latest /htslib/tabix /usr/bin # container used for development
 COPY --from=builder /bedtools/bedtools /usr/bin/

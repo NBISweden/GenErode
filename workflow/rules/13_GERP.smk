@@ -815,7 +815,7 @@ rule filter_biallelic_missing_vcf_gerp:
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/vcf/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
@@ -887,7 +887,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chunk}_split_vcf_chunks.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
@@ -903,7 +903,7 @@ rule split_chunk_bed_files:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_split_chunk_bed_files.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools makewindows -b {input.chunk_bed} -w 10000000 > {output.chunk_win_bed} 2> {log}

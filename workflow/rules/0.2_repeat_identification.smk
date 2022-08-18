@@ -214,7 +214,7 @@ rule sort_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
@@ -233,7 +233,7 @@ rule make_no_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log} &&

@@ -340,7 +340,7 @@ rule filtered_vcf2bed:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}_filtered_vcf2bed.log",
     singularity:
-        "docker://verku/bedtools-2.29.2" # replace with link to NBIS Dockerhub repo
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         gzip -cd {input.vcf} | grep -v "^#" | awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.bed} 2> {log}
