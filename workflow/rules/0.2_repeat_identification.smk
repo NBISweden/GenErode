@@ -2,7 +2,7 @@
 ### 0.2 Repeat prediction and repeat masking of the reference genome
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.bed")
+all_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
 all_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
 
 
@@ -214,7 +214,7 @@ rule sort_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
@@ -233,7 +233,7 @@ rule make_no_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log} &&

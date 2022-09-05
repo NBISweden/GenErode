@@ -1,4 +1,4 @@
-.. image:: docs/source/img/logga_viridis2.png
+.. image:: https://github.com/NBISweden/GenErode/blob/main/docs/source/img/logga_viridis2.png?raw=true
    :width: 124.0px
    :height: 175.4px
    :alt: GenErode pipeline logo

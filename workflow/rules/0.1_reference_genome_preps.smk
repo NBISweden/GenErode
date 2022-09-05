@@ -9,6 +9,8 @@ all_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}",
     ext=["dict", "genome", "bed"]))
 
 # snakemake rules
+localrules: make_reference_bed
+
 rule bwa_index_reference:
     """Index the reference genome using bwa"""
     input:
@@ -99,8 +101,6 @@ rule make_reference_bed:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
         + "_make_reference_bed.log",
-    group:
-        "reference_prep_group"
     shell:
         """
         awk -v OFS='\t' '{{print $1, "0", $2}}' {input.fai} > {output.ref_bed} 2> {log}

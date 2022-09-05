@@ -810,22 +810,22 @@ rule filter_biallelic_missing_vcf_gerp:
         bed=rules.filtered_vcf2bed.output.bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf"),
+        filtered=temp("results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz"),
     threads: 6
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/vcf/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} > {output.filtered} 2> {log}
+        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
         """
 
 
 rule biallelic_missing_filtered_vcf_gerp_stats:
     """Obtain summary stats of filtered vcf file"""
     input:
-        filtered="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf",
+        filtered="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
     output:
         stats="results/gerp/{dataset}/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
     log:
@@ -879,7 +879,7 @@ rule modern_biallelic_missing_filtered_vcf_gerp_multiqc:
 rule split_vcf_files:
     """Split the VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf",
+        vcf="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:
@@ -887,7 +887,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chunk}_split_vcf_chunks.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
@@ -903,7 +903,7 @@ rule split_chunk_bed_files:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_split_chunk_bed_files.log",
     singularity:
-        "docker://quay.io/biocontainers/bedtools:2.29.2--hc088bd4_0"
+        "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
         bedtools makewindows -b {input.chunk_bed} -w 10000000 > {output.chunk_win_bed} 2> {log}
@@ -994,7 +994,7 @@ rule relative_mutational_load_per_sample:
         max_gerp=config["max_gerp"],
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
-    threads: 4
+    threads: 2
     shell:
         """
         python3 workflow/scripts/gerp_rel_mut_load_sample.py {input.gerp_out} {params.min_gerp} {params.max_gerp} {output.mut_load} 2> {log}
