@@ -29,7 +29,8 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          #mamba-version: "*"
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda
           activate-environment: generode
           environment-file: environment.yml
           auto-activate-base: false
