@@ -115,7 +115,8 @@ set-resources:
 ### repeat identification
   - repeatmodeler:runtime=8640
   - repeatmodeler:mem_mb=102400
-  - repeatclassifier:- repeatclassifier:mem_mb=12800
+  - repeatclassifier:runtime=1440
+  - repeatclassifier:mem_mb=12800
   - repeatmasker:runtime=8640
   - repeatmasker:mem_mb=102400
 ### fastq processing
