@@ -157,7 +157,7 @@ rule sorted_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/"),
-    threads: 8
+    threads: 12
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap",
     log:
