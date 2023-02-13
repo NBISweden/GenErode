@@ -36,7 +36,7 @@ set-threads:
   - map_historical=8
   - sai2bam=8
   - map_modern=8
-  - sorted_bam_stats_group=8
+  - sorted_bam_qualimap=8
 ### process bam files
   - merge_historical_bams_per_index=2
   - merge_modern_bams_per_index=2
@@ -144,8 +144,8 @@ set-resources:
   - sai2bam:mem_mb=51200
   - map_modern:runtime=14400
   - map_modern:mem_mb=51200
-  - sorted_bam_stats_group:runtime=5760
-  - sorted_bam_stats_group:mem_mb=51200
+  - sorted_bam_qualimap:runtime=5760
+  - sorted_bam_qualimap:mem_mb=51200
 ### process bam files
   - merge_historical_bams_per_index:runtime=2880
   - merge_historical_bams_per_index:mem_mb=12800
