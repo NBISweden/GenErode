@@ -58,7 +58,7 @@ map_modern:
   cpus-per-task: 8
 sorted_bam_qualimap:
   time: 4-00:00:00
-  cpus-per-task: 16
+  cpus-per-task: 8
 ### process bam files
 merge_historical_bams_per_index:
   time: 2-00:00:00
