@@ -64,11 +64,11 @@ def historical_mito_bams_merge_files_inputs(wildcards):
     only merged or also unmerged reads should be mapped
     """
     if config["map_unmerged_reads"] == True:
-        ratiotables = expand("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}_reads.txt",
+        ratiotables = expand("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}.txt",
             reads=["merged", "unmerged"],
             mitoref=[HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
     elif config["map_unmerged_reads"] == False:
-        ratiotables = expand("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}_reads.txt",
+        ratiotables = expand("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}.txt",
             reads=["merged"],
             mitoref=[HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
     return ratiotables
@@ -275,7 +275,7 @@ rule mapped_reads_ratios:
         species=historical_mapped_reads_ratios_species_inputs,
         other=historical_mapped_reads_ratios_other_inputs,
     output:
-        ratiotables=temp("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}_reads.txt"),
+        ratiotables=temp("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}.txt"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_vs_" + MITO_NAME + "_{reads}_mapped_reads_ratios.log",
     run:
@@ -303,7 +303,7 @@ rule merge_read_ratio_files:
     shell:
         """
         echo "reference_comparison sample ratio_of_mapped_reads" > {output.finaltable} && 
-        awk '{{print FILENAME, $0}}' {input} | sed 's/_*..merged_reads.txt//g' | awk -F'/' '{{print $NF}}' >> {output.finaltable} 2> {log}
+        awk '{{print FILENAME, $0}}' {input} | sed 's/_*..merged.txt//g' | awk -F'/' '{{print $NF}}' >> {output.finaltable} 2> {log}
         """
 
 
