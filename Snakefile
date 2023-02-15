@@ -2,7 +2,7 @@
 # This is the Snakefile of the GenErode pipeline for historical or       #
 # ancient and modern samples to study patterns of genome erosion         #
 #                                                                        #
-# Pipeline version 0.4.2                                                 #
+# Pipeline version 0.5.0                                                 #
 #                                                                        #
 # Written by Verena Kutschera, Marcin Kierczak and Tom van der Valk      #
 # Email: generode@nbis.se                                                #
@@ -321,12 +321,6 @@ if (config["bam_rmdup_realign_indels"]
             shell(
                 r"""
                 snakemake --unlock --cores 1 &&
-                snakemake --report report_raw.html --cores 1 &&
-                echo "Editing the report HTML file..." &&
-                grep -v "Click the nodes" report_raw.html | sed 's/max-width: 100vw;/max-width: 50%; border: 1px solid #ccc;/g' \
-                | sed 's/margin-left: auto;/margin-left: 1;/g' | sed 's/Workflow/GenErode pipeline report/g' | sed 's/"workflow"/"pipeline"/g' \
-                | sed 's/.panel#workflow/.panel#pipeline/g' > GenErode_pipeline_report.html &&
-                rm report_raw.html
-                echo "Report HTML file successfully edited"
+                snakemake --report GenErode_pipeline_report.html --cores 1
                 """)
             all_outputs.append("GenErode_pipeline_report.html")

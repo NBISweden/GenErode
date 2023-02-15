@@ -50,13 +50,13 @@ historical_merged_mito_bams_group:
 map_historical:
   time: 10-00:00:00
   cpus-per-task: 8
-convert_historical_sam:
+sai2bam:
   time: 10-00:00:00
   cpus-per-task: 8
 map_modern:
   time: 10-00:00:00
   cpus-per-task: 8
-sorted_bam_stats_group:
+sorted_bam_qualimap:
   time: 4-00:00:00
   cpus-per-task: 8
 ### process bam files
