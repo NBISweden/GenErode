@@ -15,7 +15,7 @@ def get_mapped_reads(inlist):
     readsDict = {}
     for i in inlist:
         bn = os.path.basename(i)
-        name = bn[: bn.find(".sorted.bam.stats.txt")]
+        name = "_".join(bn.split("_", 3)[:3])
         with open(i, "r") as f:
             for line in f:
                 if " mapped (" in line:
