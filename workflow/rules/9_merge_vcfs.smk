@@ -8,70 +8,70 @@ all_outputs.append("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/mu
 # Functions used by rules of this part of the pipeline
 def merge_all_inputs(wildcards):
     """Input for merge_all_vcfs"""
-    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
-    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
-    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
         sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
     outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG + not_subsampled_not_CpG + subsampled_not_CpG)
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
@@ -80,70 +80,70 @@ def merge_all_inputs(wildcards):
 
 def merge_all_index_inputs(wildcards):
     """Input for merge_all_vcfs"""
-    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
-    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
-    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
         sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
         DP=config["subsampling_depth"],)
     outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG + not_subsampled_not_CpG + subsampled_not_CpG)
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi",
             sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
             DP=config["subsampling_depth"],)
         outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
@@ -164,6 +164,44 @@ def missingness_filtered_vcf_multiqc_inputs(wildcards):
 
 
 # snakemake rules
+rule extract_snps:
+    """Extract SNPs from single-sample VCF files"""
+    input:
+        bcf=rules.filtered_vcf2bcf.output.bcf,
+        index=rules.index_repmasked_vcfs.output.index,
+    output:
+        bcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf"),
+    threads: 2
+    group:
+        "extract_snps_group"
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_extract_snps.log",
+    singularity:
+        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+    shell:
+        """
+        bcftools view -v snps --threads {threads} {input.bcf} > {output.bcf} 2> {log}
+        """
+
+
+rule index_snp_vcfs:
+    """Index vcf files before any downstream processing"""
+    input:
+        bcf=rules.extract_snps.output.bcf,
+    output:
+        index=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.snps.bcf.csi"),
+    group:
+        "extract_snps_group"
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_snp_vcfs.log",
+    singularity:
+        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+    shell:
+        """
+        bcftools index -o {output.index} {input.bcf} 2> {log}
+        """
+
+
 rule merge_all_vcfs:
     """Merge all samples into one VCF file, containing only SNPs"""
     input:

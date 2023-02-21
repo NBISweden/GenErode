@@ -195,6 +195,9 @@ filtered_vcf2bcf:
   time: 05:00:00
   cpus-per-task: 2
 ### merge and process VCF files
+extract_snps_group:
+  time: 05:00:00
+  cpus-per-task: 2
 merge_all_vcfs:
   time: 3-00:00:00
   cpus-per-task: 6

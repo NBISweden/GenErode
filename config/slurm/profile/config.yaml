@@ -82,6 +82,7 @@ set-threads:
   - remove_repeats_vcf=6
   - filtered_vcf2bcf=2
 ### merge and process VCF files
+  - extract_snps_group=2
   - merge_all_vcfs=6
   - filter_vcf_biallelic=2
   - filter_vcf_missing=2
@@ -227,6 +228,8 @@ set-resources:
   - remove_repeats_vcf:mem_mb=38400
   - filtered_vcf2bcf:mem_mb=12800
 ### merge and process VCF files
+  - extract_snps_group:runtime=300
+  - extract_snps_group:mem_mb=12800
   - merge_all_vcfs:runtime=4320
   - merge_all_vcfs:mem_mb=38400
   - filter_vcf_biallelic:runtime=1440
