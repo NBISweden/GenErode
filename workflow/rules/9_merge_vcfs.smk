@@ -326,11 +326,15 @@ rule filter_vcf_missing:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     shell:
         """
-        if [{params.fmiss} > 0]
+        if [[ {params.fmiss} -eq 0.0 ]]
         then
-          bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
-        else
           bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+        elif [[ {params.fmiss} -eq 1.0 ]]
+        then
+          bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+        elif [[ {params.fmiss} -gt 0.0 && -lt 1.0 ]]
+        then 
+          bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         fi
         
         bcftools index -f {output.vcf} 2>> {log}
