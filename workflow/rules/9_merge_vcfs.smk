@@ -326,7 +326,20 @@ rule filter_vcf_missing:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     shell:
         """
-        bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log} &&
+        # only include sites with zero missing data
+        if [[ `echo 0.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
+        then
+          bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+        # include all sites
+        elif [[ `echo 1.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
+        then
+          bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+        # include sites with less than the fraction f_missing of missing data
+        elif [[ `echo 0.0 {params.fmiss} 1.0 | awk '{{print ($1 < $2 && $2 < $3)}}'` == 1 ]]
+        then 
+          bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+        fi
+        
         bcftools index -f {output.vcf} 2>> {log}
         """
 

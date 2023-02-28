@@ -371,7 +371,9 @@ merge_vcfs_per_dataset: False
 
 # Maximum allowed fraction of missing genotypes across all samples for a 
 # site to be kept in the BCF and BED file, to ensure that the same sites 
-# are compared between historical and modern samples.
+# are compared between historical and modern samples. Has to be a floating
+# point number between 0.0 (no missing data allowed) and 1.0 (sites are 
+# allowed that are completely missing).
 f_missing: 0.1 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
 #####
 
