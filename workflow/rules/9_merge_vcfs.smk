@@ -331,7 +331,7 @@ rule filter_vcf_missing:
         then
           bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include all sites
-        elif [[ `echo 1.0 {params.fmiss} | awk '{{print ($1 == $2)}}')` == 1 ]]
+        elif [[ `echo 1.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
         then
           bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include sites with less than the fraction f_missing of missing data
