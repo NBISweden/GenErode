@@ -544,7 +544,7 @@ rule indel_realigner:
 
 rule index_realigned_bams:
     input:
-        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam",
+        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
     output:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai"),
     log:
