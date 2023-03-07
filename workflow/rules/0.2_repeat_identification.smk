@@ -177,7 +177,7 @@ rule repeatmasker:
         RepeatMasker -pa {threads} -a -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
 
         # Check if *.cat file is compressed or uncompressed
-        if [ ! -f {output.rep_cat} ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
+        if [ ! -f {output.rep_cat} ]
         then
           gzip {params.rep_cat_unzip}
         fi
