@@ -585,6 +585,11 @@ rule concatenate_fasta_per_contig:
 rule compute_gerp:
     """
     Compute GERP++ scores.
+    '-s 0.001': tree scaling factor to re-scale tree. Set to 0.001 to scale
+    a tree from millions of years (such as trees from www.timetree.org) to 
+    billions of years. GERP++ default: 1.0
+    '-v': verbose mode
+    '-a': alignment in mfa format
     Output only includes positions, no contig names.
     This analysis is run as one job per genome chunk, but is internally run per contig.
     """
@@ -596,7 +601,6 @@ rule compute_gerp:
         gerp_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/")),
     params:
         name=REF_NAME,
-        tree_scale=config["tree_scaling_factor"],
     log:
         "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
@@ -609,7 +613,7 @@ rule compute_gerp:
         fi
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s {params.tree_scale} -e {params.name} 2> {log} &&
+          gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2> {log} &&
           mv {input.concatenated_fasta_dir}/${{contig}}.fasta.rates {output.gerp_dir} 2>> {log} &&
           echo "Computed GERP++ scores for" $contig >> {log} 
         done
