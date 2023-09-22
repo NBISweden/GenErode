@@ -496,8 +496,9 @@ gerp_ref_path: ""
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
 # time estimates.
-# Divergence time estimates must be in millions of years for correct scaling 
-# of GERP scores (see dated phylogenetic trees from www.timetree.org).
+# Divergence time estimates must be in millions of years for consistent scaling 
+# of GERP scores across GenErode runs. Dated phylogenetic trees in millions of years 
+# are e.g. available from www.timetree.org.
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".
 tree: ""
