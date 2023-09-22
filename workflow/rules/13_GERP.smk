@@ -587,7 +587,8 @@ rule compute_gerp:
     Compute GERP++ scores.
     '-s 0.001': tree scaling factor to re-scale tree. Set to 0.001 to scale
     a tree from millions of years (such as trees from www.timetree.org) to 
-    billions of years. GERP++ default: 1.0
+    billions of years to ensure consistently scaled GERP scores across GenErode
+    runs. GERP++ gerpcol default: 1.0
     '-v': verbose mode
     '-a': alignment in mfa format
     Output only includes positions, no contig names.
