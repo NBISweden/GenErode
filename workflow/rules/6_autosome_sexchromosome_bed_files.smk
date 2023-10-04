@@ -1,5 +1,5 @@
 ##########################################################################
-### 6.3 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
+### 6 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
 
 # Code collecting output files from this part of the pipeline
 if len(sexchromosomeList) > 0:
