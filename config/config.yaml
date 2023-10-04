@@ -374,6 +374,23 @@ merge_vcfs_per_dataset: False
 # point number between 0.0 (no missing data allowed) and 1.0 (sites are 
 # allowed that are completely missing).
 f_missing: 0.1 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
+
+# Removal of sex-chromosomal contigs/scaffolds from the merged
+# BCF file. Can also be used to remove any other contigs/scaffolds,
+# e.g. unplaced or short scaffolds, from the BCF files.
+
+# 1) If all contigs/scaffolds should be kept in the BCF file and 
+# downstream analyses and/or if the identity of sex-chromosomal contigs/
+# scaffolds is unknown, set vcf_remove_chromosomes to False and do 
+# not provide a path to a text file with sex-chromosomal contigs/
+# scaffolds with the reference genome.
+#
+# 2) If sex-chromosomal contigs/scaffolds (or other contigs/scaffolds 
+# such as unplaced or short scaffolds) should be entirely excluded from 
+# the merged BCF file and downstream analyses, set vcf_remove_chromosomes 
+# to True and provide the path to the file with sex-chromosomal contigs/scaffolds 
+# with the reference genome.
+vcf_remove_chromosomes: False
 #####
 
 #################################################################
@@ -454,6 +471,8 @@ snpEff: False
 # same directory as the GTF file.
 # That way, the database has to be built only once for a given GTF file.
 gtf_path: ""
+#####
+
 #################################################################
 #################################################################
 
