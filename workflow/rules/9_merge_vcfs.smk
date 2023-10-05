@@ -164,14 +164,14 @@ def missingness_filtered_vcf_multiqc_inputs(wildcards):
                 fmiss=config["f_missing"],)
     elif len(sexchromosomeList) == 0:
         if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-            return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.vcf.stats.txt",
+            return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
             dataset=["all", "historical", "modern"],
             fmiss=config["f_missing"],)
         elif os.path.exists(config["historical_samples"]):
-            return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.vcf.stats.txt",
+            return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
                 fmiss=config["f_missing"],)
         elif os.path.exists(config["modern_samples"]):
-            return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.vcf.stats.txt",
+            return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
                 fmiss=config["f_missing"],)
 
 
@@ -326,8 +326,8 @@ rule filter_vcf_missing:
         index=rules.filter_vcf_biallelic.output.index,
         multiqc=rules.biallelic_filtered_vcf_multiqc.output.stats,
     output:
-        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.vcf.gz",
-        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.vcf.gz.csi",
+        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.genome.vcf.gz",
+        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.genome.vcf.gz.csi",
     threads: 2
     params:
         fmiss=config["f_missing"],
@@ -382,12 +382,12 @@ rule remove_chromosomes:
 rule filtered_vcf2bed:
     """Convert the VCF file after removal of missing data (and optionally sex chromosomes) to BED file containing the remaining sites"""
     input:
-        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     output:
-        bed="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.bed",
+        bed="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.bed",
     log:
-        "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}{autos}_filtered_vcf2bed.log",
+        "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.{chr}_filtered_vcf2bed.log",
     singularity:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
@@ -398,14 +398,14 @@ rule filtered_vcf2bed:
 
 rule extract_historical_samples:
     input:
-        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
         bed=rules.filtered_vcf2bed.output.bed,
     output:
-        vcf="results/historical/vcf/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/historical/vcf/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        vcf="results/historical/vcf/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/historical/vcf/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     log:
-        "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}{autos}_extract_historical_samples.log",
+        "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}.{chr}_extract_historical_samples.log",
     singularity:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     params:
@@ -431,14 +431,14 @@ rule extract_historical_samples:
 
 rule extract_modern_samples:
     input:
-        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
         bed=rules.filtered_vcf2bed.output.bed,
     output:
-        vcf="results/modern/vcf/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/modern/vcf/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        vcf="results/modern/vcf/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/modern/vcf/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     log:
-        "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}{autos}_extract_modern_samples.log",
+        "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}.{chr}_extract_modern_samples.log",
     singularity:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     params:
@@ -465,12 +465,12 @@ rule extract_modern_samples:
 rule missingness_filtered_vcf_stats:
     """Obtain summary stats of merged vcf file"""
     input:
-        merged="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz",
-        index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}{autos}.vcf.gz.csi",
+        merged="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}{autos}.vcf.stats.txt",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
     log:
-        "results/logs/9_merge_vcfs/" + REF_NAME + ".{dataset}_fmissing{fmiss}{autos}_missingness_filtered_vcf_stats.log",
+        "results/logs/9_merge_vcfs/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_missingness_filtered_vcf_stats.log",
     singularity:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     shell:
