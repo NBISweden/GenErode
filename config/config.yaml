@@ -27,13 +27,12 @@ ref_path: ""
 # Relative path (from the main pipeline directory) to file listing 
 # scaffolds/contigs linked to sex chromosomes (one scaffold/contig 
 # name per line).
-# If provided, the listed scaffolds/contigs are excluded from mlRho 
-# analyses (but see below how to run mlRho for autosomes and sex
-# chromosomes separately from each other) and from the merged BCF file 
-# that is used for PCA, ROH, snpEff and GERP analyses.
+# Is used to create BED files to run mlRho separately for autosomes 
+# and sex chromosomes or exclusively for autosomes, and/or to create 
+# autosome-only BCF files for PCA, ROH, snpEff and GERP analyses.
 # Can also be used to specify any other contigs/scaffolds, e.g.  
-# unplaced or short scaffolds, for removal from the mlRho analysis 
-# and BCF file.
+# unplaced or short scaffolds, for removal from mlRho analysis 
+# and BCF files.
 # Leave empty ("") if identity of sex chromosomes is unknown and/or 
 # if the pipeline should be run on all scaffolds/contigs of the genome.
 sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
