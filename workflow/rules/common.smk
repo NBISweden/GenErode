@@ -372,6 +372,11 @@ if os.path.exists(config["sexchromosomes"]):
         for line in file:
             sexchromosomeList.append(line.strip())
 
+if len(sexchromosomeList) > 0:
+    CHR = "autos"
+elif len(sexchromosomeList) == 0:
+    CHR = "genome"
+
 ###
 # snpEff
 if config["snpEff"]:
