@@ -151,7 +151,7 @@ def merge_all_index_inputs(wildcards):
 
 def missingness_filtered_vcf_multiqc_inputs(wildcards):
     """Input for missingness_filtered_vcf_multiqc"""
-    if config["vcf_remove_chromosomes"]:
+    if len(sexchromosomeList) > 0:
         if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
             return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.autos.vcf.stats.txt",
             dataset=["all", "historical", "modern"],
@@ -162,7 +162,7 @@ def missingness_filtered_vcf_multiqc_inputs(wildcards):
         elif os.path.exists(config["modern_samples"]):
             return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.autos.vcf.stats.txt",
                 fmiss=config["f_missing"],)
-    else:
+    elif len(sexchromosomeList) == 0:
         if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
             return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.vcf.stats.txt",
             dataset=["all", "historical", "modern"],
@@ -357,15 +357,14 @@ rule filter_vcf_missing:
 
 rule remove_chromosomes:
     input:
-        bcf=rules.filter_vcf_missing.output.bcf,
+        bcf=rules.filter_vcf_missing.output.vcf,
         index=rules.filter_vcf_missing.output.index,
-        multiqc=rules.missing_filtered_vcf_multiqc.output.stats,
     output:
         vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.autos.vcf.gz",
         index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.autos.vcf.gz.csi",
     threads: 2
     params:
-        exclude = sexchromosomeList.join(",") # parse list with contigs/scaffolds to exclude and convert to format chr1,chr2,chr3
+        exclude = ",".join(sexchromosomeList) # parse list with contigs/scaffolds to exclude and convert to format chr1,chr2,chr3 for removal with bcftools view
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.autos_remove_chromosomes.log",
     singularity:
