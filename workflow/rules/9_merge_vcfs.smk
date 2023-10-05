@@ -151,28 +151,19 @@ def merge_all_index_inputs(wildcards):
 
 def missingness_filtered_vcf_multiqc_inputs(wildcards):
     """Input for missingness_filtered_vcf_multiqc"""
-    if len(sexchromosomeList) > 0:
-        if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-            return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.autos.vcf.stats.txt",
+    if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
+        return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
             dataset=["all", "historical", "modern"],
-            fmiss=config["f_missing"],)
-        elif os.path.exists(config["historical_samples"]):
-            return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.autos.vcf.stats.txt",
-                fmiss=config["f_missing"],)
-        elif os.path.exists(config["modern_samples"]):
-            return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.autos.vcf.stats.txt",
-                fmiss=config["f_missing"],)
-    elif len(sexchromosomeList) == 0:
-        if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-            return expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
-            dataset=["all", "historical", "modern"],
-            fmiss=config["f_missing"],)
-        elif os.path.exists(config["historical_samples"]):
-            return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
-                fmiss=config["f_missing"],)
-        elif os.path.exists(config["modern_samples"]):
-            return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.genome.vcf.stats.txt",
-                fmiss=config["f_missing"],)
+            fmiss=config["f_missing"],
+            chr=CHR,)
+    elif os.path.exists(config["historical_samples"]):
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            fmiss=config["f_missing"],
+            chr=CHR,)
+    elif os.path.exists(config["modern_samples"]):
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            fmiss=config["f_missing"],
+            chr=CHR,)
 
 
 # snakemake rules
