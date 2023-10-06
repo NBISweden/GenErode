@@ -594,7 +594,7 @@ rule realigned_bam_fastqc:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
     singularity:
-        "docker://biocontainers/fastqc:v0.11.9_cv7"
+        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
