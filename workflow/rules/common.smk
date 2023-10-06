@@ -397,8 +397,9 @@ def create_refbedfile(reference_fasta, bedfile):
             if seq_length > 0:
                 bedfile_out.write(contig + "\t0\t" + str(seq_length) + "\n")
 
-def split_ref_bed(refbedfile, outdir):
+def split_ref_bed(refbedfile, outdir, chromosomelist):
     bed_df = pd.read_csv(refbedfile, sep="\t", header=None)
+    bed_df = bed_df[~bed_df[0].isin(chromosomelist)] # remove any scaffolds/contigs in the list of sex-chromosomal scaffolds/contigs, if provided
     if len(bed_df) >= 200:
         lines = len(bed_df) // 200
     elif len(bed_df) < 200:
@@ -427,7 +428,10 @@ if config["gerp"]:
 
     # create chunk bed files and chunk list
     ref_bed = REF_DIR + "/" + REF_NAME + ".bed"
-    chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/"
+    if len(sexchromosomeList) > 0:
+        chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_autos/"
+    elif len(sexchromosomeList) == 0:
+        chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_genome/"
 
     # create output directory for chunk bed files, if not present yet
     if not os.path.exists(chunk_bed_outdir):
@@ -440,10 +444,11 @@ if config["gerp"]:
         print("Created reference genome bed file: ", config["ref_path"], ref_bed)
 
     # split the reference bed file into chunks and store a list of the chunk names in a list
-    CHUNK_BED_FILES = [file for file in os.listdir(chunk_bed_outdir) if file.endswith(".bed")]  # create a list of the chunk bed files present in the directory
-    if len(CHUNK_BED_FILES) == 0:  # check if splitting needs to be run
-        split_ref_bed(ref_bed, chunk_bed_outdir)
-        CHUNK_BED_FILES = [file for file in os.listdir(chunk_bed_outdir) if file.endswith(".bed")]  # replace list of the chunk bed files present in the directory after (re-)running the splitting
+    split_ref_bed(ref_bed, chunk_bed_outdir, sexchromosomeList)
+    CHUNK_BED_FILES = [file for file in os.listdir(chunk_bed_outdir) if file.endswith(".bed")]  # list of the chunk bed files present in the directory after running the splitting
+    if len(sexchromosomeList) > 0:
+        print("Split the reference genome bed file into chunks, excluding sex-chromosomal scaffolds/contigs")
+    elif len(sexchromosomeList) == 0:
         print("Split the reference genome bed file into chunks")
 
     CHUNKS = [bed.replace(".bed", "") for bed in CHUNK_BED_FILES]

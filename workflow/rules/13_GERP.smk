@@ -3,7 +3,8 @@
 # Authors: Marcin Kierczak, Tom van der Valk, Verena Kutschera
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append("results/gerp/" + REF_NAME + ".ancestral.rates.gerp.hist.pdf")
+all_outputs.append(expand("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
+    chr=CHR,))
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
     all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
@@ -405,13 +406,13 @@ rule bam2fasta:
         bam=rules.align2target.output.bam,
         index=rules.index_gerp_bams.output.index,
         stats=rules.gerp_bam_multiqc.output.stats,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/")),
+        fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/")),
     params:
         gerpref="{gerpref}",
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
     singularity:
         "docker://biocontainers/samtools:v1.9-4-deb_cv1"  # This container includes python 3.7.6 with default python modules
@@ -438,14 +439,14 @@ rule split_ref_contigs:
     input:
         ref=config["ref_path"],
         fai=config["ref_path"] + ".fai",
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         stats=rules.gerp_bam_multiqc.output.stats,
     output:
-        fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/")),
+        fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/")),
     params:
         gerpref=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
     singularity:
         "docker://quay.io/biocontainers/seqtk:1.3--hed695b0_2"
@@ -471,16 +472,16 @@ rule concatenate_fasta_per_contig:
     This analysis is run as one job per genome chunk, but is internally run per contig.
     """
     input:
-        gerpref_fasta=expand("results/gerp/chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/", gerpref=GERP_REF_NAMES),
+        gerpref_fasta=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/", chr=CHR, gerpref=GERP_REF_NAMES),
         ref_fasta=rules.split_ref_contigs.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        concatenated_fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/")),
+        concatenated_fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/")),
     params:
-        fasta_dir="results/gerp/chunks/" + REF_NAME + "/fasta",
+        fasta_dir="results/gerp/{chr}_chunks/" + REF_NAME + "/fasta",
         chunk=lambda wildcards: "{wildcards.chunk}",
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
     threads: 2
     run:
         if not os.path.exists(output.concatenated_fasta_dir):
@@ -518,14 +519,14 @@ rule compute_gerp:
     """
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         tree=config["tree"],
     output:
-        gerp_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/")),
+        gerp_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
     singularity:
         "docker://quay.io/biocontainers/gerp:2.1--hfc679d8_0"
@@ -552,13 +553,13 @@ rule gerp2coords:
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
         gerp_dir=rules.compute_gerp.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_coords_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/")),
+        gerp_coords_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -582,13 +583,13 @@ rule get_ancestral_state:
     """Get the ancestral state of each position in the focal reference genome."""
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        fasta_ancestral_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/")),
+        fasta_ancestral_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -612,11 +613,11 @@ rule produce_contig_out:
     input:
         fasta_ancestral_dir=rules.get_ancestral_state.output.fasta_ancestral_dir,
         gerp_coords_dir=rules.gerp2coords.output.gerp_coords_dir,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_merged_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
+        gerp_merged_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -639,11 +640,11 @@ rule merge_gerp_per_chunk:
     """Merge results per genome chunk into one file."""
     input:
         gerp_merged_dir=rules.produce_contig_out.output.gerp_merged_dir,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_chunks_merged=temp("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
+        gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -661,11 +662,11 @@ rule merge_gerp_per_chunk:
 rule merge_gerp_gz:
     """Merge results per contig into one file."""
     input:
-        gerp_chunks_merged=expand("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chunk=CHUNKS),
+        gerp_chunks_merged=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chr=CHR, chunk=CHUNKS),
     output:
-        gerp_out="results/gerp/" + REF_NAME + ".ancestral.rates.gz",
+        gerp_out="results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gz",
     log:
-        "results/logs/13_GERP/" + REF_NAME + "_merge_gerp_gz.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chr}.merge_gerp_gz.log",
     threads: 2
     shell:
         """
@@ -678,12 +679,12 @@ rule plot_gerp_hist:
     input:
         gerp_out=rules.merge_gerp_gz.output.gerp_out,
     output:
-        pdf=report("results/gerp/" + REF_NAME + ".ancestral.rates.gerp.hist.pdf",
+        pdf=report("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
             caption="../report/gerp_plot.rst",
             category="GERP",),
     threads: 2
     log:
-        "results/logs/13_GERP/" + REF_NAME + "_plot_gerp_hist.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chr}.plot_gerp_hist.log",
     script:
         "../scripts/gerp_hist_plot.py"
 
@@ -692,12 +693,12 @@ rule split_vcf_files:
     """Split individual VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
         vcf=rules.filter_biallelic_missing_vcf.output.filtered,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:
-        vcf_chunk=temp("results/gerp/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.vcf.gz"),
+        vcf_chunk=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.vcf.gz"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     singularity:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
@@ -709,11 +710,11 @@ rule split_vcf_files:
 rule split_chunk_bed_files:
     """Split the chunk bed files into 10 million basepair windows"""
     input:
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        chunk_win_bed=temp(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/windows/{chunk}_10Mwindows.bed"),
+        chunk_win_bed=temp(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/windows/{chunk}_10Mwindows.bed"),
     log:
-        "results/logs/13_GERP/" + REF_NAME + ".{chunk}_split_chunk_bed_files.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
     singularity:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
@@ -732,9 +733,9 @@ rule gerp_derived_alleles:
         vcf=rules.split_vcf_files.output.vcf_chunk,
         chunk_win_bed=rules.split_chunk_bed_files.output.chunk_win_bed,
     output:
-        gerp_alleles_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles/")),
+        gerp_alleles_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles/")),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles.log",
     threads: 4
     shell:
         """
@@ -754,9 +755,9 @@ rule merge_gerp_alleles_per_chunk:
         gerp_alleles_dir=rules.gerp_derived_alleles.output.gerp_alleles_dir,
         chunk_win_bed=rules.split_chunk_bed_files.output.chunk_win_bed,
     output:
-        gerp_chunks_merged=temp("results/gerp/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles"),
+        gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_merge_gerp_alleles_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_merge_gerp_alleles_per_chunk.log",
     threads: 4
     run:
         chunk_windows = []
@@ -779,7 +780,7 @@ rule merge_gerp_alleles_per_chunk:
 rule merge_gerp_alleles_gz:
     """Merge results into one file per sample."""
     input:
-        gerp_chunks_merged=expand("results/gerp/chunks/" + REF_NAME + "/{{dataset}}/{{sample}}.merged.rmdup.merged.{{processed}}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles",
+        gerp_chunks_merged=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/{{dataset}}/{{sample}}.merged.rmdup.merged.{{processed}}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles",
             chunk=CHUNKS,
             fmiss=config["f_missing"],
             chr=CHR,
