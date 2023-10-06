@@ -71,12 +71,12 @@ jobs:
         run: |
           snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
 
-      - name: snpeff_gerp_dry
+      - name: snpeff_gerp_autos_dry
         shell: bash -l {0}
         run: |
-          snakemake -npr --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake -npr --configfile .test/config/config_snpeff_gerp_autos.yaml -j 4 --cores 1 --use-singularity
 
-      - name: snpeff_gerp
+      - name: snpeff_gerp_autos
         shell: bash -l {0}
         run: |
-          snakemake --configfile .test/config/config_snpeff_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake --configfile .test/config/config_snpeff_gerp_autos.yaml -j 4 --cores 1 --use-singularity
