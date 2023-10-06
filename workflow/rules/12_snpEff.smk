@@ -4,6 +4,8 @@
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
+    all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
+        dataset=["historical", "modern"]))
     all_outputs.append(expand("results/all/snpEff/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf", 
         fmiss=config["f_missing"],
         chr=CHR,))
@@ -11,12 +13,14 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
     all_outputs.append("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["historical_samples"]):
+    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/historical/snpEff/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
     all_outputs.append("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["modern_samples"]):
+    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/modern/snpEff/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
@@ -247,46 +251,10 @@ rule build_snpEff_db:
         """
 
 
-rule repmasked_bcf2vcf_snpEff:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
-    output:
-        vcf=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
-    log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{processed}_repmasked_bcf2vcf.log",
-    singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
-rule filter_biallelic_missing_vcf_snpEff:
-    """Keep only sites with certain upper fraction missingness as specified in config file and sites that are biallelic across all samples from individual vcf files"""
-    input:
-        vcf=rules.repmasked_bcf2vcf_snpEff.output.vcf,
-        bed=rules.filtered_vcf2bed.output.bed,
-        genomefile=rules.genome_file.output.genomefile,
-    output:
-        filtered=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz"),
-    threads: 6
-    log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
-    singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
-    shell:
-        """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
-        """
-
-
 rule annotate_vcf:
     """Annotate the VCF files of each individual"""
     input:
-        vcf=rules.filter_biallelic_missing_vcf_snpEff.output.filtered,
+        vcf=rules.filter_biallelic_missing_vcf.output.filtered,
         db=rules.build_snpEff_db.output.db,
         config=rules.update_snpEff_config.output.config,
     output:

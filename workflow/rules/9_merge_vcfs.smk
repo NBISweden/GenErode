@@ -166,6 +166,137 @@ def missingness_filtered_vcf_multiqc_inputs(wildcards):
             chr=CHR,)
 
 
+def historical_biallelic_missing_filtered_vcf_multiqc_inputs(wildcards):
+    """Input for historical_biallelic_missing_filtered_vcf_multiqc_inputs"""
+    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
+        DP=config["subsampling_depth"],
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
+        DP=config["subsampling_depth"],
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG)
+    if config["CpG_from_vcf"] == True:
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+    elif config["CpG_from_reference"] == True:
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+    elif config["CpG_from_vcf_and_reference"] == True:
+        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+    return outlist
+
+def modern_biallelic_missing_filtered_vcf_multiqc_inputs(wildcards):
+    """Input for modern_biallelic_missing_filtered_vcf_multiqc_inputs"""
+    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
+        DP=config["subsampling_depth"],
+        fmiss=config["f_missing"],
+        chr=CHR,)
+    outlist = (not_subsampled_not_CpG + subsampled_not_CpG)
+    if config["CpG_from_vcf"] == True:
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
+    elif config["CpG_from_reference"] == True:
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
+    elif config["CpG_from_vcf_and_reference"] == True:
+        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
+            DP=config["subsampling_depth"],
+            fmiss=config["f_missing"],
+            chr=CHR,)
+        outlist += (not_subsampled_CpG + subsampled_CpG)
+    return outlist
+
+
 # snakemake rules
 rule merge_all_vcfs:
     """Merge all samples into one VCF file, containing only SNPs"""
@@ -481,6 +612,99 @@ rule missingness_filtered_vcf_multiqc:
         outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc",
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/missingness_filtered_vcf_multiqc.log",
+    singularity:
+        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+    shell:
+        """
+        multiqc -f {params.indir} -o {params.outdir} 2> {log}
+        """
+
+
+# Rules to filter individual BCF files for biallelic sites, missingness and sex-chromosomal scaffolds
+# for snpEff and GERP steps. Only triggered when snpEff or GERP is run.
+
+rule repmasked_bcf2vcf:
+    """Convert bcf format to vcf.gz for removal of sites"""
+    input:
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+    output:
+        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.tmp.vcf.gz"),
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_repmasked_bcf2vcf.log",
+    singularity:
+        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+    shell:
+        """
+        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
+        """
+
+
+rule filter_biallelic_missing_vcf:
+    """Keep only sites with certain upper fraction missingness as specified in config file and sites that are biallelic across all samples from individual vcf files"""
+    input:
+        vcf=rules.repmasked_bcf2vcf.output.vcf,
+        bed=rules.filtered_vcf2bed.output.bed,
+        genomefile=rules.genome_file.output.genomefile,
+    output:
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+    threads: 6
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
+    singularity:
+        "docker://nbisweden/generode-bedtools-2.29.2"
+    shell:
+        """
+        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
+        """
+
+
+rule biallelic_missing_filtered_vcf_stats:
+    """Obtain summary stats of filtered vcf file"""
+    input:
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+    output:
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_biallelic_missing_filtered_vcf_stats.log",
+    singularity:
+        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+    shell:
+        """
+        bcftools stats {input.filtered} > {output.stats} 2> {log}
+        """
+
+
+rule historical_biallelic_missing_filtered_vcf_multiqc:
+    """Collect all stats files from historical vcf files filtered for biallelic sites and missing data"""
+    input:
+        historical_biallelic_missing_filtered_vcf_multiqc_inputs,
+    output:
+        stats="results/historical/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
+    params:
+        indir="results/historical/vcf/" + REF_NAME + "/stats/",
+        outdir="results/historical/vcf/" + REF_NAME + "/stats/multiqc",
+    log:
+        "results/logs/9_merge_vcfs/historical/" + REF_NAME + "/biallelic_missing_filtered_vcf_multiqc.log",
+    singularity:
+        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+    shell:
+        """
+        multiqc -f {params.indir} -o {params.outdir} 2> {log}
+        """
+
+
+rule modern_biallelic_missing_filtered_vcf_multiqc:
+    """Collect all stats files from modern vcf files filtered for biallelic sites and missing data"""
+    input:
+        modern_biallelic_missing_filtered_vcf_multiqc_inputs,
+    output:
+        stats="results/modern/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
+    params:
+        indir="results/modern/vcf/" + REF_NAME + "/stats/",
+        outdir="results/modern/vcf/" + REF_NAME + "/stats/multiqc",
+    log:
+        "results/logs/9_merge_vcfs/modern/" + REF_NAME + "/biallelic_missing_filtered_vcf_multiqc.log",
     singularity:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:
