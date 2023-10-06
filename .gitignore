@@ -23,3 +23,4 @@ tmpConsensi.fa
 .test/data/references/*sa
 .test/data/references/*genome
 .test/data/references/*upper.fasta
+.test/data/references/gerp
