@@ -585,6 +585,12 @@ rule concatenate_fasta_per_contig:
 rule compute_gerp:
     """
     Compute GERP++ scores.
+    '-s 0.001': tree scaling factor to re-scale tree. Set to 0.001 to scale
+    a tree from millions of years (such as trees from www.timetree.org) to 
+    billions of years to ensure consistently scaled GERP scores across GenErode
+    runs. GERP++ gerpcol default: 1.0
+    '-v': verbose mode
+    '-a': alignment in mfa format
     Output only includes positions, no contig names.
     This analysis is run as one job per genome chunk, but is internally run per contig.
     """
@@ -608,7 +614,7 @@ rule compute_gerp:
         fi
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -e {params.name} 2> {log} &&
+          gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2> {log} &&
           mv {input.concatenated_fasta_dir}/${{contig}}.fasta.rates {output.gerp_dir} 2>> {log} &&
           echo "Computed GERP++ scores for" $contig >> {log} 
         done
@@ -650,32 +656,6 @@ rule gerp2coords:
                 """.format(contig=contig))
 
 
-rule rescale_gerp:
-    """
-    Re-scale GERP scores to correct time scale. 
-    This analysis is run as one job per genome chunk, but is internally run per contig.
-    """
-    input:
-        gerp_coords_dir=rules.gerp2coords.output.gerp_coords_dir,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
-    output:
-        gerp_rescaled_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_rescaled/")),
-    log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_rescale_gerp.log",
-    shell:
-        """
-        if [ ! -d {output.gerp_rescaled_dir} ]; then 
-            mkdir -p {output.gerp_rescaled_dir}; 
-        fi
-        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
-        do
-          awk -F'\t' '{{ if($1 ~ /[0-9]+/ && $1 != 0) {{print $1/1000}} else {{print $1}} }}' OFS='\t' \
-          {input.gerp_coords_dir}/${{contig}}.fasta.rates.parsed > {output.gerp_rescaled_dir}/${{contig}}.fasta.rates.parsed.rescaled 2>> {log} &&
-          echo "GERP scores rescaled for" $contig >> {log}
-        done
-        """
-
-
 rule get_ancestral_state:
     """Get the ancestral state of each position in the focal reference genome."""
     input:
@@ -709,7 +689,7 @@ rule produce_contig_out:
     """Merge the ancestral allele and gerp-scores into one file per contig."""
     input:
         fasta_ancestral_dir=rules.get_ancestral_state.output.fasta_ancestral_dir,
-        gerp_rescaled_dir=rules.rescale_gerp.output.gerp_rescaled_dir,
+        gerp_coords_dir=rules.gerp2coords.output.gerp_coords_dir,
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
     output:
         gerp_merged_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
@@ -727,9 +707,9 @@ rule produce_contig_out:
                 if [ ! -d {{output.gerp_merged_dir}} ]; then 
                     mkdir -p {{output.gerp_merged_dir}}; 
                 fi
-                paste {{input.fasta_ancestral_dir}}/{contig}.fasta.parsed {{input.gerp_rescaled_dir}}/{contig}.fasta.rates.parsed.rescaled | \
+                paste {{input.fasta_ancestral_dir}}/{contig}.fasta.parsed {{input.gerp_coords_dir}}/{contig}.fasta.rates.parsed | \
                 sed "s/^/{contig}\t/g" > {{output.gerp_merged_dir}}/{contig}.fasta.parsed.rates 2>> {{log}} &&
-                echo "Rescaled GERP-scores and ancestral states merged for {contig}" >> {{log}}
+                echo "GERP-scores and ancestral states merged for {contig}" >> {{log}}
                 """.format(contig=contig))
 
 
@@ -772,7 +752,7 @@ rule merge_gerp_gz:
 
 
 rule plot_gerp_hist:
-    """Plot the rescaled GERP scores as histogram"""
+    """Plot the GERP scores as histogram"""
     input:
         gerp_out=rules.merge_gerp_gz.output.gerp_out,
     output:

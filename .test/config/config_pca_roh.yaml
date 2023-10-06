@@ -494,11 +494,15 @@ gerp_ref_path: ""
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
 # time estimates.
-# Divergence time estimates must be in billions of years for correct scaling 
+# Divergence time estimates must be in millions of years for correct scaling 
 # of GERP scores (see dated phylogenetic trees from www.timetree.org).
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".
 tree: ""
+
+# Tree scaling factor for GERP++ ("-s") to re-scale tree. If a tree from
+# www.timetree.org is provided (in millions of years), set to 0.001.
+tree_scaling_factor: 0.001
 
 # Minimum and maximum GERP score for a site to be included into calculations 
 # of relative mutational load.
