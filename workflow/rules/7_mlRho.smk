@@ -27,8 +27,7 @@ def bam_file_mlRho(wildcards):
         bam = "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(sample=wildcards.sample)
     elif wildcards.sample in MODERN_SUBSAMPLED_SAMPLES:
         bam = "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    bai = bam + ".bai"
-    return [bam, bai]
+    return [bam]
 
 def depth_file_mlRho(wildcards):
     """Select correct depth stats file for each sample"""
