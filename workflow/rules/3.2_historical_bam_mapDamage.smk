@@ -100,7 +100,7 @@ rule rescaled_bam_fastqc:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_fastqc.log",
     threads: 2
     singularity:
-        "docker://biocontainers/fastqc:v0.11.9_cv7"
+        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}

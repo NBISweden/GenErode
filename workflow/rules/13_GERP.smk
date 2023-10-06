@@ -361,7 +361,7 @@ rule outgroup_fastqc:
         "results/logs/13_GERP/fastq/{gerpref}_outgroup_fastqc.log",
     threads: 2
     singularity:
-        "docker://biocontainers/fastqc:v0.11.9_cv7"
+        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
