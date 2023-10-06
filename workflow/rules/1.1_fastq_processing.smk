@@ -159,7 +159,7 @@ rule fastp_historical:
         R2_un=temp("results/historical/trimming/{sample}_{index}_{lane}_R2_unmerged.fastq.gz"),
         merged="results/historical/trimming/{sample}_{index}_{lane}_trimmed_merged.fastq.gz",
         html="results/historical/trimming/stats/{sample}_{index}_{lane}_fastp_report.html",
-        json=temp("results/modern/trimming/stats/{sample}_{index}_{lane}_fastp_report.json"),
+        json=temp("results/historical/trimming/stats/{sample}_{index}_{lane}_fastp_report.json"),
     params:
         readlength=config["hist_readlength"],
         report="fastp report for {sample}_{index}_{lane}",
