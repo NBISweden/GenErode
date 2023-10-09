@@ -10,7 +10,7 @@ import pandas as pd
 
 min_version("5.19.0")
 
-generode_version = "0.5.1"
+generode_version = "0.6.0"
 
 configfile: "config/config.yaml"
 
