@@ -4,8 +4,6 @@
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
-        dataset=["historical", "modern"]))
     all_outputs.append(expand("results/all/snpEff/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf", 
         fmiss=config["f_missing"],
         chr=CHR,))
@@ -13,14 +11,12 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
     all_outputs.append("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/historical/snpEff/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
     all_outputs.append("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/modern/snpEff/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))

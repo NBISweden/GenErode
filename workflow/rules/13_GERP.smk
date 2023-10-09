@@ -7,8 +7,6 @@ all_outputs.append(expand("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.g
     chr=CHR,))
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html",
-        dataset=["historical", "modern"]))
     all_outputs.append(expand("results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
@@ -16,7 +14,6 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
@@ -24,7 +21,6 @@ elif os.path.exists(config["historical_samples"]):
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/multiqc/multiqc_report.html")
     all_outputs.append(expand("results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
