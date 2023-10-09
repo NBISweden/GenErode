@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.5.1        #
+# Configuration settings for the GenErode pipeline 0.6.0        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -375,7 +375,7 @@ merge_vcfs_per_dataset: False
 # are compared between historical and modern samples. Has to be a floating
 # point number between 0.0 (no missing data allowed) and 1.0 (sites are 
 # allowed that are completely missing).
-f_missing: 0.1 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
+f_missing: 0.9 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
 #####
 
 #################################################################
@@ -508,10 +508,6 @@ tree: ".test/data/gerp_data/gerp_tree.nwk"
 # Positive values indicate purifying selection.
 min_gerp: 0
 max_gerp: 1000
-
-# Tree scaling factor for GERP++ ("-s") to re-scale tree. If a tree from
-# www.timetree.org is provided (in millions of years), set to 0.001.
-tree_scaling_factor: 0.001
 
 #####
 # NOTE:
