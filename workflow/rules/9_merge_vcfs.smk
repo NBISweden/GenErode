@@ -685,7 +685,7 @@ rule historical_biallelic_missing_filtered_vcf_multiqc:
         indir="results/historical/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/",
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/multiqc",
     log:
-        "results/logs/9_merge_vcfs/historical/" + REF_NAME + "/biallelic_missing_filtered_vcf_multiqc.log",
+        "results/logs/9_merge_vcfs/historical/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
     singularity:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:
@@ -704,7 +704,7 @@ rule modern_biallelic_missing_filtered_vcf_multiqc:
         indir="results/modern/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/",
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/multiqc",
     log:
-        "results/logs/9_merge_vcfs/modern/" + REF_NAME + "/biallelic_missing_filtered_vcf_multiqc.log",
+        "results/logs/9_merge_vcfs/modern/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
     singularity:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:
