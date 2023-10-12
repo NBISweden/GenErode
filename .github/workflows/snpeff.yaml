@@ -1,0 +1,62 @@
+name: snpeff
+
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/13_GERP.smk'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/docker'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/13_GERP.smk'
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.1.4
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda
+          activate-environment: generode
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: conda_environment
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      - name: snpeff_dry
+        shell: bash -l {0}
+        run: |
+          snakemake -npr --configfile .test/config/config_snpeff.yaml -j 4 --cores 1 --use-singularity
+
+      - name: snpeff
+        shell: bash -l {0}
+        run: |
+          snakemake --configfile .test/config/config_snpeff.yaml -j 4 --cores 1 --use-singularity
