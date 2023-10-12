@@ -3,8 +3,8 @@
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
-        dataset=["all", "historical", "modern"],)
+    all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+        dataset=["all", "historical", "modern"],))
 elif os.path.exists(config["historical_samples"]):
     all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 elif os.path.exists(config["modern_samples"]):
