@@ -207,22 +207,33 @@ set-resources:
   - make_noCpG_repma_bed:mem_mb=12800
 ### create chromosome bed files
   - make_autosomes_bed:runtime=300
+  - intersect_sexchr_repma_beds:runtime=300
   - intersect_sexchr_repma_beds:mem_mb=12800
+  - intersect_autos_repma_beds:runtime=300
   - intersect_autos_repma_beds:mem_mb=12800
+  - intersect_sexchr_CpG_repma_beds:runtime=300
   - intersect_sexchr_CpG_repma_beds:mem_mb=12800
+  - intersect_autos_CpG_repma_beds:runtime=300
   - intersect_autos_CpG_repma_beds:mem_mb=12800
 ### mlRho
   - bam2pro_autos:runtime=1440
   - bam2pro_sexchr:runtime=1440
   - bam2pro_all:runtime=1440
 ### CpG filter VCF files
+  - remove_CpG_vcf:runtime=300
   - remove_CpG_vcf:mem_mb=38400
+  - CpG_vcf2bcf:runtime=300
   - CpG_vcf2bcf:mem_mb=12800
 ### process VCF files
+  - remove_snps_near_indels:runtime=300
   - remove_snps_near_indels:mem_mb=12800
+  - filter_vcfs_qual_dp:runtime=300
   - filter_vcfs_qual_dp:mem_mb=12800
+  - filter_vcfs_allelic_balance:runtime=300
   - filter_vcfs_allelic_balance:mem_mb=12800
+  - remove_repeats_vcf:runtime=300
   - remove_repeats_vcf:mem_mb=38400
+  - filtered_vcf2bcf:runtime=300
   - filtered_vcf2bcf:mem_mb=12800
 ### merge and process VCF files
   - merge_all_vcfs:runtime=4320

@@ -186,7 +186,7 @@ filter_vcfs_qual_dp:
   time: 05:00:00
   cpus-per-task: 2
 filter_vcfs_allelic_balance:
-  time: 05:00:00
+  time: 1-00:00:00
   cpus-per-task: 2
 remove_repeats_vcf:
   time: 05:00:00
