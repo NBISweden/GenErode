@@ -1,0 +1,87 @@
+name: mitogenome_mapping
+
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/rules/0.1_reference_genome_preps.smk'
+      - 'workflow/rules/0.2_repeat_identification.smk'
+      - 'workflow/rules/2_mapping.smk'
+      - 'workflow/rules/3.1_bam_rmdup_realign_indels.smk'
+      - 'workflow/rules/3.2_historical_bam_mapDamage.smk'
+      - 'workflow/rules/3.3_bam_subsampling.smk'
+      - 'workflow/rules/4_genotyping.smk'
+      - 'workflow/rules/5_CpG_identification.smk'
+      - 'workflow/rules/6_autosome_sexchromosome_bed_files.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
+      - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
+      - 'workflow/rules/9_merge_vcfs.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/docker'
+      - 'workflow/rules/0.1_reference_genome_preps.smk'
+      - 'workflow/rules/0.2_repeat_identification.smk'
+      - 'workflow/rules/2_mapping.smk'
+      - 'workflow/rules/3.1_bam_rmdup_realign_indels.smk'
+      - 'workflow/rules/3.2_historical_bam_mapDamage.smk'
+      - 'workflow/rules/3.3_bam_subsampling.smk'
+      - 'workflow/rules/4_genotyping.smk'
+      - 'workflow/rules/5_CpG_identification.smk'
+      - 'workflow/rules/6_autosome_sexchromosome_bed_files.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
+      - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
+      - 'workflow/rules/9_merge_vcfs.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.1.4
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda
+          activate-environment: generode
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: conda_environment
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      - name: mitogenome_mapping_dry
+        shell: bash -l {0}
+        run: |
+          snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+
+      - name: mitogenome_mapping
+        shell: bash -l {0}
+        run: |
+          snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+

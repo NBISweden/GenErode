@@ -1,10 +1,18 @@
-name: CI
+name: mlRho_options
 
 on:
   push:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
+      - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
+      - 'workflow/rules/9_merge_vcfs.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
     branches:
       - main
   pull_request:
@@ -12,6 +20,14 @@ on:
       - 'README.md'
       - 'LICENSE.md'
       - 'workflow/docker'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
+      - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
+      - 'workflow/rules/9_merge_vcfs.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
     branches:
       - main
       - dev
@@ -41,16 +57,6 @@ jobs:
           conda info
           conda list
 
-      - name: mitogenome_mapping_dry
-        shell: bash -l {0}
-        run: |
-          snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
-
-      - name: mitogenome_mapping
-        shell: bash -l {0}
-        run: |
-          snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
-
       - name: mlRho_options_dry
         shell: bash -l {0}
         run: |
@@ -60,23 +66,3 @@ jobs:
         shell: bash -l {0}
         run: |
           snakemake --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
-
-      - name: pca_roh_dry
-        shell: bash -l {0}
-        run: |
-          snakemake -npr --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
-
-      - name: pca_roh
-        shell: bash -l {0}
-        run: |
-          snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
-
-      - name: snpeff_gerp_autos_dry
-        shell: bash -l {0}
-        run: |
-          snakemake -npr --configfile .test/config/config_snpeff_gerp_autos.yaml -j 4 --cores 1 --use-singularity
-
-      - name: snpeff_gerp_autos
-        shell: bash -l {0}
-        run: |
-          snakemake --configfile .test/config/config_snpeff_gerp_autos.yaml -j 4 --cores 1 --use-singularity
