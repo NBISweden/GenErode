@@ -2,7 +2,13 @@
 ### 9. Merge VCF files and filter for biallelic sites, missingness and sex-chromosomal contigs/scaffolds
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
+    all_outputs.append("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+        dataset=["all", "historical", "modern"],)
+elif os.path.exists(config["historical_samples"]):
+    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+elif os.path.exists(config["modern_samples"]):
+    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline
@@ -606,12 +612,12 @@ rule missingness_filtered_vcf_multiqc:
     input:
         missingness_filtered_vcf_multiqc_inputs,
     output:
-        stats="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
     params:
-        indir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/",
-        outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc",
+        indir="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/",
+        outdir="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc",
     log:
-        "results/logs/9_merge_vcfs/all/" + REF_NAME + "/missingness_filtered_vcf_multiqc.log",
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/missingness_filtered_vcf_multiqc.log",
     singularity:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:

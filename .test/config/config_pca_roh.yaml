@@ -135,9 +135,12 @@ bam_rmdup_realign_indels: False
 # Parameters related to depth filtering of BAM and VCF files.
 # After BAM file processing, the average genome-wide depth is calculated 
 # per sample, from which minimum and maximum depth thresholds for quality 
-# filtering are determined.
-# In the calculation of the average genome-wide depth of coverage, 
-# sites with missing data (i.e. zero coverage) can be included or excluded.
+# filtering are determined. 
+# Sites with mapping quality < 30 or in repeat elements are excluded 
+# by default from the calculation of the average genome-wide depth 
+# of coverage.
+# Sites with missing data (i.e. zero coverage) can be included or 
+# excluded in the average depth calculation.
 # Set to True if sites with missing data (zero coverage) should be 
 # included in the average depth calculation.
 # Set to False if sites with missing data (zero coverage) should be 
