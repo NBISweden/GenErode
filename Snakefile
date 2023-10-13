@@ -309,6 +309,7 @@ rule all:
 
 
 if (config["bam_rmdup_realign_indels"]
+    or config["merge_vcfs_per_dataset"]
     or config["mlRho"]
     or config["pca"]
     or config["ROH"]

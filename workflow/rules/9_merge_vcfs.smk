@@ -612,7 +612,10 @@ rule missingness_filtered_vcf_multiqc:
     input:
         missingness_filtered_vcf_multiqc_inputs,
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+        stats=report(
+            "results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+            caption="../report/missingness_filtered_vcf_multiqc.rst",
+            category="VCF file processing",),
     params:
         indir="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/",
         outdir="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc",
