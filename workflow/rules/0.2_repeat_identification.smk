@@ -21,23 +21,6 @@ rule ref_upper:
         """
 
 
-rule cp_repeatmasker_lib:
-    """Copy RepeatMasker library from container"""
-    output:
-        rm_lib=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib"),
-        nhr=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nhr"),
-        nin=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nin"),
-        nsq=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nsq"),
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_cp_repeatmasker_libs.log",
-    singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
-    shell:
-        """
-        cp /usr/local/share/RepeatMasker/Libraries/RepeatMasker.lib* {output.rm_lib} 2> {log}
-        """
-
-
 rule repeatmodeler:
     """RepeatModeler for de novo repeat prediction from a reference assembly"""
     input:
@@ -101,7 +84,6 @@ rule repeatmasker:
     input:
         ref_upper=rules.ref_upper.output,
         repmo=rules.repeatclassifier.output.repmo,
-        rm_libs=rules.cp_repeatmasker_libs.output,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
         rep_align=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.align",
