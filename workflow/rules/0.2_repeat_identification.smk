@@ -39,7 +39,7 @@ rule cp_repeatmasker_libs:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_cp_repeatmasker_libs.log",
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         cp /usr/local/share/RepeatMasker/Libraries/* workflow/resources/RepeatMasker/Libraries/ 2> {log}
@@ -75,7 +75,7 @@ rule make_repma_blast_db:
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repma_blast_db.log"),
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir}
@@ -99,7 +99,7 @@ rule repeatmodeler:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir}
@@ -139,7 +139,7 @@ rule repeatclassifier:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatclassifier.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         RepeatClassifier -repeatmasker_dir {params.repma_dir} -consensi {input.repmo} -stockholm {input.stk} 2> {log}
