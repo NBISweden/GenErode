@@ -26,8 +26,8 @@ rule repeatmodeler:
     input:
         ref_upper=rules.ref_upper.output,
     output:
-        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa",
-        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families.stk",
+        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
+        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
     params:
         dir=REF_DIR + "/repeatmodeler/" + REF_NAME + "/",
         name=REF_NAME,
@@ -49,8 +49,8 @@ rule repeatmodeler:
         RepeatModeler -engine ncbi -pa {threads} -database {params.name} 2>> {log} &&
 
         # copy the output files to a new directory
-        cp RM_*.*/consensi.fa RM_raw.out/ 2>> {log} &&
-        cp RM_*.*/families.stk RM_raw.out/ 2>> {log}
+        cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
+        cp RM_*.*/families-classified.stk RM_raw.out/ 2>> {log}
 
         # remove temporary file
         if [ -f {params.abs_tmp} ]
@@ -60,30 +60,11 @@ rule repeatmodeler:
         """
 
 
-rule repeatclassifier:
-    """Create final RepeatModeler output files"""
-    input:
-        repmo=rules.repeatmodeler.output.repmo,
-        stk=rules.repeatmodeler.output.stk,
-    output:
-        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
-        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatclassifier.log",
-    threads: 2
-    singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
-    shell:
-        """
-        RepeatClassifier -consensi {input.repmo} -stockholm {input.stk} 2> {log}
-        """
-
-
 rule repeatmasker:
     """Repeat mask the full genome assembly using raw de novo predicted repeats"""
     input:
         ref_upper=rules.ref_upper.output,
-        repmo=rules.repeatclassifier.output.repmo,
+        repmo=rules.repeatmodeler.output.repmo,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
         rep_align=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.align",
