@@ -82,12 +82,9 @@ rule repeatclassifier:
     input:
         repmo=rules.repeatmodeler.output.repmo,
         stk=rules.repeatmodeler.output.stk,
-        rm_libs=rules.cp_repeatmasker_libs.output,
     output:
         repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
         stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
-    params:
-        repma_dir="workflow/resources/RepeatMasker",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatclassifier.log",
     threads: 2
@@ -95,7 +92,7 @@ rule repeatclassifier:
         "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
-        RepeatClassifier -repeatmasker_dir {params.repma_dir} -consensi {input.repmo} -stockholm {input.stk} 2> {log}
+        RepeatClassifier -consensi {input.repmo} -stockholm {input.stk} 2> {log}
         """
 
 
