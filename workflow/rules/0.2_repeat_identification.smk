@@ -46,7 +46,7 @@ rule repeatmodeler:
         BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
 
         # Run RepeatModeler
-        RepeatModeler -engine ncbi -pa {threads} -database {params.name} 2>> {log} &&
+        RepeatModeler -engine ncbi -threads {threads} -database {params.name} 2>> {log} &&
 
         # copy the output files to a new directory
         cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
