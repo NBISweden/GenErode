@@ -96,6 +96,7 @@ if config["CpG_identification"]:
         include: "workflow/rules/3.3_bam_subsampling.smk"
         include: "workflow/rules/4_genotyping.smk"
         include: "workflow/rules/5_CpG_identification.smk"
+        include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
 
 
     elif config["CpG_from_reference"] == True:
@@ -107,6 +108,7 @@ if config["CpG_identification"]:
         include: "workflow/rules/3.2_historical_bam_mapDamage.smk"
         include: "workflow/rules/3.3_bam_subsampling.smk"
         include: "workflow/rules/5_CpG_identification.smk"
+        include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
 
 
     elif config["CpG_from_vcf_and_reference"] == True:
@@ -119,20 +121,10 @@ if config["CpG_identification"]:
         include: "workflow/rules/3.3_bam_subsampling.smk"
         include: "workflow/rules/4_genotyping.smk"
         include: "workflow/rules/5_CpG_identification.smk"
+        include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
 
 
 ###
-if config["autosome_sexchromosome_bed_files"]:
-    include: "workflow/rules/0.1_reference_genome_preps.smk"
-    include: "workflow/rules/0.2_repeat_identification.smk"
-    include: "workflow/rules/1.1_fastq_processing.smk"
-    include: "workflow/rules/2_mapping.smk"
-    include: "workflow/rules/3.1_bam_rmdup_realign_indels.smk"
-    include: "workflow/rules/3.2_historical_bam_mapDamage.smk"
-    include: "workflow/rules/3.3_bam_subsampling.smk"
-    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
-
-
 if config["mlRho"]:
     if len(config["CpG_samplenames"]) > 0:  # to avoid genotyping if not necessary
         if config["CpG_from_vcf"] == True:
@@ -196,6 +188,7 @@ if config["vcf_CpG_filtering"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
 
 
@@ -209,6 +202,7 @@ if config["vcf_qual_repeat_filtering"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
 
@@ -223,6 +217,7 @@ if config["merge_vcfs_per_dataset"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
     include: "workflow/rules/9_merge_vcfs.smk"
@@ -238,6 +233,7 @@ if config["pca"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
     include: "workflow/rules/9_merge_vcfs.smk"
@@ -254,6 +250,7 @@ if config["ROH"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
     include: "workflow/rules/9_merge_vcfs.smk"
@@ -270,6 +267,7 @@ if config["snpEff"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
     include: "workflow/rules/9_merge_vcfs.smk"
@@ -287,6 +285,7 @@ if config["gerp"]:
     include: "workflow/rules/3.3_bam_subsampling.smk"
     include: "workflow/rules/4_genotyping.smk"
     include: "workflow/rules/5_CpG_identification.smk"
+    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
     include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
     include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
     include: "workflow/rules/9_merge_vcfs.smk"
@@ -310,6 +309,7 @@ rule all:
 
 
 if (config["bam_rmdup_realign_indels"]
+    or config["merge_vcfs_per_dataset"]
     or config["mlRho"]
     or config["pca"]
     or config["ROH"]

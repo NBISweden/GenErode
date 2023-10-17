@@ -186,7 +186,7 @@ filter_vcfs_qual_dp:
   time: 05:00:00
   cpus-per-task: 2
 filter_vcfs_allelic_balance:
-  time: 05:00:00
+  time: 1-00:00:00
   cpus-per-task: 2
 remove_repeats_vcf:
   time: 05:00:00
@@ -204,10 +204,19 @@ filter_vcf_biallelic:
 filter_vcf_missing:
   time: 1-00:00:00
   cpus-per-task: 2
+remove_chromosomes:
+  time: 1-00:00:00
+  cpus-per-task: 2
 extract_historical_samples:
   time: 05:00:00
 extract_modern_samples:
   time: 05:00:00
+repmasked_bcf2vcf:
+  time: 05:00:00
+  cpus-per-task: 2
+filter_biallelic_missing_vcf:
+  time: 1-00:00:00
+  cpus-per-task: 6
 ### PCA
 vcf2plink_pca:
   time: 05:00:00
@@ -220,14 +229,8 @@ vcf2plink_hwe:
   time: 05:00:00
   cpus-per-task: 2
 ### snpEff
-repmasked_bcf2vcf_snpEff:
-  time: 05:00:00
-  cpus-per-task: 2
 build_snpEff_db:
   time: 05:00:00
-filter_biallelic_missing_vcf_snpEff:
-  time: 1-00:00:00
-  cpus-per-task: 6
 annotate_vcf:
   time: 05:00:00
 ### gerp
@@ -264,12 +267,6 @@ merge_per_chunk:
 merge_gerp_gz:
   time: 1-00:00:00
   cpus-per-task: 2
-repmasked_bcf2vcf_gerp:
-  time: 05:00:00
-  cpus-per-task: 2
-filter_biallelic_missing_vcf_gerp:
-  time: 1-00:00:00
-  cpus-per-task: 6
 split_vcf_files:
   time: 05:00:00
 gerp_derived_alleles:

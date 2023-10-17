@@ -3,285 +3,204 @@
 # Authors: Marcin Kierczak, Tom van der Valk, Verena Kutschera
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append("results/gerp/" + REF_NAME + ".ancestral.rates.gerp.hist.pdf")
+all_outputs.append(expand("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
+    chr=CHR,))
+
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/gerp/{dataset}/" + REF_NAME + "/vcf/stats/multiqc/multiqc_report.html",
-        dataset=["historical", "modern"]))
-    all_outputs.append(expand("results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    all_outputs.append(expand("results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/gerp/historical/" + REF_NAME + "/vcf/stats/multiqc/multiqc_report.html")
-    all_outputs.append(expand("results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    all_outputs.append(expand("results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/gerp/modern/" + REF_NAME + "/vcf/stats/multiqc/multiqc_report.html")
-    all_outputs.append(expand("results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    all_outputs.append(expand("results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 
 # Functions used by rules of this part of the pipeline
-def historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
-    """Input for historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs"""
-    rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
-        fmiss=config["f_missing"],)
-    not_rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
-        fmiss=config["f_missing"],)
-    rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],
-        fmiss=config["f_missing"],)
-    not_rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],
-        fmiss=config["f_missing"],)
-    outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG)
-    if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
-    elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
-    elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
-    return outlist
-
-def modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs(wildcards):
-    """Input for modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs"""
-    not_subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
-        fmiss=config["f_missing"],)
-    subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-        sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],
-        fmiss=config["f_missing"],)
-    outlist = (not_subsampled_not_CpG + subsampled_not_CpG)
-    if config["CpG_from_vcf"] == True:
-        not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
-    elif config["CpG_from_reference"] == True:
-        not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
-    elif config["CpG_from_vcf_and_reference"] == True:
-        not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
-            fmiss=config["f_missing"],)
-        subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            fmiss=config["f_missing"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
-    return outlist
-
 def rel_load_table_inputs(wildcards):
     """Collect output files for pipeline report"""
     outlist = []
     if os.path.exists(config["historical_samples"]):
-        rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
-        not_rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        not_rescaled_not_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
-        rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
-        not_rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        not_rescaled_subsampled_not_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
         outlist += (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG)
         if config["CpG_from_vcf"] == True:
-            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
         elif config["CpG_from_reference"] == True:
-            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
         elif config["CpG_from_vcf_and_reference"] == True:
-            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_not_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_rescaled_subsampled_CpG = expand("results/gerp/historical/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
     if os.path.exists(config["modern_samples"]):
-        not_subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        not_subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
-        subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        subsampled_not_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
             DP=config["subsampling_depth"],
             fmiss=config["f_missing"],
+            chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],)
         outlist += (not_subsampled_not_CpG + subsampled_not_CpG)
         if config["CpG_from_vcf"] == True:
-            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (not_subsampled_CpG + subsampled_CpG)
         elif config["CpG_from_reference"] == True:
-            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (not_subsampled_CpG + subsampled_CpG)
         elif config["CpG_from_vcf_and_reference"] == True:
-            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            not_subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
-            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            subsampled_CpG = expand("results/gerp/modern/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
                 DP=config["subsampling_depth"],
                 fmiss=config["f_missing"],
+                chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
             outlist += (not_subsampled_CpG + subsampled_CpG)
@@ -290,11 +209,11 @@ def rel_load_table_inputs(wildcards):
 def all_GERP_outputs(wildcards):
     """Collect output files for report"""
     if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-        return "results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
+        return "results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
     elif os.path.exists(config["historical_samples"]):
-        return "results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
+        return "results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
     elif os.path.exists(config["modern_samples"]):
-        return "results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
+        return "results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"
 
 
 # snakemake rules
@@ -483,13 +402,13 @@ rule bam2fasta:
         bam=rules.align2target.output.bam,
         index=rules.index_gerp_bams.output.index,
         stats=rules.gerp_bam_multiqc.output.stats,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/")),
+        fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/")),
     params:
         gerpref="{gerpref}",
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
     singularity:
         "docker://biocontainers/samtools:v1.9-4-deb_cv1"  # This container includes python 3.7.6 with default python modules
@@ -516,14 +435,14 @@ rule split_ref_contigs:
     input:
         ref=config["ref_path"],
         fai=config["ref_path"] + ".fai",
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         stats=rules.gerp_bam_multiqc.output.stats,
     output:
-        fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/")),
+        fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/")),
     params:
         gerpref=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
     singularity:
         "docker://quay.io/biocontainers/seqtk:1.3--hed695b0_2"
@@ -549,16 +468,16 @@ rule concatenate_fasta_per_contig:
     This analysis is run as one job per genome chunk, but is internally run per contig.
     """
     input:
-        gerpref_fasta=expand("results/gerp/chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/", gerpref=GERP_REF_NAMES),
+        gerpref_fasta=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/", chr=CHR, gerpref=GERP_REF_NAMES),
         ref_fasta=rules.split_ref_contigs.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        concatenated_fasta_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/")),
+        concatenated_fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/")),
     params:
-        fasta_dir="results/gerp/chunks/" + REF_NAME + "/fasta",
+        fasta_dir="results/gerp/{chr}_chunks/" + REF_NAME + "/fasta",
         chunk=lambda wildcards: "{wildcards.chunk}",
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
     threads: 2
     run:
         if not os.path.exists(output.concatenated_fasta_dir):
@@ -596,14 +515,14 @@ rule compute_gerp:
     """
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         tree=config["tree"],
     output:
-        gerp_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/")),
+        gerp_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
     singularity:
         "docker://quay.io/biocontainers/gerp:2.1--hfc679d8_0"
@@ -630,13 +549,13 @@ rule gerp2coords:
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
         gerp_dir=rules.compute_gerp.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_coords_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/")),
+        gerp_coords_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -660,13 +579,13 @@ rule get_ancestral_state:
     """Get the ancestral state of each position in the focal reference genome."""
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        fasta_ancestral_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/")),
+        fasta_ancestral_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/")),
     params:
         name=REF_NAME,
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -690,11 +609,11 @@ rule produce_contig_out:
     input:
         fasta_ancestral_dir=rules.get_ancestral_state.output.fasta_ancestral_dir,
         gerp_coords_dir=rules.gerp2coords.output.gerp_coords_dir,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_merged_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
+        gerp_merged_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -717,11 +636,11 @@ rule merge_gerp_per_chunk:
     """Merge results per genome chunk into one file."""
     input:
         gerp_merged_dir=rules.produce_contig_out.output.gerp_merged_dir,
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        gerp_chunks_merged=temp("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
+        gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
     threads: 2
     run:
         chunk_contigs = []
@@ -739,11 +658,11 @@ rule merge_gerp_per_chunk:
 rule merge_gerp_gz:
     """Merge results per contig into one file."""
     input:
-        gerp_chunks_merged=expand("results/gerp/chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chunk=CHUNKS),
+        gerp_chunks_merged=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chr=CHR, chunk=CHUNKS),
     output:
-        gerp_out="results/gerp/" + REF_NAME + ".ancestral.rates.gz",
+        gerp_out="results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gz",
     log:
-        "results/logs/13_GERP/" + REF_NAME + "_merge_gerp_gz.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chr}.merge_gerp_gz.log",
     threads: 2
     shell:
         """
@@ -756,116 +675,26 @@ rule plot_gerp_hist:
     input:
         gerp_out=rules.merge_gerp_gz.output.gerp_out,
     output:
-        pdf=report("results/gerp/" + REF_NAME + ".ancestral.rates.gerp.hist.pdf",
+        pdf=report("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
             caption="../report/gerp_plot.rst",
             category="GERP",),
     threads: 2
     log:
-        "results/logs/13_GERP/" + REF_NAME + "_plot_gerp_hist.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chr}.plot_gerp_hist.log",
     script:
         "../scripts/gerp_hist_plot.py"
 
 
-rule repmasked_bcf2vcf_gerp:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
-    output:
-        vcf=temp("results/gerp/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
-    log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_repmasked_bcf2vcf.log",
-    singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
-rule filter_biallelic_missing_vcf_gerp:
-    """Keep only sites with certain upper fraction missingness as specified in config file and sites that are biallelic across all samples from individual vcf files"""
-    input:
-        vcf=rules.repmasked_bcf2vcf_gerp.output.vcf,
-        bed=rules.filtered_vcf2bed.output.bed,
-        genomefile=rules.genome_file.output.genomefile,
-    output:
-        filtered=temp("results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz"),
-    threads: 6
-    log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/vcf/{sample}.{processed}_fmissing{fmiss}_filter_biallelic_missing_vcf.log",
-    singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
-    shell:
-        """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
-        """
-
-
-rule biallelic_missing_filtered_vcf_gerp_stats:
-    """Obtain summary stats of filtered vcf file"""
-    input:
-        filtered="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
-    output:
-        stats="results/gerp/{dataset}/" + REF_NAME + "/vcf/stats/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.stats.txt",
-    log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/vcf/{sample}.{processed}_fmissing{fmiss}_biallelic_missing_filtered_vcf_stats.log",
-    singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
-    shell:
-        """
-        bcftools stats {input.filtered} > {output.stats} 2> {log}
-        """
-
-
-rule historical_biallelic_missing_filtered_vcf_gerp_multiqc:
-    """Collect all stats files from historical vcf files filtered for biallelic sites and missing data"""
-    input:
-        historical_biallelic_missing_filtered_vcf_gerp_multiqc_inputs,
-    output:
-        stats="results/gerp/historical/" + REF_NAME + "/vcf/stats/multiqc/multiqc_report.html",
-    params:
-        indir="results/gerp/historical/" + REF_NAME + "/vcf/stats/",
-        outdir="results/gerp/historical/" + REF_NAME + "/vcf/stats/multiqc",
-    log:
-        "results/logs/13_GERP/historical/" + REF_NAME + "/vcf/biallelic_missing_filtered_vcf_multiqc.log",
-    singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
-    shell:
-        """
-        multiqc -f {params.indir} -o {params.outdir} 2> {log}
-        """
-
-
-rule modern_biallelic_missing_filtered_vcf_gerp_multiqc:
-    """Collect all stats files from modern vcf files filtered for biallelic sites and missing data"""
-    input:
-        modern_biallelic_missing_filtered_vcf_gerp_multiqc_inputs,
-    output:
-        stats="results/gerp/modern/" + REF_NAME + "/vcf/stats/multiqc/multiqc_report.html",
-    params:
-        indir="results/gerp/modern/" + REF_NAME + "/vcf/stats/",
-        outdir="results/gerp/modern/" + REF_NAME + "/vcf/stats/multiqc",
-    log:
-        "results/logs/13_GERP/modern/" + REF_NAME + "/vcf/biallelic_missing_filtered_vcf_multiqc.log",
-    singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
-    shell:
-        """
-        multiqc -f {params.indir} -o {params.outdir} 2> {log}
-        """
-
-
 rule split_vcf_files:
-    """Split the VCF files into chunks for more resource-efficient merging with GERP results"""
+    """Split individual VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf="results/gerp/{dataset}/" + REF_NAME + "/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.vcf.gz",
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        vcf=rules.filter_biallelic_missing_vcf.output.filtered,
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:
-        vcf_chunk=temp("results/gerp/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}.vcf.gz"),
+        vcf_chunk=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.vcf.gz"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chunk}_split_vcf_chunks.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     singularity:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
@@ -877,11 +706,11 @@ rule split_vcf_files:
 rule split_chunk_bed_files:
     """Split the chunk bed files into 10 million basepair windows"""
     input:
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/{chunk}.bed",
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
-        chunk_win_bed=temp(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files/windows/{chunk}_10Mwindows.bed"),
+        chunk_win_bed=temp(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/windows/{chunk}_10Mwindows.bed"),
     log:
-        "results/logs/13_GERP/" + REF_NAME + ".{chunk}_split_chunk_bed_files.log",
+        "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
     singularity:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
@@ -900,9 +729,9 @@ rule gerp_derived_alleles:
         vcf=rules.split_vcf_files.output.vcf_chunk,
         chunk_win_bed=rules.split_chunk_bed_files.output.chunk_win_bed,
     output:
-        gerp_alleles_dir=temp(directory("results/gerp/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}_gerp_derived_alleles/")),
+        gerp_alleles_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles/")),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}_gerp_derived_alleles.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles.log",
     threads: 4
     shell:
         """
@@ -922,9 +751,9 @@ rule merge_gerp_alleles_per_chunk:
         gerp_alleles_dir=rules.gerp_derived_alleles.output.gerp_alleles_dir,
         chunk_win_bed=rules.split_chunk_bed_files.output.chunk_win_bed,
     output:
-        gerp_chunks_merged=temp("results/gerp/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}.fasta.parsed.rates.derived_alleles"),
+        gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles"),
     log:
-        "results/logs/13_GERP/chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}_merge_gerp_alleles_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_merge_gerp_alleles_per_chunk.log",
     threads: 4
     run:
         chunk_windows = []
@@ -947,15 +776,16 @@ rule merge_gerp_alleles_per_chunk:
 rule merge_gerp_alleles_gz:
     """Merge results into one file per sample."""
     input:
-        gerp_chunks_merged=expand("results/gerp/chunks/" + REF_NAME + "/{{dataset}}/{{sample}}.merged.rmdup.merged.{{processed}}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chunk}.fasta.parsed.rates.derived_alleles",
+        gerp_chunks_merged=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/{{dataset}}/{{sample}}.merged.rmdup.merged.{{processed}}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles",
             chunk=CHUNKS,
             fmiss=config["f_missing"],
+            chr=CHR,
             min_gerp=config["min_gerp"],
             max_gerp=config["max_gerp"],),
     output:
-        gerp_out="results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.ancestral.rates.derived.alleles.gz",
+        gerp_out="results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ancestral.rates.derived.alleles.gz",
     log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.merge_gerp_alleles_gz.log",
+        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.merge_gerp_alleles_gz.log",
     threads: 4
     shell:
         """
@@ -966,14 +796,14 @@ rule merge_gerp_alleles_gz:
 rule relative_mutational_load_per_sample:
     """Calculate the relative mutational load per sample."""
     input:
-        gerp_out="results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.ancestral.rates.derived.alleles.gz",
+        gerp_out="results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ancestral.rates.derived.alleles.gz",
     output:
-        mut_load=temp("results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"),
+        mut_load=temp("results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt"),
     params:
         min_gerp=config["min_gerp"],
         max_gerp=config["max_gerp"],
     log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
+        "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
     threads: 2
     shell:
         """
@@ -986,11 +816,11 @@ rule relative_mutational_load_table:
     input:
         rel_load_table_inputs,
     output:
-        mut_load=report("results/gerp/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+        mut_load=report("results/gerp/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
             caption="../report/relative_mutational_load_table.rst",
             category="GERP",),
     log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
+        "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
     threads: 4
     script:
         "../scripts/gerp_rel_mut_load_table.py"
@@ -1001,10 +831,10 @@ rule relative_mutational_load_plot:
     input:
         all_GERP_outputs,
     output:
-        plot=report("results/gerp/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+        plot=report("results/gerp/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             caption="../report/relative_mutational_load_plot.rst",
             category="GERP",),
     log:
-        "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.relative_mutational_load_plot.gerp_{minGERP}_{maxGERP}.log",
+        "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load_plot.gerp_{minGERP}_{maxGERP}.log",
     script:
         "../scripts/gerp_rel_mut_load_plot.py"
