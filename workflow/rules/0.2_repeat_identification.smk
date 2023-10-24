@@ -21,75 +21,13 @@ rule ref_upper:
         """
 
 
-rule cp_repeatmasker_libs:
-    """Copy RepeatMasker libraries from container"""
-    output:
-        art=temp("workflow/resources/RepeatMasker/Libraries/Artefacts.embl"),
-        embl=temp("workflow/resources/RepeatMasker/Libraries/Dfam.embl"),
-        hmm=temp("workflow/resources/RepeatMasker/Libraries/Dfam.hmm"),
-        repann=temp("workflow/resources/RepeatMasker/Libraries/RepeatAnnotationData.pm"),
-        phr=temp("workflow/resources/RepeatMasker/Libraries/RepeatPeps.lib.phr"),
-        psq=temp("workflow/resources/RepeatMasker/Libraries/RepeatPeps.lib.psq"),
-        lib=temp("workflow/resources/RepeatMasker/Libraries/RepeatPeps.lib"),
-        pin=temp("workflow/resources/RepeatMasker/Libraries/RepeatPeps.lib.pin"),
-        peprm=temp("workflow/resources/RepeatMasker/Libraries/RepeatPeps.readme"),
-        meta=temp("workflow/resources/RepeatMasker/Libraries/RMRBMeta.embl"),
-        rm=temp("workflow/resources/RepeatMasker/Libraries/README.meta"),
-        tax=temp("workflow/resources/RepeatMasker/Libraries/taxonomy.dat"),
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_cp_repeatmasker_libs.log",
-    singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
-    shell:
-        """
-        cp /usr/local/share/RepeatMasker/Libraries/* workflow/resources/RepeatMasker/Libraries/ 2> {log}
-        """
-
-
-rule embl2fasta:
-    """Convert Dfam embl to fasta format"""
-    input:
-        dfam_embl=rules.cp_repeatmasker_libs.output.embl,
-    output:
-        rm_lib=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib"),
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_embl2fasta.log",
-    run:
-        from Bio import SeqIO
-        with open(input.dfam_embl, "rU") as input_handle, open(output.rm_lib, "w") as output_handle:
-            sequences = SeqIO.parse(input_handle, "embl")
-            count = SeqIO.write(sequences, output_handle, "fasta")
-        print("Converted %i records" % count)
-
-
-rule make_repma_blast_db:
-    input:
-        rm_lib=rules.embl2fasta.output.rm_lib,
-    output:
-        nhr=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nhr"),
-        nin=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nin"),
-        nsq=temp("workflow/resources/RepeatMasker/Libraries/RepeatMasker.lib.nsq"),
-    params:
-        dir="workflow/resources/RepeatMasker/Libraries/",
-        rm_lib="RepeatMasker.lib",
-    log:
-        os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repma_blast_db.log"),
-    singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
-    shell:
-        """
-        cd {params.dir}
-        makeblastdb -dbtype nucl -in {params.rm_lib} 2> {log}
-        """
-
-
 rule repeatmodeler:
     """RepeatModeler for de novo repeat prediction from a reference assembly"""
     input:
         ref_upper=rules.ref_upper.output,
     output:
-        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa",
-        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families.stk",
+        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
+        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
     params:
         dir=REF_DIR + "/repeatmodeler/" + REF_NAME + "/",
         name=REF_NAME,
@@ -99,7 +37,7 @@ rule repeatmodeler:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir}
@@ -108,11 +46,11 @@ rule repeatmodeler:
         BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
 
         # Run RepeatModeler
-        RepeatModeler -engine ncbi -pa {threads} -database {params.name} 2>> {log} &&
+        RepeatModeler -engine ncbi -threads {threads} -database {params.name} 2>> {log} &&
 
         # copy the output files to a new directory
-        cp RM_*.*/consensi.fa RM_raw.out/ 2>> {log} &&
-        cp RM_*.*/families.stk RM_raw.out/ 2>> {log}
+        cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
+        cp RM_*.*/families-classified.stk RM_raw.out/ 2>> {log}
 
         # remove temporary file
         if [ -f {params.abs_tmp} ]
@@ -122,38 +60,11 @@ rule repeatmodeler:
         """
 
 
-rule repeatclassifier:
-    """Create final RepeatModeler output files"""
-    input:
-        repmo=rules.repeatmodeler.output.repmo,
-        stk=rules.repeatmodeler.output.stk,
-        rm_lib=rules.embl2fasta.output.rm_lib,
-        rm_db=rules.make_repma_blast_db.output,
-        rm_libs=rules.cp_repeatmasker_libs.output,
-    output:
-        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
-        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
-    params:
-        repma_dir="workflow/resources/RepeatMasker",
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatclassifier.log",
-    threads: 2
-    singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.1--pl526_0"
-    shell:
-        """
-        RepeatClassifier -repeatmasker_dir {params.repma_dir} -consensi {input.repmo} -stockholm {input.stk} 2> {log}
-        """
-
-
 rule repeatmasker:
     """Repeat mask the full genome assembly using raw de novo predicted repeats"""
     input:
         ref_upper=rules.ref_upper.output,
-        repmo=rules.repeatclassifier.output.repmo,
-        rm_lib=rules.embl2fasta.output.rm_lib,
-        rm_db=rules.make_repma_blast_db.output,
-        rm_libs=rules.cp_repeatmasker_libs.output,
+        repmo=rules.repeatmodeler.output.repmo,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
         rep_align=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.align",
@@ -169,10 +80,9 @@ rule repeatmasker:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmasker:4.0.9_p2--pl526_2"
+        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
-        export REPEATMASKER_LIB_DIR=$PWD/workflow/resources/RepeatMasker/Libraries &&
         cd {params.dir} &&
         RepeatMasker -pa {threads} -a -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
 
