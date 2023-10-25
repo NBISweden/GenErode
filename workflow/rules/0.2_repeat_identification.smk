@@ -137,7 +137,6 @@ rule make_no_repeats_bed:
         sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
     output:
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
-        no_rep_bed_dir="results/" + REF_NAME + ".repma.bed",
     group:
         "reference_group"
     log:
@@ -146,6 +145,5 @@ rule make_no_repeats_bed:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log} &&
-        cp {output.no_rep_bed} {output.no_rep_bed_dir} 2>> {log}
+        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log}
         """
