@@ -310,7 +310,7 @@ rule merge_all_vcfs:
         bcf=merge_all_inputs,
         index=merge_all_index_inputs,
     output:
-        merged=temp("results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf"),
+        merged="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf",
     threads: 6
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
@@ -334,7 +334,7 @@ rule index_merged_vcf:
     input:
         bcf="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf",
     output:
-        index=temp("results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf.csi"),
+        index="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf.csi",
     group:
         "merged_vcf_group"
     log:
