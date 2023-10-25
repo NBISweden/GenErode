@@ -163,11 +163,11 @@ def missingness_filtered_vcf_multiqc_inputs(wildcards):
             fmiss=config["f_missing"],
             chr=CHR,)
     elif os.path.exists(config["historical_samples"]):
-        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        return expand("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
             fmiss=config["f_missing"],
             chr=CHR,)
     elif os.path.exists(config["modern_samples"]):
-        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        return expand("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
             fmiss=config["f_missing"],
             chr=CHR,)
 
