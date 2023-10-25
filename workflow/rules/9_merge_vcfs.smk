@@ -6,9 +6,9 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
     all_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
         dataset=["all", "historical", "modern"],))
 elif os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+    all_outputs.append("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 elif os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+    all_outputs.append("results/all/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline
