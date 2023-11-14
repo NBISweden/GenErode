@@ -516,7 +516,8 @@ rule indel_realigner_targets:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        java -jar /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
+        mem=$(((6 * {threads}) - 2))
+        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
         """
 
 
@@ -538,7 +539,8 @@ rule indel_realigner:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        java -jar /usr/GenomeAnalysisTK.jar -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.target_list} -o {output.realigned} 2> {log}
+        mem=$(((6 * {threads}) - 2))
+        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.target_list} -o {output.realigned} 2> {log}
         """
 
 
