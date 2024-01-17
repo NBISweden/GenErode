@@ -67,7 +67,6 @@ rule repeatmasker:
         repmo=rules.repeatmodeler.output.repmo,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
-        rep_align=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.align",
         rep_tbl=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.tbl",
         rep_out=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.out",
         rep_cat=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.cat.gz",
@@ -84,7 +83,7 @@ rule repeatmasker:
     shell:
         """
         cd {params.dir} &&
-        RepeatMasker -pa {threads} -a -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
+        RepeatMasker -pa {threads} -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
 
         # Check if *.cat file is compressed or uncompressed
         if [ ! -f {output.rep_cat} ]
