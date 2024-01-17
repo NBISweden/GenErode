@@ -9,9 +9,6 @@ __default__:
 repeatmodeler:
   time: 06-00:00:00
   cpus-per-task: 16
-repeatclassifier:
-  time: 01-00:00:00
-  cpus-per-task: 2
 repeatmasker:
   time: 10-00:00:00
   cpus-per-task: 16

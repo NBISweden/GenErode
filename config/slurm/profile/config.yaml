@@ -21,7 +21,6 @@ default-resources:
 set-threads:
 ### repeat identification
   - repeatmodeler=16
-  - repeatclassifier=2
   - repeatmasker=16
 ### fastq processing
   - historical_fastq_before_group=2
@@ -113,8 +112,6 @@ set-resources:
 ### repeat identification
   - repeatmodeler:runtime=8640
   - repeatmodeler:mem_mb=102400
-  - repeatclassifier:runtime=1440
-  - repeatclassifier:mem_mb=12800
   - repeatmasker:runtime=8640
   - repeatmasker:mem_mb=102400
 ### fastq processing
