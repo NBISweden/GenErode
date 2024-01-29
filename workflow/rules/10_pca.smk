@@ -3,22 +3,28 @@
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.pc1_pc2.pdf",
-        fmiss=config["f_missing"],))
-    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.pc1_pc3.pdf",
-        fmiss=config["f_missing"],))
+    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
+    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.pc1_pc2.pdf",
-        fmiss=config["f_missing"],))
-    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.pc1_pc3.pdf",
-        fmiss=config["f_missing"],))
+    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
+    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.pc1_pc2.pdf",
-        fmiss=config["f_missing"],))
-    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.pc1_pc3.pdf",
-        fmiss=config["f_missing"],))
+    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
+    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+        fmiss=config["f_missing"],
+        chr=CHR,))
 
 
 # snakemake rules
@@ -30,18 +36,18 @@ localrules:
 rule vcf2plink_pca:
     """Convert VCF files to plink format (version 1.9) for PCA"""
     input:
-        vcf="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.vcf.gz",
-        index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.vcf.gz.csi",
+        vcf="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     output:
-        bed=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.bed"),
-        bim=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.bim"),
-        fam=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.fam"),
-        nosex=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.nosex"),
+        bed=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.bed"),
+        bim=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.bim"),
+        fam=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.fam"),
+        nosex=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.nosex"),
     threads: 2
     params:
-        bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}",
+        bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}_vcf2plink_pca.log",
+        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_pca.log",
     singularity:
         "docker://quay.io/biocontainers/plink:1.90b6.12--heea4ae3_0"
     shell:
@@ -58,12 +64,12 @@ rule plink_eigenvec:
         fam=rules.vcf2plink_pca.output.fam,
         nosex=rules.vcf2plink_pca.output.nosex,
     output:
-        eigenvec="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.eigenvec",
-        eigenval="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.eigenval",
+        eigenvec="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.eigenvec",
+        eigenval="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.eigenval",
     params:
-        bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}",
+        bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}_plink_eigenvec.log",
+        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plink_eigenvec.log",
     singularity:
         "docker://quay.io/biocontainers/plink:1.90b6.12--heea4ae3_0"
     shell:
@@ -85,11 +91,11 @@ rule plot_pc1_pc2:
         eigenvec=rules.plink_eigenvec.output.eigenvec,
         eigenval=rules.plink_eigenvec.output.eigenval,
     output:
-        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.pc1_pc2.pdf",
+        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
             caption="../report/pca_plot_pc1_pc2.rst",
             category="PCA",),
     log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}_plot_pc1_pc2.log",
+        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc2.log",
     script:
         "../scripts/pc1_vs_pc2_plot.py"
 
@@ -100,10 +106,10 @@ rule plot_pc1_pc3:
         eigenvec=rules.plink_eigenvec.output.eigenvec,
         eigenval=rules.plink_eigenvec.output.eigenval,
     output:
-        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.pc1_pc3.pdf",
+        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
             caption="../report/pca_plot_pc1_pc3.rst",
             category="PCA",),
     log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}_plot_pc1_pc3.log",
+        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc3.log",
     script:
         "../scripts/pc1_vs_pc3_plot.py"

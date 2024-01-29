@@ -22,7 +22,7 @@ def mlRho_dataframe(inputfiles):
         dataset = path_list[1]
         sample = path_list[4].split(".")[0]
         genomeregion = path_list[4].split(".")[-3]
-        if genomeregion == "all":
+        if genomeregion == "genome":
             genomeregion = "genomewide"
         elif genomeregion == "autos":
             genomeregion = "autosomes"

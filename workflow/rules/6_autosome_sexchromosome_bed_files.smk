@@ -1,5 +1,5 @@
 ##########################################################################
-### 6.3 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
+### 6 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
 
 # Code collecting output files from this part of the pipeline
 if len(sexchromosomeList) > 0:
@@ -51,7 +51,7 @@ rule make_autosomes_bed:
 
 rule intersect_sexchr_repma_beds:
     input:
-        no_rep_bed_dir=rules.make_no_repeats_bed.output.no_rep_bed_dir,
+        no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
         sexchr_bed=rules.make_sexchr_bed.output,
     output:
         repma_sex_chr="results/" + REF_NAME + ".repma.sexchr.bed",
@@ -64,13 +64,13 @@ rule intersect_sexchr_repma_beds:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
-        bedtools intersect -a {input.no_rep_bed_dir} -b {input.sexchr_bed} > {output.repma_sex_chr} 2> {log}
+        bedtools intersect -a {input.no_rep_bed} -b {input.sexchr_bed} > {output.repma_sex_chr} 2> {log}
         """
 
 
 rule intersect_autos_repma_beds:
     input:
-        no_rep_bed_dir=rules.make_no_repeats_bed.output.no_rep_bed_dir,
+        no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
         autosome_bed=rules.make_autosomes_bed.output,
     output:
         repma_autos="results/" + REF_NAME + ".repma.autos.bed",
@@ -83,7 +83,7 @@ rule intersect_autos_repma_beds:
         "docker://nbisweden/generode-bedtools-2.29.2"
     shell:
         """
-        bedtools intersect -a {input.no_rep_bed_dir} -b {input.autosome_bed} > {output.repma_autos} 2> {log}
+        bedtools intersect -a {input.no_rep_bed} -b {input.autosome_bed} > {output.repma_autos} 2> {log}
         """
 
 

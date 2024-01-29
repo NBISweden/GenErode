@@ -359,7 +359,7 @@ rule remove_repeats_vcf:
     """Remove repeats from vcf files"""
     input:
         vcf=rules.filtered_bcf2vcf.output.vcf,
-        bed=rules.make_no_repeats_bed.output.no_rep_bed_dir,
+        bed=rules.make_no_repeats_bed.output.no_rep_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),

@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.5.1        #
+# Configuration settings for the GenErode pipeline 0.6.0        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -21,6 +21,21 @@
 # The file name will be reused by the pipeline and can have the file 
 # name extensions *.fasta, *.fa or *.fna.
 ref_path: ".test/data/references/sumatran_rhino.fasta"
+
+# OPTIONAL:
+# Relative path (from the main pipeline directory) to file listing 
+# scaffolds/contigs linked to sex chromosomes (one scaffold/contig 
+# name per line).
+# Is used to create BED files to run mlRho separately for autosomes 
+# and sex chromosomes or exclusively for autosomes, and/or to create 
+# autosome-only BCF files for PCA, ROH, snpEff and GERP analyses.
+# Can also be used to specify any other contigs/scaffolds, e.g.  
+# unplaced or short scaffolds, for removal from mlRho analysis 
+# and BCF files.
+# Leave empty ("") if identity of sex chromosomes is unknown and/or 
+# if the pipeline should be run on all scaffolds/contigs of the genome.
+sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
+#################################################################
 #################################################################
 
 
@@ -120,9 +135,12 @@ bam_rmdup_realign_indels: False
 # Parameters related to depth filtering of BAM and VCF files.
 # After BAM file processing, the average genome-wide depth is calculated 
 # per sample, from which minimum and maximum depth thresholds for quality 
-# filtering are determined.
-# In the calculation of the average genome-wide depth of coverage, 
-# sites with missing data (i.e. zero coverage) can be included or excluded.
+# filtering are determined. 
+# Sites with mapping quality < 30 or in repeat elements are excluded 
+# by default from the calculation of the average genome-wide depth 
+# of coverage.
+# Sites with missing data (i.e. zero coverage) can be included or 
+# excluded in the average depth calculation.
 # Set to True if sites with missing data (zero coverage) should be 
 # included in the average depth calculation.
 # Set to False if sites with missing data (zero coverage) should be 
@@ -279,26 +297,6 @@ CpG_samplenames: []
 #################################################################
 
 #####
-# OPTIONAL: 
-# Generate BED files of autosomes and sex chromosomes for mlRho 
-# analyses, in case these should be analyzed separately from each 
-# other (see below for further options).
-# Includes intersecting of the new chromosome-specific BED files 
-# with CpG- and repeat-masking BED files for downstream filtering.
-autosome_sexchromosome_bed_files: False
-
-# Relative path (from the main pipeline directory) to file listing 
-# scaffolds/contigs linked to sex chromosomes (one scaffold/contig 
-# name per line).
-# Leave empty ("") if identity of sex chromosomes is unknown and/or 
-# if mlRho should be run on all scaffolds/contigs of the genome.
-# Keep the path to the file when running the next step (mlRho) 
-# separately for autosomes and sex chromosomes or only for autosomes.
-sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
-#####
-
-
-#####
 # Run mlRho 2.9 on filtered BAM files.
 # Automatically generates a PDF file with a plot of genome-wide 
 # theta (with confidence intervals from mlRho) for each sample 
@@ -315,21 +313,22 @@ mlRho: False
 # and/or mlRho should be run on all contigs/scaffolds,
 # set mlRho_autosomes_sexchromosomes to False and do not provide 
 # a path to a text file with sex-chromosomal contigs/scaffolds 
-# above when running mlRho.
+# with the reference genome ("sexchromosomes") when running mlRho.
 #
 # 2) If the identity of sex-chromosomal contigs/scaffolds is known, 
 # mlRho analyses can be run for autosomes and sex chromosomes 
 # separately from each other. 
 # In that case, set mlRho_autosomes_sexchromosomes to True and 
 # provide the path to the file with sex-chromosomal contigs/scaffolds 
-# above when running mlRho.
+# with the reference genome ("sexchromosomes") when running mlRho.
 #
 # 3) If the identity of sex-chromosomal contigs/scaffolds is known, 
-# sex-chromosomal contigs/scaffolds can be entirely excluded from 
+# sex-chromosomal contigs/scaffolds (or other contigs/scaffolds such
+# as unplaced or short scaffolds) can be entirely excluded from 
 # the analysis.
 # In that case, set mlRho_autosomes_sexchromosomes to False and 
 # provide the path to the file with sex-chromosomal contigs/scaffolds 
-# above when running mlRho.
+# with the reference genome ("sexchromosomes") when running mlRho.
 mlRho_autosomes_sexchromosomes: False
 #####
 #################################################################
@@ -362,17 +361,24 @@ vcf_qual_repeat_filtering: False
 #####
 # Merge BCF files into a BCF file containing all samples and remove all 
 # sites that are not biallelic and with missing data across all samples 
-# up to a certain threshold as defined below.
+# up to a certain threshold as defined below. 
+# If the path to a file with sex-chromosomal contigs/scaffolds is provided
+# with the reference genome ("sexchromosomes"), these scaffolds/contigs are
+# removed from the merged and filtered BCF file and all downstream analyses
+# (optional).
 # Extract 1) all historical and 2) all modern samples from the merged and 
 # filtered BCF file.
-# Create a BED file of sites that remain after filtering across all samples
-# to be used for downstream filtering of individual BCF files.
+# Create a BED file of sites that remain after filtering and contig/scaffold
+# removal across all samples to be used for downstream filtering of individual
+# BCF files.
 merge_vcfs_per_dataset: False
 
 # Maximum allowed fraction of missing genotypes across all samples for a 
 # site to be kept in the BCF and BED file, to ensure that the same sites 
-# are compared between historical and modern samples.
-f_missing: 0.5 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
+# are compared between historical and modern samples. Has to be a floating
+# point number between 0.0 (no missing data allowed) and 1.0 (sites are 
+# allowed that are completely missing).
+f_missing: 0.9 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
 #####
 
 #################################################################
@@ -494,7 +500,7 @@ gerp_ref_path: ""
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
 # time estimates.
-# Divergence time estimates must be in billions of years for correct scaling 
+# Divergence time estimates must be in millions of years for correct scaling 
 # of GERP scores (see dated phylogenetic trees from www.timetree.org).
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".

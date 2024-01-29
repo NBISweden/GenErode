@@ -516,7 +516,8 @@ rule indel_realigner_targets:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        java -jar /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
+        mem=$(((6 * {threads}) - 2))
+        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
         """
 
 
@@ -538,7 +539,8 @@ rule indel_realigner:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        java -jar /usr/GenomeAnalysisTK.jar -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.target_list} -o {output.realigned} 2> {log}
+        mem=$(((6 * {threads}) - 2))
+        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.target_list} -o {output.realigned} 2> {log}
         """
 
 
@@ -594,7 +596,7 @@ rule realigned_bam_fastqc:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
     singularity:
-        "docker://biocontainers/fastqc:v0.11.9_cv7"
+        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
