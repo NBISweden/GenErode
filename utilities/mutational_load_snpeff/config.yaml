@@ -1,0 +1,32 @@
+#################################################################
+#################################################################
+# Configuration settings for the mutational load pipeline       #
+#################################################################
+#################################################################
+
+
+#################################################################
+# 1) Full path to merged VCF file. Required for removal of sites
+# that are fixed for the ALT allele across all samples (1/1). When 
+# the reference genome of an outgroup species/population is used, 
+# these sites are not informative for population-level analyses. 
+# This filter currently only handles VCF files from which sites 
+# with any missing data were removed.
+vcf_path: ""
+#################################################################
+
+#################################################################
+# 2) Full path to directory containing snpEff annotated VCF files.
+# Required for removal of sites that were annotated as being 
+# located in an intron or an intergenic region, for the extraction 
+# of sites that were annotated in snpEff according to different  
+# impact categories, and for the calculation of total and relative  
+# load for each sample.
+snpEff_dir: ""
+#################################################################
+
+#################################################################
+# 3) Full path to an output directory for results from this 
+# pipeline.
+out_dir: ""
+#################################################################

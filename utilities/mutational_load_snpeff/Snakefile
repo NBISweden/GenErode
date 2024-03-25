@@ -1,0 +1,318 @@
+############################################################
+################ Mutational load pipeline ##################
+# Snakemake pipeline to filter snpEff annotated VCF files  #
+# and to estimate individual potential and realised        #
+# mutational load                                          #
+############################################################
+
+
+############################################################
+################ WORKFLOW VARIABLES AND CODE ###############
+############################################################
+
+from snakemake.exceptions import WorkflowError
+from snakemake.utils import min_version
+from snakemake.utils import validate
+from snakemake.io import glob_wildcards
+import pandas as pd
+import os
+
+min_version("7.0.0")
+snpeff_filtering_version = "0.0.1"
+configfile: "config.yaml"
+
+# Input and output directories and paths
+# Get paths and file names for merged VCF file
+vcf_dir = os.path.dirname(config["vcf_path"])
+vcf_name = ".".join(os.path.basename(config["vcf_path"]).split('.')[:-2])
+
+# Clean directory paths
+snpEff_dir = config["snpEff_dir"].rstrip("/")
+out_dir = config["out_dir"].rstrip("/")
+
+# Get a list of snpEff annotated VCF files from the snpEff directory
+ann_vcfs, = glob_wildcards(snpEff_dir + "/{ann_vcf}.vcf")
+
+############################################################
+#################### WORKFLOW RULES ########################
+############################################################
+
+rule all:
+    input:
+        merged_filtered_vcf=out_dir + "/" + vcf_name + ".no_fixed_hom_alt.vcf",
+        ann_category_vcfs=expand(out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.vcf",
+            ann_vcf=ann_vcfs,
+            ann=["ann_high", "ann_moderate", "ann_low", "ann_syn"]),
+        genetic_load=expand(out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.{load}_load.txt",
+            ann_vcf=ann_vcfs,
+            ann=["ann_high", "ann_moderate", "ann_low"],
+            load=["total", "realised"]),
+
+rule extract_number_of_samples:
+    """
+    Count the number of samples in the merged VCF file.
+    Required for rule "find_fixed_homozygote_alt_sites". 
+    """
+    input:
+        vcf=config["vcf_path"],
+    output:
+        n_samples=temp(out_dir + "/" + vcf_name + ".n_samples.txt"),
+    log:
+        os.path.abspath("logs/rule_logs/extract_number_of_samples.log"),
+    singularity:
+        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+    threads: 2
+    shell:
+        """
+        bcftools query -l {input.vcf} | wc -l > {output.n_samples} 2> {log}
+        """
+
+rule find_fixed_homozygote_alt_sites:
+    """
+    Identify sites in the merged VCF that are fixed for the 
+    ALT allele across all samples (1/1). When the reference 
+    genome of an outgroup species/population is used, these 
+    sites are not informative for population-level analyses. 
+    This filter currently only handles sites without missing 
+    data.
+    """
+    input:
+        vcf=config["vcf_path"],
+        n_samples=out_dir + "/" + vcf_name + ".n_samples.txt",
+    output:
+        bed=out_dir + "/" + vcf_name + ".fixed_hom_alt.bed",
+    log:
+        os.path.abspath("logs/rule_logs/find_fixed_homozygote_alt_sites.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        n_samples=`head -n 1 {input.n_samples}`
+        zcat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        filter "((countHom() = $n_samples) && (countVariant() = $n_samples))" | \
+        grep -v "^#" | awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.bed} 2> {log}
+        """
+
+rule remove_fixed_homozygote_alt_sites_merged_vcf:
+    """
+    Remove sites in the merged VCF that are fixed for the 
+    ALT allele across all samples (1/1) from the merged 
+    VCF file for other downstream analyses and variant 
+    calling statistics. 
+    """
+    input:
+        vcf=config["vcf_path"],
+        bed=out_dir + "/" + vcf_name + ".fixed_hom_alt.bed",
+    output:
+        vcf=out_dir + "/" + vcf_name + ".no_fixed_hom_alt.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/remove_fixed_homozygote_alt_sites_merged_vcf.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        zcat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        intervals -x {input.bed} > {output.vcf}
+        """
+
+rule find_intron_intergenic_variants:
+    """
+    Identify sites that were annotated as being located in 
+    an intron or an intergenic region in each sample. 
+    Merge the BED files with the BED file of sites that are 
+    fixed ALT across all samples. 
+    """
+    input:
+        vcf=snpEff_dir + "/{ann_vcf}.vcf",
+        bed=out_dir + "/" + vcf_name + ".fixed_hom_alt.bed",
+    output:
+        intron_bed=temp(out_dir + "/{ann_vcf}.intron.bed"),
+        intergenic_bed=temp(out_dir + "/{ann_vcf}.intergenic.bed"),
+        merged_bed=out_dir + "/{ann_vcf}.fixed_hom_alt.intron.intergenic.bed",
+    log:
+        os.path.abspath("logs/rule_logs/find_intron_intergenic_variants/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        # Extract SNPs from introns and intergenic regions, convert to BED format
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[*].EFFECT has 'intron_variant'" | grep -v "^#" | \
+            awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.intron_bed} 2> {log} &&
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[*].EFFECT has 'intergenic_region'" | grep -v "^#" | \
+            awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.intergenic_bed} 2>> {log} &&
+
+        # Merge and sort the BED files
+        cat {input.bed} {output.intron_bed} {output.intergenic_bed} | sort -k1,1 -k2,2n > {output.merged_bed} 2>> {log}
+        """
+
+rule remove_sites_snpEff_vcf:
+    """
+    Remove sites that are fixed for the ALT allele across 
+    all samples (1/1), that are located in an intron or in 
+    an intergenic region. 
+    """
+    input:
+        vcf=snpEff_dir + "/{ann_vcf}.vcf",
+        merged_bed=out_dir + "/{ann_vcf}.fixed_hom_alt.intron.intergenic.bed",
+    output:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/remove_sites_snpEff_vcfs/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        intervals -x {input.merged_bed} > {output.vcf} 2> {log}
+        """
+
+rule extract_high_impact_snps:
+    """
+    Extract sites that were annotated in snpEff as having 
+    a potentially high impact on protein function. 
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.vcf",
+    output:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.ann_high.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/extract_high_impact_snps/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[0].IMPACT has 'HIGH'" > {output.vcf} 2> {log}
+        """
+
+rule extract_moderate_impact_snps:
+    """
+    Extract sites that were annotated in snpEff as having 
+    a potentially moderate impact on protein function. 
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.vcf",
+    output:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.ann_moderate.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/extract_moderate_impact_snps/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[0].IMPACT has 'MODERATE'" > {output.vcf} 2> {log}
+        """
+
+rule extract_low_impact_snps:
+    """
+    Extract sites that were annotated in snpEff as having 
+    a potentially low impact on protein function. 
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.vcf",
+    output:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.ann_low.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/extract_low_impact_snps/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[0].IMPACT has 'LOW'" > {output.vcf} 2> {log}
+        """
+
+rule extract_synonymous_variant_snps:
+    """
+    Extract sites that were annotated in snpEff as synonymous 
+    variants, i.e. without changing the amino acid in the 
+    resulting protein sequence. 
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.vcf",
+    output:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.ann_syn.vcf",
+    log:
+        os.path.abspath("logs/rule_logs/extract_synonymous_variant_snps/{ann_vcf}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+            filter "ANN[0].EFFECT has 'synonymous_variant'" > {output.vcf} 2> {log}
+        """
+
+rule total_load:
+    """
+    Sum of the number of variants of each category i, correcting 
+    for potential mapping biases by dividing the number of each 
+    category by the total number of synonymous SNPs
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.vcf",
+        syn=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.ann_syn.vcf",
+    output:
+        load=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.total_load.txt",
+    log:
+        os.path.abspath("logs/rule_logs/total_load/{ann_vcf}_{ann}.log"),
+    threads: 1
+    shell:
+        """
+        ann=`grep -v "#" {input.vcf} | wc -l`
+        syn=`grep -v "#" {input.syn} | wc -l`
+        load=`awk "BEGIN {{print $ann/$syn}}"`
+        echo "n_variants n_synonymous_variants total_load" > {output.load}
+        echo $ann $syn $load >> {output.load}
+        """
+
+rule extract_homozygous_variants:
+    """
+    Extract homozygous variants for each category
+    """
+    input:
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.vcf",
+    output:
+        hom_vcf=temp(out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.hom.vcf"),
+    log:
+        os.path.abspath("logs/rule_logs/extract_homozygous_variants/{ann_vcf}_{ann}.log"),
+    singularity:
+        "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
+    threads: 2
+    shell:
+        """
+        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        filter "(countHom() = 1)" > {output.hom_vcf} 2> {log}
+        """
+
+rule realised_load:
+    """
+    Total number of homozygous variants of category i divided by 
+    twice the total number of variants for category i per individual
+    """
+    input:
+        hom_vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.hom.vcf",
+        vcf=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.vcf",
+    output:
+        load=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.realised_load.txt",
+    log:
+        os.path.abspath("logs/rule_logs/realised_load/{ann_vcf}_{ann}.log"),
+    threads: 1
+    shell:
+        """
+        hom=`grep -v "#" {input.hom_vcf} | wc -l`
+        tot=`grep -v "#" {input.vcf} | wc -l`
+        load=`awk "BEGIN {{print $hom / (2 * $tot)}}"`
+        echo "n_homozygous_variants n_total_variants realised_load" > {output.load}
+        echo $hom $tot $load >> {output.load}
+        """

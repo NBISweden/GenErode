@@ -1,0 +1,28 @@
+
+cluster-cancel: "scancel"
+restart-times: "0"
+jobscript: "slurm-jobscript.sh"
+cluster: "slurm-submit.py"
+cluster-status: "slurm-status.py"
+max-jobs-per-second: "10"
+max-status-checks-per-second: "10"
+local-cores: 1
+latency-wait: "5"
+use-conda: "False"
+use-singularity: "True"
+jobs: "100"
+printshellcmds: "True"
+
+# Resource configuration for pipeline jobs, fine-tune if necessary
+default-resources:
+  - runtime=120
+  - mem_mb=12800
+  - disk_mb=1000000
+set-threads: # map rule names to threads
+  - total_load=1
+  - realised_load=1
+set-resources: # map rule names to resources in general
+  - total_load:mem_mb=6400
+  - total_load:runtime=30
+  - realised_load:mem_mb=6400
+  - realised_load:runtime=30
