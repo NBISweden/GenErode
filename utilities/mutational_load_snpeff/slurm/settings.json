@@ -1,5 +1,5 @@
 {
-    "SBATCH_DEFAULTS": "account=snic2022-22-1071",
+    "SBATCH_DEFAULTS": "account=XXXX-XX-XXXX",
     "CLUSTER_NAME": "",
     "CLUSTER_CONFIG": ""
 }

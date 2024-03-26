@@ -13,8 +13,18 @@ environment needs to be activated.
 in a container.
 
 - A slurm profile is provided with the pipeline for runs
-on HPC clusters with the slurm workload manager.
+on HPC clusters with the slurm workload manager. Please 
+add your compute project to the file 
+`utilities/mutational_load_snpeff/slurm/settings.json` 
+by modifying the following line:
 
+```
+    "SBATCH_DEFAULTS": "account=XXXX-XX-XXXX",
+```
+
+For job- and cluster-specific adjustments, please edit the 
+file `utilities/mutational_load_snpeff/slurm/config.yaml` 
+accordingly.
 
 The pipeline performs the following filtering and data 
 processing steps:
