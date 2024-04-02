@@ -19,9 +19,12 @@ default-resources:
   - mem_mb=12800
   - disk_mb=1000000
 set-threads: # map rule names to threads
+  - extract_number_of_samples=2
   - total_load=1
   - realised_load=1
 set-resources: # map rule names to resources in general
+  - extract_number_of_samples:mem_mb=12800
+  - extract_number_of_samples:runtime=30
   - total_load:mem_mb=6400
   - total_load:runtime=30
   - realised_load:mem_mb=6400
