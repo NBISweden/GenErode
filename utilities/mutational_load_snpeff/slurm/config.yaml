@@ -25,6 +25,13 @@ set-threads: # map rule names to threads
 set-resources: # map rule names to resources in general
   - extract_number_of_samples:mem_mb=12800
   - extract_number_of_samples:runtime=30
+  - find_fixed_homozygote_alt_sites:mem_mb=25600
+  - find_fixed_homozygote_alt_sites:runtime=300
+  - remove_fixed_homozygote_alt_sites_merged_vcf:mem_mb=25600
+  - remove_fixed_homozygote_alt_sites_merged_vcf:runtime=300
+  - find_intron_intergenic_variants:runtime=300
+  - remove_sites_snpEff_vcf:mem_mb=25600
+  - remove_sites_snpEff_vcf:runtime=300
   - total_load:mem_mb=6400
   - total_load:runtime=30
   - realised_load:mem_mb=6400
