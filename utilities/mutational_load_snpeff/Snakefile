@@ -88,8 +88,9 @@ rule find_fixed_homozygote_alt_sites:
     threads: 2
     shell:
         """
+        mem=$(((6 * {threads}) - 2))
         n_samples=`head -n 1 {input.n_samples}`
-        zcat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        zcat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
         filter "((countHom() = $n_samples) && (countVariant() = $n_samples))" | \
         grep -v "^#" | awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.bed} 2> {log}
         """
@@ -113,7 +114,8 @@ rule remove_fixed_homozygote_alt_sites_merged_vcf:
     threads: 2
     shell:
         """
-        zcat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        zcat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
         intervals -x {input.bed} > {output.vcf}
         """
 
@@ -138,11 +140,12 @@ rule find_intron_intergenic_variants:
     threads: 2
     shell:
         """
+        mem=$(((6 * {threads}) - 2))
         # Extract SNPs from introns and intergenic regions, convert to BED format
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[*].EFFECT has 'intron_variant'" | grep -v "^#" | \
             awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.intron_bed} 2> {log} &&
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[*].EFFECT has 'intergenic_region'" | grep -v "^#" | \
             awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.intergenic_bed} 2>> {log} &&
 
@@ -168,7 +171,8 @@ rule remove_sites_snpEff_vcf:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
         intervals -x {input.merged_bed} > {output.vcf} 2> {log}
         """
 
@@ -188,7 +192,8 @@ rule extract_high_impact_snps:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[0].IMPACT has 'HIGH'" > {output.vcf} 2> {log}
         """
 
@@ -208,7 +213,8 @@ rule extract_moderate_impact_snps:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[0].IMPACT has 'MODERATE'" > {output.vcf} 2> {log}
         """
 
@@ -228,7 +234,8 @@ rule extract_low_impact_snps:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[0].IMPACT has 'LOW'" > {output.vcf} 2> {log}
         """
 
@@ -249,7 +256,8 @@ rule extract_synonymous_variant_snps:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
             filter "ANN[0].EFFECT has 'synonymous_variant'" > {output.vcf} 2> {log}
         """
 
@@ -291,7 +299,8 @@ rule extract_homozygous_variants:
     threads: 2
     shell:
         """
-        cat {input.vcf} | java -jar -Xmx8g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
+        mem=$(((6 * {threads}) - 2))
+        cat {input.vcf} | java -jar -Xmx${{mem}}g /usr/local/share/snpsift-4.3.1t-3/SnpSift.jar \
         filter "(countHom() = 1)" > {output.hom_vcf} 2> {log}
         """
 
