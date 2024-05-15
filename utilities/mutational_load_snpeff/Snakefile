@@ -85,7 +85,7 @@ rule find_fixed_homozygote_alt_sites:
         os.path.abspath("logs/rule_logs/find_fixed_homozygote_alt_sites.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
+    threads: 4
     shell:
         """
         mem=$(((6 * {threads}) - 2))
@@ -111,7 +111,7 @@ rule remove_fixed_homozygote_alt_sites_merged_vcf:
         os.path.abspath("logs/rule_logs/remove_fixed_homozygote_alt_sites_merged_vcf.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
+    threads: 4
     shell:
         """
         mem=$(((6 * {threads}) - 2))
@@ -168,7 +168,7 @@ rule remove_sites_snpEff_vcf:
         os.path.abspath("logs/rule_logs/remove_sites_snpEff_vcfs/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
+    threads: 4
     shell:
         """
         mem=$(((6 * {threads}) - 2))
