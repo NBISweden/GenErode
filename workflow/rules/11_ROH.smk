@@ -72,7 +72,7 @@ rule compress_roh_vcf:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools view -Oz -o {output.compressed} {input.vcf} 2> {log} &&

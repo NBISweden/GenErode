@@ -60,7 +60,7 @@ rule extract_number_of_samples:
     log:
         os.path.abspath("logs/rule_logs/extract_number_of_samples.log"),
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     threads: 2
     shell:
         """

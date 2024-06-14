@@ -76,7 +76,7 @@ rule sorted_bcf2vcf_CpG_id:
     log:
         "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_id.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}

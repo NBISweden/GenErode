@@ -25,7 +25,7 @@ rule variant_calling:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_variant_calling.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | bcftools call -c -M -O b --threads {threads} -o {output.bcf} 2> {log}
@@ -43,7 +43,7 @@ rule sort_vcfs:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_sort_vcfs.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools sort -O b -T {params.tmpdir} -o {output.sort} {input.bcf} 2> {log}
@@ -61,7 +61,7 @@ rule index_sorted_vcfs:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_sorted_vcfs.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools index -o {output.index} {input.sort} 2> {log}
@@ -80,7 +80,7 @@ rule sorted_vcf_stats:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_vcf_stats.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "oras://community.wave.seqera.io/library/bcftools:1.20--f18ddc693c3747b4"
     shell:
         """
         bcftools stats {input.sort} > {output.stats} 2> {log}
