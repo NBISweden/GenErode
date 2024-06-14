@@ -163,7 +163,7 @@ rule sorted_bam_qualimap:
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         mem=$(((6 * {threads}) - 2))

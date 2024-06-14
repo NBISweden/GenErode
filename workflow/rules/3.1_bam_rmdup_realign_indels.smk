@@ -147,7 +147,7 @@ rule merged_index_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         mem=$(((6 * {threads}) - 2))
@@ -290,7 +290,7 @@ rule rmdup_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         mem=$(((6 * {threads}) - 2))
@@ -446,7 +446,7 @@ rule merged_sample_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         mem=$(((6 * {threads}) - 2))
@@ -618,7 +618,7 @@ rule realigned_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         mem=$(((6 * {threads}) - 2))

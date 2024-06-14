@@ -251,7 +251,7 @@ rule historical_mito_bams_qualimap:
         "historical_mito_bams_group"
     threads: 1
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
@@ -367,7 +367,7 @@ rule historical_merged_mito_bams_qualimap:
         "historical_merged_mito_bams_group"
     threads: 1
     singularity:
-        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
