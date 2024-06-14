@@ -146,7 +146,7 @@ rule subsampled_bam_qualimap:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
     shell:
         """
         mem=$(((6 * {threads}) - 2))

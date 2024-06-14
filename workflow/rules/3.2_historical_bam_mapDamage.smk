@@ -122,7 +122,7 @@ rule rescaled_bam_qualimap:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "docker://quay.io/biocontainers/qualimap-2.3-hdfd78af_0"
     shell:
         """
         mem=$(((6 * {threads}) - 2))
