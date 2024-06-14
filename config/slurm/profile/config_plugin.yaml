@@ -1,0 +1,23 @@
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+cores: 1
+printshellcmds: true
+software-deployment-method: apptainer
+
+# slurm resources
+default-resources: 
+  slurm_account: naiss2023-22-916 # update this to your slurm account
+  slurm_partition: shared # use Dardel’s shared partition
+  runtime: 120 # default runtime in minutes
+  mem_mb: 8000
+  nodes: 1 # one node on Dardel from the shared partition
+  slurm_extra: "'ntasks-per-node=1'" # number of concurrent tasks / ranks
+set-resources:
+  my-example-rule: # name of the rule in your Snakefile
+    runtime: 60
+    mem_mb: 60000 # memory requirement in Mb
+set-threads:
+  my-example-rule: 10 # sets the number of threads to use for this rules
+
+
