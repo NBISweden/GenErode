@@ -11,8 +11,11 @@ pip install snakemake-executor-plugin-slurm
 ```
 
 2) Copy the configuration file `config/slurm/profile/config_plugin.yaml` 
-to `slurm/config.yaml` and adjust the compute resources according to 
-the local cluster
+to `slurm/config.yaml`. This file specifies compute resources for each 
+rule or group jobs. Any rule or group job that is not listed under 
+`set-threads` or `set-resources` uses default resources specified under 
+`default-resources`. If any rule or group jobs fail due to too little 
+memory or run time, their compute resources can be updated in this file. 
 
 > Note that the current configuration file was adjusted to the 
 HPC cluster Dardel from PDC/KTH. The configuration file for 
@@ -36,6 +39,9 @@ snakemake --profile slurm -np &> YYMMDD_dry.out
 snakemake --profile slurm &> YYMMDD_main.out
 ```
 
+> Useful flags for running the pipeline: `--ri` to re-run 
+incomplete jobs and `-k` to keep going in case a job fails. 
+
 ## Specific instructions for Dardel
 
 1) Install the Snakemake SLURM plugin the first time GenErode 
@@ -46,8 +52,11 @@ pip install snakemake-executor-plugin-slurm
 ```
 
 2) Copy the configuration file `config/slurm/profile/config_plugin.yaml` 
-to `slurm/config.yaml` and adjust the compute resources according to 
-the local cluster
+to `slurm/config.yaml`. This file specifies compute resources for each 
+rule or group jobs. Any rule or group job that is not listed under 
+`set-threads` or `set-resources` uses default resources specified under 
+`default-resources`. If any rule or group jobs fail due to too little 
+memory or run time, their compute resources can be updated in this file. 
 
 3) Start GenErode the following:
 
@@ -80,3 +89,6 @@ snakemake --profile slurm -np &> YYMMDD_dry.out
 ```
 snakemake --profile slurm &> YYMMDD_main.out
 ```
+
+> Useful flags for running the pipeline: `--ri` to re-run 
+incomplete jobs and `-k` to keep going in case a job fails. 
