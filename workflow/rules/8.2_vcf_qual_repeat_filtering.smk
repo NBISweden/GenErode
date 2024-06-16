@@ -208,7 +208,7 @@ rule remove_snps_near_indels:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_snps_near_indels.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools filter -g 5 -O b --threads {threads} -o {output.snps} {input.bcf} 2> {log}
@@ -228,7 +228,7 @@ rule filter_vcfs_qual_dp:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_qual_dp.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -256,7 +256,7 @@ rule filter_vcfs_allelic_balance:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_allelic_balance.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools view -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
@@ -275,7 +275,7 @@ rule index_filtered_vcfs:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_filtered_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -294,7 +294,7 @@ rule filtered_vcf_stats:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -348,7 +348,7 @@ rule filtered_bcf2vcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_bcf2vcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -384,7 +384,7 @@ rule filtered_vcf2bcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_vcf2bcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
@@ -402,7 +402,7 @@ rule index_repmasked_vcfs:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_repmasked_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -421,7 +421,7 @@ rule repmasked_vcf_stats:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_repmasked_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
