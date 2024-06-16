@@ -1,0 +1,53 @@
+# Configuration file for slurm plugin (Snakemake >8.0.0) for Dardel cluster at PDC/KTH
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+cores: 1
+printshellcmds: true
+software-deployment-method: apptainer
+
+# slurm resources
+## default-resources: applied to all jobs, overruled by resources defined below for jobs
+default-resources: 
+  slurm_account: XXX-XX-XXX # update this to your slurm account
+  slurm_partition: shared # use Dardel’s shared partition
+  runtime: 120 # default runtime in minutes
+  mem_mb: 8000
+  nodes: 1 # one node on Dardel from the shared partition
+  ntasks: 1 # number of concurrent tasks / ranks
+  cpus_per_task: 8 # number of hyperthreads per task, corresponds to 1 GB RAM
+set-threads: # map rule names to threads
+  - extract_number_of_samples=16
+  - find_fixed_homozygote_alt_sites=32
+  - remove_fixed_homozygote_alt_sites_merged_vcf=32
+  - find_intron_intergenic_variants=16
+  - remove_sites_snpEff_vcf=32
+  - extract_high_impact_snps=16
+  - extract_moderate_impact_snps=16
+  - extract_low_impact_snps=16
+  - extract_synonymous_variant_snps=16
+  - total_load=8
+  - realised_load=8
+set-resources: # map rule names to resources in general
+  - extract_number_of_samples:mem_mb=16000
+  - extract_number_of_samples:runtime=30
+  - find_fixed_homozygote_alt_sites:mem_mb=32000
+  - find_fixed_homozygote_alt_sites:runtime=300
+  - remove_fixed_homozygote_alt_sites_merged_vcf:mem_mb=32000
+  - remove_fixed_homozygote_alt_sites_merged_vcf:runtime=300
+  - find_intron_intergenic_variants:mem_mb=16000
+  - find_intron_intergenic_variants:runtime=300
+  - remove_sites_snpEff_vcf:mem_mb=32000
+  - remove_sites_snpEff_vcf:runtime=300
+  - extract_high_impact_snps:mem_mb=16000
+  - extract_high_impact_snps:runtime=120
+  - extract_moderate_impact_snps:mem_mb=16000
+  - extract_moderate_impact_snps:runtime=120
+  - extract_low_impact_snps:mem_mb=16000
+  - extract_low_impact_snps:runtime=120
+  - extract_synonymous_variant_snps:mem_mb=16000
+  - extract_synonymous_variant_snps:runtime=120
+  - total_load:mem_mb=6400
+  - total_load:runtime=30
+  - realised_load:mem_mb=6400
+  - realised_load:runtime=30

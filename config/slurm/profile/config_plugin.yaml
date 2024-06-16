@@ -9,7 +9,7 @@ software-deployment-method: apptainer
 # slurm resources
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
 default-resources: 
-  slurm_account: naiss2023-22-916 # update this to your slurm account
+  slurm_account: XXX-XX-XXX # update this to your slurm account
   slurm_partition: shared # use Dardel’s shared partition
   runtime: 120 # default runtime in minutes
   mem_mb: 8000
@@ -57,7 +57,8 @@ set-threads:
   - subsample_bams=16
   - subsampled_bam_qualimap=48
 ### genotyping
-  - variant_calling=3
+  - variant_calling=32
+  - sort_vcfs=16
 ### identify CpG sites
   - CpG_genotype_bed_formatting_group=32
   - all_CpG_bed_formatting_group=16
@@ -186,6 +187,7 @@ set-resources:
   - variant_calling:runtime=2880
   - variant_calling:mem_mb=19200
   - sort_vcfs:runtime=1440
+  - sort_vcfs:mem_mb=16000
 ### identify CpG sites
   - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
