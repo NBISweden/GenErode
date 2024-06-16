@@ -70,4 +70,4 @@ jobs:
       - name: pca_roh
         shell: bash -l {0}
         run: |
-          snakemake --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity
+          snakemake -k --configfile .test/config/config_pca_roh.yaml -j 4 --cores 1 --use-singularity

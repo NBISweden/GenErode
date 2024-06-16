@@ -78,4 +78,4 @@ jobs:
       - name: mlRho_options
         shell: bash -l {0}
         run: |
-          snakemake --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
+          snakemake -k --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
