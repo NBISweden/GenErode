@@ -315,7 +315,7 @@ rule merge_all_vcfs:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         files=`echo {input.bcf} | awk '{{print NF}}'`
@@ -340,7 +340,7 @@ rule index_merged_vcf:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_index_merged_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -359,7 +359,7 @@ rule merged_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_merged_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools stats {input.merged} > {output.stats} 2> {log}
@@ -400,7 +400,7 @@ rule filter_vcf_biallelic:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_filter_vcf_biallelic.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools view -m2 -M2 -v snps -Ob -o {output.bcf} {input.bcf} 2> {log} &&
@@ -420,7 +420,7 @@ rule biallelic_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_biallelic_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -462,7 +462,7 @@ rule filter_vcf_missing:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}_filter_vcf_missing.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         # only include sites with zero missing data
@@ -496,7 +496,7 @@ rule remove_chromosomes:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.autos_remove_chromosomes.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools view {input.bcf} \
@@ -535,7 +535,7 @@ rule extract_historical_samples:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}.{chr}_extract_historical_samples.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     params:
         samples=hist_sm,
         all_samples=ALL_SAMPLES,
@@ -568,7 +568,7 @@ rule extract_modern_samples:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}.{chr}_extract_modern_samples.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     params:
         samples=mod_sm,
         all_samples=ALL_SAMPLES,
@@ -600,7 +600,7 @@ rule missingness_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_missingness_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools stats {input.merged} > {output.stats} 2> {log}
@@ -642,7 +642,7 @@ rule repmasked_bcf2vcf:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_repmasked_bcf2vcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -677,7 +677,7 @@ rule biallelic_missing_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_biallelic_missing_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools stats {input.filtered} > {output.stats} 2> {log}

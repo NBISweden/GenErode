@@ -72,7 +72,7 @@ rule compress_roh_vcf:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.19--h8b25389_1"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools view -Oz -o {output.compressed} {input.vcf} 2> {log} &&
