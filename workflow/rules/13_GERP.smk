@@ -445,7 +445,7 @@ rule split_ref_contigs:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
     singularity:
-        "docker://quay.io/biocontainers/seqtk:1.3--hed695b0_2"
+        "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then
