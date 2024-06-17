@@ -49,7 +49,7 @@ rule sort_vcfs:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
-        bcftools sort -O b -T {params.tmpdir} -m {resources.mem_mb} -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -O b -T {params.tmpdir} -o {output.sort} {input.bcf} 2> {log}
         """
 
 
