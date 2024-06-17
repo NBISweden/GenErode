@@ -64,14 +64,12 @@ rule sai2bam:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     resources:
         cpus_per_task=8,
-        mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        mem=$(({resources.mem_mb}/{resources.cpus_per_task}))
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -@ {resources.cpus_per_task} -m ${{mem}}M - > {output.bam} 2> {log}
+        samtools sort -@ {resources.cpus_per_task} - > {output.bam} 2> {log}
         """
 
 
@@ -108,14 +106,12 @@ rule map_modern:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     resources:
         cpus_per_task=8,
-        mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        mem=$(({resources.mem_mb}/{resources.cpus_per_task}))
         bwa mem -M -t {resources.cpus_per_task} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -@ {resources.cpus_per_task} -m ${{mem}}M - > {output.bam} 2> {log}
+        samtools sort -@ {resources.cpus_per_task} - > {output.bam} 2> {log}
         """
 
 

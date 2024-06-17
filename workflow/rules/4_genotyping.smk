@@ -41,7 +41,6 @@ rule sort_vcfs:
         sort="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.bcf",
     resources:
         cpus_per_task=2,
-        mem_mb=16000,
     params:
         tmpdir="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted_XXXXXX/",
     log:
@@ -50,7 +49,7 @@ rule sort_vcfs:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
-        bcftools sort -O b -T {params.tmpdir} -m {resources.mem_mb} -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -O b -T {params.tmpdir} -o {output.sort} {input.bcf} 2> {log}
         """
 
 
