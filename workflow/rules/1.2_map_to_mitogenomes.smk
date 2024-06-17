@@ -182,6 +182,8 @@ rule map_historical_merged_to_mito:
         merged="results/historical/trimming/{sample}_{index}_{lane}_trimmed_merged.fastq.gz",
     output:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
+    resources:
+        cpus_per_task=1,
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     singularity:
@@ -205,6 +207,8 @@ rule map_historical_unmerged_to_mito:
         R1_sai=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_R1_{mitoref}.sai"),
         R2_sai=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_R2_{mitoref}.sai"),
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_unmerged_{mitoref}.sorted.bam"),
+    resources:
+        cpus_per_task=1,
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     singularity:
