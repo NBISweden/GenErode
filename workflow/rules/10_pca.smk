@@ -66,6 +66,7 @@ rule plink_eigenvec:
     output:
         eigenvec="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.eigenvec",
         eigenval="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.eigenval",
+    threads: 1
     params:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
@@ -77,7 +78,7 @@ rule plink_eigenvec:
         samples=`cat {input.fam} | wc -l`
         if [ "$samples" -gt 1 ]
         then
-          plink --bfile {params.bfile} --allow-extra-chr --pca --out {params.bfile} 2> {log}
+          plink --bfile {params.bfile} --threads {threads} --allow-extra-chr --pca --out {params.bfile} 2> {log}
         else
           touch {output.eigenvec} && touch {output.eigenval} 2> {log}
           echo "Not enough samples to calculate a PCA." >> {log}

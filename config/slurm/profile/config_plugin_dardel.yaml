@@ -90,6 +90,7 @@ set-threads:
   - filter_biallelic_missing_vcf=48
 ### PCA
   - vcf2plink_pca=16
+  - plink_eigenvec=8
 ### runs of homozygosity
   - filter_vcf_hwe=16
   - vcf2plink_hwe=16
