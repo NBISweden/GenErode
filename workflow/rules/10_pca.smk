@@ -49,7 +49,7 @@ rule vcf2plink_pca:
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_pca.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/plink%3A1.90b6.21--hec16e2b_4"
+        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
     shell:
         """
         plink --vcf {input.vcf} --make-bed --allow-extra-chr --out {params.bfile} 2> {log}
@@ -72,7 +72,7 @@ rule plink_eigenvec:
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plink_eigenvec.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/plink%3A1.90b6.21--hec16e2b_4"
+        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
     shell:
         """
         samples=`cat {input.fam} | wc -l`
