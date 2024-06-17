@@ -250,12 +250,14 @@ rule historical_mito_bams_qualimap:
     group:
         "historical_mito_bams_group"
     threads: 1
+    resources:
+        mem_mb=8000,
     singularity:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
           unset DISPLAY
@@ -366,12 +368,14 @@ rule historical_merged_mito_bams_qualimap:
     group:
         "historical_merged_mito_bams_group"
     threads: 1
+    resources:
+        mem_mb=8000,
     singularity:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
           unset DISPLAY

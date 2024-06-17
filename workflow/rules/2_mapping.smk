@@ -62,12 +62,15 @@ rule sai2bam:
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     threads: 8
+    resources:
+        mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
+        mem=$(({resources.mem_mb}/{threads}))
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} -m ${{mem}}M - > {output.bam} 2> {log}
         """
 
 
@@ -103,12 +106,15 @@ rule map_modern:
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     threads: 8
+    resources:
+        mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
+        mem=$(({resources.mem_mb}/{threads}))
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} -m ${{mem}}M - > {output.bam} 2> {log}
         """
 
 
@@ -158,6 +164,8 @@ rule sorted_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap",
     log:
@@ -166,7 +174,7 @@ rule sorted_bam_qualimap:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """

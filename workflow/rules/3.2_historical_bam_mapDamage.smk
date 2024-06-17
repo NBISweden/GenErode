@@ -117,6 +117,8 @@ rule rescaled_bam_qualimap:
         results="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/genome_results.txt",
         outdir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap",
     log:
@@ -125,7 +127,7 @@ rule rescaled_bam_qualimap:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G  -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """
