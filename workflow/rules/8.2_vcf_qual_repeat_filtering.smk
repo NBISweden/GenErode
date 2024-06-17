@@ -204,14 +204,15 @@ rule remove_snps_near_indels:
         bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.bcf",
     output:
         snps=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.bcf"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_snps_near_indels.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
-        bcftools filter -g 5 -O b --threads {threads} -o {output.snps} {input.bcf} 2> {log}
+        bcftools filter -g 5 -O b --threads {resources.cpus_per_task} -o {output.snps} {input.bcf} 2> {log}
         """
 
 
@@ -224,7 +225,8 @@ rule filter_vcfs_qual_dp:
         dp=depth_file_vcf,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.bcf"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_qual_dp.log",
     singularity:
@@ -241,7 +243,7 @@ rule filter_vcfs_qual_dp:
         fi
 
         bcftools filter -i "(DP4[0]+DP4[1]+DP4[2]+DP4[3])>$minDP & (DP4[0]+DP4[1]+DP4[2]+DP4[3])<$maxDP & QUAL>=30 & INDEL=0" -O b \
-        --threads {threads} -o {output.filtered} {input.bcf} 2> {log}
+        --threads {resources.cpus_per_task} -o {output.filtered} {input.bcf} 2> {log}
         """
 
 
@@ -252,7 +254,8 @@ rule filter_vcfs_allelic_balance:
         bcf=rules.filter_vcfs_qual_dp.output.filtered,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.bcf"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_allelic_balance.log",
     singularity:
@@ -363,7 +366,8 @@ rule remove_repeats_vcf:
         genomefile=rules.genome_file.output.genomefile,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
-    threads: 6
+    resources:
+        cpus_per_task=6,
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_repeats_vcf.log",
     singularity:
@@ -380,7 +384,8 @@ rule filtered_vcf2bcf:
         filtered=rules.remove_repeats_vcf.output.filtered,
     output:
         bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_vcf2bcf.log",
     singularity:

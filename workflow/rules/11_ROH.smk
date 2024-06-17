@@ -50,7 +50,8 @@ rule filter_vcf_hwe:
         index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     output:
         vcf=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         out="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
     log:
@@ -92,7 +93,8 @@ rule vcf2plink_hwe:
         bim="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.bim",
         fam="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.fam",
         nosex="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.nosex",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         bfile="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
     log:

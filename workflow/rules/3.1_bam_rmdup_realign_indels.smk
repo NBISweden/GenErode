@@ -50,7 +50,8 @@ rule merge_historical_bams_per_index:
         merge_hist_bams_per_index_inputs,
     output:
         merged=temp("results/historical/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -76,7 +77,8 @@ rule merge_modern_bams_per_index:
         merge_mod_bams_per_index_inputs,
     output:
         merged=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -141,8 +143,8 @@ rule merged_index_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap",
@@ -154,7 +156,7 @@ rule merged_index_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 
@@ -210,14 +212,15 @@ rule rmdup_historical_bams:
         index="results/historical/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai",
     output:
         rmdup=temp("results/historical/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam"),
-    threads: 6
+    resources:
+        cpus_per_task=6,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_rmdup_historical_bams.log",
     singularity:
         "docker://biocontainers/samtools:v1.9-4-deb_cv1"
     shell:
         """
-        samtools view -@ {threads} -h {input.merged} | python3 workflow/scripts/samremovedup.py  | samtools view -b -o {output.rmdup} 2> {log}
+        samtools view -@ {resources.cpus_per_task} -h {input.merged} | python3 workflow/scripts/samremovedup.py  | samtools view -b -o {output.rmdup} 2> {log}
         """
 
 
@@ -229,8 +232,8 @@ rule rmdup_modern_bams:
     output:
         rmdup=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam"),
         metrix=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup_metrics.txt"),
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_rmdup_modern_bams.log",
@@ -288,8 +291,8 @@ rule rmdup_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap",
@@ -301,7 +304,7 @@ rule rmdup_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 
@@ -355,7 +358,8 @@ rule merge_historical_bams_per_sample:
         merge_hist_bams_per_sample_inputs,
     output:
         merged=temp("results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -381,7 +385,8 @@ rule merge_modern_bams_per_sample:
         merge_mod_bams_per_sample_inputs,
     output:
         merged=temp("results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -446,8 +451,8 @@ rule merged_sample_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap",
@@ -459,7 +464,7 @@ rule merged_sample_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 
@@ -517,8 +522,8 @@ rule indel_realigner_targets:
         bai="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam.bai",
     output:
         target_list=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn_targets.list"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner_targets.log",
@@ -527,7 +532,7 @@ rule indel_realigner_targets:
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
-        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
+        java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {resources.cpus_per_task} 2> {log}
         """
 
 
@@ -542,8 +547,8 @@ rule indel_realigner:
         target_list=rules.indel_realigner_targets.output,
     output:
         realigned="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner.log",
@@ -606,12 +611,13 @@ rule realigned_bam_fastqc:
         "realigned_bam_group"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input.bam} 2> {log}
         """
 
 
@@ -624,8 +630,8 @@ rule realigned_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap",
@@ -637,7 +643,7 @@ rule realigned_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 
@@ -687,7 +693,8 @@ rule plot_dp_hist:
         pdf=report("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
             caption="../report/depth_plot.rst",
             category="BAM file processing",),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_plot_dp_hist.log",
     script:

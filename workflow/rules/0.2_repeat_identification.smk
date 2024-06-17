@@ -35,7 +35,8 @@ rule repeatmodeler:
         abs_tmp=os.path.abspath("tmpConsensi.fa"),
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
-    threads: 16
+    resources:
+        cpus_per_task=16,
     singularity:
         "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
@@ -46,7 +47,7 @@ rule repeatmodeler:
         BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
 
         # Run RepeatModeler
-        RepeatModeler -engine ncbi -threads {threads} -database {params.name} 2>> {log} &&
+        RepeatModeler -engine ncbi -threads {resources.cpus_per_task} -database {params.name} 2>> {log} &&
 
         # copy the output files to a new directory
         cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
@@ -77,13 +78,14 @@ rule repeatmasker:
         rep_cat_unzip=REF_NAME + ".upper.fasta.cat",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
-    threads: 16
+    resources:
+        cpus_per_task=16,
     singularity:
         "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir} &&
-        RepeatMasker -pa {threads} -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
+        RepeatMasker -pa {resources.cpus_per_task} -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
 
         # Check if *.cat file is compressed or uncompressed
         if [ ! -f {output.rep_cat} ]

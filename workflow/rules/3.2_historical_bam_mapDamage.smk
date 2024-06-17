@@ -31,7 +31,8 @@ rule rescale_historical:
         log="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Runtime_log.txt",
         tmp=temp("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/{sample}.merged.rmdup.merged.realn.rescaled.bam"),
         rescaled="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/",
     log:
@@ -98,12 +99,13 @@ rule rescaled_bam_fastqc:
         "rescaled_bam_group"
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_fastqc.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input.bam} 2> {log}
         """
 
 
@@ -116,8 +118,8 @@ rule rescaled_bam_qualimap:
         stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/qualimapReport.html",
         results="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/genome_results.txt",
         outdir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap",
@@ -129,7 +131,7 @@ rule rescaled_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G  -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G  -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 

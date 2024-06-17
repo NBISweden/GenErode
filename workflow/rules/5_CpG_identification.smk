@@ -213,7 +213,8 @@ rule make_noCpG_bed:
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
     output:
         no_CpG_bed="results/" + REF_NAME + ".no{CpG_method}.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
     singularity:
@@ -270,7 +271,8 @@ rule make_noCpG_repma_bed:
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
     output:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
     singularity:

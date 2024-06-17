@@ -19,14 +19,15 @@ rule filter_bam_mapped_mq:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.bam",
     output:
         filtered=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.bam"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_bam_mapped_mq.log",
     singularity:
         "docker://biocontainers/samtools:v1.9-4-deb_cv1"
     shell:
         """
-        samtools view -h -b -F 4 -q 30 -@ {threads} -o {output.filtered} {input.bam} 2> {log}
+        samtools view -h -b -F 4 -q 30 -@ {resources.cpus_per_task} -o {output.filtered} {input.bam} 2> {log}
         """
 
 
@@ -37,7 +38,8 @@ rule subsample_bams:
         dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt",
     output:
         subsam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         DP=config["subsampling_depth"],
     log:
@@ -50,7 +52,7 @@ rule subsample_bams:
         frac=`awk -v s={params.DP} -v d=$depth "BEGIN {{print s/d}}"`
         if [ `awk 'BEGIN {{print ('$frac' <= 1.0)}}'` = 1 ] # awk will return 1 if the statement is true, and 0 if it is false
         then
-          samtools view -h -b -s $frac -@ {threads} -o {output.subsam} {input.bam} 2> {log}
+          samtools view -h -b -s $frac -@ {resources.cpus_per_task} -o {output.subsam} {input.bam} 2> {log}
         else
           echo "!!!\nWarning [genome erosion workflow]: The sample {input.bam} has a lower average depth than the target depth for subsampling. \
           Remove the sample from the subsampling list in the config file or choose a lower target depth.\n!!!" >> {log}
@@ -140,8 +142,8 @@ rule subsampled_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap",
@@ -153,7 +155,7 @@ rule subsampled_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 

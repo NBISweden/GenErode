@@ -278,12 +278,13 @@ rule outgroup_fastqc:
         dir="results/gerp/fastq_files/stats/",
     log:
         "results/logs/13_GERP/fastq/{gerpref}_outgroup_fastqc.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input.fastq} 2> {log}
         """
 
 
@@ -325,7 +326,8 @@ rule align2target:
         stats=rules.outgroup_fastqc_multiqc.output.stats,
     output:
         bam=temp("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam"),
-    threads: 8
+    resources:
+        cpus_per_task=8,
     params:
         extra=r"-R '@RG\tID:{input.fastq}\tSM:{input.fastq}\tPL:ILLUMINA\tPI:330'",
     log:
@@ -334,9 +336,9 @@ rule align2target:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
-            samtools view -@ {threads} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
-            samtools view -@ {threads} -b - | samtools sort -@ {threads} - > {output.bam} 2> {log}
+        bwa mem {params.extra} -t {resources.cpus_per_task} {input.target} {input.fastq} | \
+            samtools view -@ {resources.cpus_per_task} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
+            samtools view -@ {resources.cpus_per_task} -b - | samtools sort -@ {resources.cpus_per_task} - > {output.bam} 2> {log}
         """
 
 
@@ -409,7 +411,8 @@ rule bam2fasta:
         gerpref="{gerpref}",
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://biocontainers/samtools:v1.9-4-deb_cv1"  # This container includes python 3.7.6 with default python modules
     shell:
@@ -443,7 +446,8 @@ rule split_ref_contigs:
         gerpref=REF_NAME,
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
-    threads: 1
+    resources:
+        cpus_per_task=1,
     singularity:
         "docker://quay.io/biocontainers/seqtk:1.3--hed695b0_2"
     shell:
@@ -478,7 +482,8 @@ rule concatenate_fasta_per_contig:
         chunk=lambda wildcards: "{wildcards.chunk}",
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     run:
         if not os.path.exists(output.concatenated_fasta_dir):
             os.makedirs(output.concatenated_fasta_dir)
@@ -523,7 +528,8 @@ rule compute_gerp:
         name=REF_NAME,
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     singularity:
         "docker://quay.io/biocontainers/gerp:2.1--hfc679d8_0"
     shell:
@@ -556,7 +562,8 @@ rule gerp2coords:
         name=REF_NAME,
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     run:
         chunk_contigs = []
         with open(input.chunk_bed, "r") as file:
@@ -586,7 +593,8 @@ rule get_ancestral_state:
         name=REF_NAME,
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     run:
         chunk_contigs = []
         with open(input.chunk_bed, "r") as file:
@@ -614,7 +622,8 @@ rule produce_contig_out:
         gerp_merged_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/")),
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     run:
         chunk_contigs = []
         with open(input.chunk_bed, "r") as file:
@@ -641,7 +650,8 @@ rule merge_gerp_per_chunk:
         gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     run:
         chunk_contigs = []
         with open(input.chunk_bed, "r") as file:
@@ -663,7 +673,8 @@ rule merge_gerp_gz:
         gerp_out="results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gz",
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chr}.merge_gerp_gz.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     shell:
         """
         cat {input.gerp_chunks_merged} | gzip - > {output.gerp_out} 2> {log}
@@ -678,7 +689,8 @@ rule plot_gerp_hist:
         pdf=report("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
             caption="../report/gerp_plot.rst",
             category="GERP",),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chr}.plot_gerp_hist.log",
     script:
@@ -732,7 +744,8 @@ rule gerp_derived_alleles:
         gerp_alleles_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles/")),
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     shell:
         """
         if [ ! -d {output.gerp_alleles_dir} ]; then 
@@ -754,7 +767,8 @@ rule merge_gerp_alleles_per_chunk:
         gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.fasta.parsed.rates.derived_alleles"),
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_merge_gerp_alleles_per_chunk.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     run:
         chunk_windows = []
         with open(input.chunk_win_bed, "r") as file:
@@ -786,7 +800,8 @@ rule merge_gerp_alleles_gz:
         gerp_out="results/gerp/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ancestral.rates.derived.alleles.gz",
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.merge_gerp_alleles_gz.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     shell:
         """
         awk 'FNR>1 || NR==1' {input.gerp_chunks_merged} | gzip - > {output.gerp_out} 2> {log}
@@ -804,7 +819,8 @@ rule relative_mutational_load_per_sample:
         max_gerp=config["max_gerp"],
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     shell:
         """
         python3 workflow/scripts/gerp_rel_mut_load_sample.py {input.gerp_out} {params.min_gerp} {params.max_gerp} {output.mut_load} 2> {log}
@@ -821,7 +837,8 @@ rule relative_mutational_load_table:
             category="GERP",),
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     script:
         "../scripts/gerp_rel_mut_load_table.py"
 

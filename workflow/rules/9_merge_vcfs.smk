@@ -311,7 +311,8 @@ rule merge_all_vcfs:
         index=merge_all_index_inputs,
     output:
         merged="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf",
-    threads: 6
+    resources:
+        cpus_per_task=6,
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
     singularity:
@@ -396,7 +397,8 @@ rule filter_vcf_biallelic:
     output:
         bcf=temp("results/all/vcf/" + REF_NAME + ".all.merged.biallelic.bcf"),
         index=temp("results/all/vcf/" + REF_NAME + ".all.merged.biallelic.bcf.csi"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_filter_vcf_biallelic.log",
     singularity:
@@ -456,7 +458,8 @@ rule filter_vcf_missing:
     output:
         vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.genome.vcf.gz",
         index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.genome.vcf.gz.csi",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         fmiss=config["f_missing"],
     log:
@@ -490,7 +493,8 @@ rule remove_chromosomes:
     output:
         vcf="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.autos.vcf.gz",
         index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.autos.vcf.gz.csi",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         exclude = ",".join(sexchromosomeList) # parse list with contigs/scaffolds to exclude and convert to format chr1,chr2,chr3 for removal with bcftools view
     log:
@@ -657,7 +661,8 @@ rule filter_biallelic_missing_vcf:
         genomefile=rules.genome_file.output.genomefile,
     output:
         filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
-    threads: 6
+    resources:
+        cpus_per_task=6,
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
     singularity:

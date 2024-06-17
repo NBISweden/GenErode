@@ -188,7 +188,7 @@ rule map_historical_merged_to_mito:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
+        bwa aln -l 16500 -n 0.01 -o 2 -t {resources.cpus_per_task} {input.ref} {input.merged} | \
         bwa samse {input.ref} - {input.merged} | samtools sort - > {output.bam} 2> {log}
         """
 
@@ -211,8 +211,8 @@ rule map_historical_unmerged_to_mito:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
+        bwa aln -l 16500 -n 0.01 -o 2 -t {resources.cpus_per_task} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
+        bwa aln -l 16500 -n 0.01 -o 2 -t {resources.cpus_per_task} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
         bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort - > {output.bam} 2>> {log}
         """
 
@@ -249,8 +249,8 @@ rule historical_mito_bams_qualimap:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_historical_mito_bams_qualimap.log",
     group:
         "historical_mito_bams_group"
-    threads: 1
     resources:
+        cpus_per_task=1,
         mem_mb=8000,
     singularity:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
@@ -261,7 +261,7 @@ rule historical_mito_bams_qualimap:
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
           unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
           mkdir -p {params.outdir} 2> {log}
           touch {output.report} 2>> {log}
@@ -367,8 +367,8 @@ rule historical_merged_mito_bams_qualimap:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_historical_merged_mito_bams_qualimap.log",
     group:
         "historical_merged_mito_bams_group"
-    threads: 1
     resources:
+        cpus_per_task=1,
         mem_mb=8000,
     singularity:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
@@ -379,7 +379,7 @@ rule historical_merged_mito_bams_qualimap:
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
           unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
           mkdir -p {params.outdir} 2> {log}
           touch {output.report} 2>> {log}

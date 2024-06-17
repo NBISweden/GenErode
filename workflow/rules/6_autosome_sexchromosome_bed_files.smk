@@ -55,7 +55,8 @@ rule intersect_sexchr_repma_beds:
         sexchr_bed=rules.make_sexchr_bed.output,
     output:
         repma_sex_chr="results/" + REF_NAME + ".repma.sexchr.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -74,7 +75,8 @@ rule intersect_autos_repma_beds:
         autosome_bed=rules.make_autosomes_bed.output,
     output:
         repma_autos="results/" + REF_NAME + ".repma.autos.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -93,7 +95,8 @@ rule intersect_sexchr_noCpG_repma_beds:
         sexchr_bed=rules.make_sexchr_bed.output,
     output:
         no_CpG_repma_sexchr="results/" + REF_NAME + ".no{CpG_method}.repma.sexchr.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:
@@ -112,7 +115,8 @@ rule intersect_autos_noCpG_repma_beds:
         autosome_bed=rules.make_autosomes_bed.output,
     output:
         no_CpG_repma_autos="results/" + REF_NAME + ".no{CpG_method}.repma.autos.bed",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     message:
         "the input files are: {input}"
     log:

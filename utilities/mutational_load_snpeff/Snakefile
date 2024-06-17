@@ -61,7 +61,8 @@ rule extract_number_of_samples:
         os.path.abspath("logs/rule_logs/extract_number_of_samples.log"),
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
-    threads: 2
+    resources:
+        cpus_per_task=2,
     shell:
         """
         bcftools query -l {input.vcf} | wc -l > {output.n_samples} 2> {log}
@@ -85,8 +86,8 @@ rule find_fixed_homozygote_alt_sites:
         os.path.abspath("logs/rule_logs/find_fixed_homozygote_alt_sites.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 4
     resources:
+        cpus_per_task=4,
         mem_mb=32000,
     shell:
         """
@@ -113,8 +114,8 @@ rule remove_fixed_homozygote_alt_sites_merged_vcf:
         os.path.abspath("logs/rule_logs/remove_fixed_homozygote_alt_sites_merged_vcf.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 4
     resources:
+        cpus_per_task=4,
         mem_mb=32000,
     shell:
         """
@@ -141,8 +142,8 @@ rule find_intron_intergenic_variants:
         os.path.abspath("logs/rule_logs/find_intron_intergenic_variants/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -174,8 +175,8 @@ rule remove_sites_snpEff_vcf:
         os.path.abspath("logs/rule_logs/remove_sites_snpEff_vcfs/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 4
     resources:
+        cpus_per_task=4,
         mem_mb=32000,
     shell:
         """
@@ -197,8 +198,8 @@ rule extract_high_impact_snps:
         os.path.abspath("logs/rule_logs/extract_high_impact_snps/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -220,8 +221,8 @@ rule extract_moderate_impact_snps:
         os.path.abspath("logs/rule_logs/extract_moderate_impact_snps/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -243,8 +244,8 @@ rule extract_low_impact_snps:
         os.path.abspath("logs/rule_logs/extract_low_impact_snps/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -267,8 +268,8 @@ rule extract_synonymous_variant_snps:
         os.path.abspath("logs/rule_logs/extract_synonymous_variant_snps/{ann_vcf}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -290,7 +291,8 @@ rule total_load:
         load=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.total_load.txt",
     log:
         os.path.abspath("logs/rule_logs/total_load/{ann_vcf}_{ann}.log"),
-    threads: 1
+    resources:
+        cpus_per_task=1,
     shell:
         """
         ann=`grep -v "#" {input.vcf} | wc -l`
@@ -312,8 +314,8 @@ rule extract_homozygous_variants:
         os.path.abspath("logs/rule_logs/extract_homozygous_variants/{ann_vcf}_{ann}.log"),
     singularity:
         "docker://quay.io/biocontainers/snpsift:4.3.1t--hdfd78af_3"
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     shell:
         """
@@ -334,7 +336,8 @@ rule realised_load:
         load=out_dir + "/{ann_vcf}.no_fixed_hom_alt.no_intron.no_intergenic.{ann}.realised_load.txt",
     log:
         os.path.abspath("logs/rule_logs/realised_load/{ann_vcf}_{ann}.log"),
-    threads: 1
+    resources:
+        cpus_per_task=1,
     shell:
         """
         hom=`grep -v "#" {input.hom_vcf} | wc -l`

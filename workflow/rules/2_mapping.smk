@@ -25,12 +25,13 @@ rule map_historical:
         sai=temp("results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sai"),
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_map_historical.log",
-    threads: 8
+    resources:
+        cpus_per_task=8,
     singularity:
         "docker://biocontainers/bwa:v0.7.17-3-deb_cv1"
     shell:
         """
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.fastq_hist} > {output.sai} 2> {log}
+        bwa aln -l 16500 -n 0.01 -o 2 -t {resources.cpus_per_task} {input.ref} {input.fastq_hist} > {output.sai} 2> {log}
         """
 
 
@@ -61,16 +62,16 @@ rule sai2bam:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        mem=$(({resources.mem_mb}/{threads}))
+        mem=$(({resources.mem_mb}/{resources.cpus_per_task}))
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -@ {threads} -m ${{mem}}M - > {output.bam} 2> {log}
+        samtools sort -@ {resources.cpus_per_task} -m ${{mem}}M - > {output.bam} 2> {log}
         """
 
 
@@ -105,16 +106,16 @@ rule map_modern:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
-        mem=$(({resources.mem_mb}/{threads}))
-        bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -@ {threads} -m ${{mem}}M - > {output.bam} 2> {log}
+        mem=$(({resources.mem_mb}/{resources.cpus_per_task}))
+        bwa mem -M -t {resources.cpus_per_task} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
+        samtools sort -@ {resources.cpus_per_task} -m ${{mem}}M - > {output.bam} 2> {log}
         """
 
 
@@ -163,8 +164,8 @@ rule sorted_bam_qualimap:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/qualimapReport.html",
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap/"),
-    threads: 8
     resources:
+        cpus_per_task=8,
         mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap",
@@ -176,7 +177,7 @@ rule sorted_bam_qualimap:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
-        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
+        qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {resources.cpus_per_task} -outdir {params.outdir} -outformat html 2> {log}
         """
 
 

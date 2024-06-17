@@ -48,12 +48,13 @@ rule fastqc_historical_raw:
         "historical_fastq_raw_group"
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input.fastq} 2> {log}
         """
 
 
@@ -113,12 +114,13 @@ rule fastqc_modern_raw:
         dir="data/raw_reads_symlinks/modern/stats",
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_fastqc_modern_raw.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input.fastq} 2> {log}
         """
 
 
@@ -165,13 +167,14 @@ rule fastp_historical:
         report="fastp report for {sample}_{index}_{lane}",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastp_historical.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     singularity:
         "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c --merge --merged_out={output.merged} -o {output.R1_un} -O {output.R2_un} \
-        -h {output.html} -j {output.json} -R '{params.report}' -w {threads} -l {params.readlength} 2> {log}
+        -h {output.html} -j {output.json} -R '{params.report}' -w {resources.cpus_per_task} -l {params.readlength} 2> {log}
         """
 
 
@@ -193,13 +196,14 @@ rule fastp_modern:
         report="fastp report for {sample}_{index}_{lane}",
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastp_modern.log",
-    threads: 4
+    resources:
+        cpus_per_task=4,
     singularity:
         "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c -o {output.R1_trimmed} -O {output.R2_trimmed} \
-        -h {output.html} -j {output.json} -R '{params.report}' -w {threads} -l {params.readlength} 2> {log}
+        -h {output.html} -j {output.json} -R '{params.report}' -w {resources.cpus_per_task} -l {params.readlength} 2> {log}
         """
 
 
@@ -217,12 +221,13 @@ rule fastqc_historical_merged:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
     group:
         "historical_fastq_trimmed_group"
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input} 2> {log}
         """
 
 
@@ -240,14 +245,15 @@ rule fastqc_historical_unmerged:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
     group:
         "historical_fastq_trimmed_group"
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
         if [ -s {input} ]
         then
-          fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
+          fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input} 2> {log}
         else
           mkdir -p {output.dir} &&
           touch {output.html} && touch {output.zip} &&
@@ -268,12 +274,13 @@ rule fastqc_modern_trimmed:
         dir="results/modern/trimming/stats/",
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc_modern_trimmed.log",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
-        fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
+        fastqc -o {params.dir} -t {resources.cpus_per_task} --extract {input} 2> {log}
         """
 
 

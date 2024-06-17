@@ -21,14 +21,15 @@ rule variant_calling:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.bam",
     output:
         bcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.bcf"),
-    threads: 3
+    resources:
+        cpus_per_task=3,
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_variant_calling.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
-        bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | bcftools call -c -M -O b --threads {threads} -o {output.bcf} 2> {log}
+        bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | bcftools call -c -M -O b --threads {resources.cpus_per_task} -o {output.bcf} 2> {log}
         """
 
 
@@ -38,8 +39,8 @@ rule sort_vcfs:
         bcf=rules.variant_calling.output.bcf,
     output:
         sort="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.bcf",
-    threads: 2
     resources:
+        cpus_per_task=2,
         mem_mb=16000,
     params:
         tmpdir="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted_XXXXXX/",

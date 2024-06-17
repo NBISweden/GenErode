@@ -43,7 +43,8 @@ rule vcf2plink_pca:
         bim=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.bim"),
         fam=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.fam"),
         nosex=temp("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.nosex"),
-    threads: 2
+    resources:
+        cpus_per_task=2,
     params:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:

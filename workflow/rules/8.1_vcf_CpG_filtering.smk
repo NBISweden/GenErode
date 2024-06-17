@@ -103,7 +103,8 @@ rule remove_CpG_vcf:
         genomefile=rules.genome_file.output.genomefile,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.vcf.gz"),
-    threads: 6
+    resources:
+        cpus_per_task=6,
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
@@ -120,7 +121,8 @@ rule CpG_vcf2bcf:
         filtered=rules.remove_CpG_vcf.output.filtered,
     output:
         bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf",
-    threads: 2
+    resources:
+        cpus_per_task=2,
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_vcf2bcf.log",
     singularity:

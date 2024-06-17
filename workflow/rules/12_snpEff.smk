@@ -226,8 +226,8 @@ rule build_snpEff_db:
         config=rules.update_snpEff_config.output.config,
     output:
         db=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEffectPredictor.bin",
-    threads: 1
     resources:
+        cpus_per_task=1,
         mem_mb=8000,
     params:
         ref_name=REF_NAME,
@@ -259,8 +259,8 @@ rule annotate_vcf:
         ann="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ann.vcf",
         csv="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
         html="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.html",
-    threads: 1
     resources:
+        cpus_per_task=1,
         mem_mb=8000,
     params:
         ref_name=REF_NAME,
