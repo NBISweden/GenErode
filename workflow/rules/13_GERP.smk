@@ -525,7 +525,7 @@ rule compute_gerp:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/gerp:2.1--hfc679d8_0"
+        "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
     shell:
         """
         if [ ! -d {output.gerp_dir} ]; then 
