@@ -267,7 +267,7 @@ set-resources:
   - extract_modern_samples:runtime=300
   - repmasked_bcf2vcf:runtime=300
   - repmasked_bcf2vcf:mem_mb=16000
-  - repmasked_bcf2vcf:memcpus_per_task_mb=16
+  - repmasked_bcf2vcf:cpus_per_task=16
 
   - filter_biallelic_missing_vcf:runtime=1440
   - filter_biallelic_missing_vcf:mem_mb=48000
