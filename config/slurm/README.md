@@ -77,7 +77,8 @@ any rule or group jobs fail due to too little memory or run
 time, their compute resources can be updated in this file. 
 
 > Note that the current version of `config/slurm/profile/config_plugin_dardel.yaml` 
-is still being tested. 
+is still being tested. Threads are currently specified under 
+`set-threads` and under `set-resources` as `cpus_per_task`.
 
 5) Start GenErode the following:
 
