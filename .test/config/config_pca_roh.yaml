@@ -153,13 +153,13 @@ zerocoverage: False
 # to set a minimum depth threshold. For ultra low coverage samples, a 
 # minimum hard threshold of 3X is applied that overrides this parameter.
 # A minimum depth of 6X should be aimed for.
-minDP: 0.33
+minDP: 0.1
 
 # Maximum depth threshold calculation per sample.
 # Will be applied to mlRho analysis and in VCF file filtering.
 # Factor by which the average genome-wide depth should be multiplied 
 # to set a maximum depth threshold.
-maxDP: 10
+maxDP: 100
 #####
 
 
