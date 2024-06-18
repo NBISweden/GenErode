@@ -21,8 +21,9 @@ any rule or group jobs fail due to too little memory or run
 time, their compute resources can be updated in this file. 
 
 > Note that the current configuration files were adjusted to the 
-HPC clusters Rackham from UPPMAX and Dardel from PDC/KTH. The 
-configuration file for Snakemake version 7 was kept for comparison 
+HPC clusters Rackham from UPPMAX and Dardel from PDC/KTH. Details 
+on how to configure and run GenErode on Dardel are provided below. 
+The configuration file for Snakemake version 7 was kept for comparison 
 which was also written for Rackham/UPPMAX. 
 
 3) Start GenErode the following:
@@ -46,7 +47,20 @@ incomplete jobs and `-k` to keep going in case a job fails.
 
 ## Specific instructions for Dardel
 
-1) Create the GenErode conda environment or update an earlier 
+1) Load the following modules on Dardel:
+
+```
+module load PDC UPPMAX bioinfo-tools conda singularity tmux
+```
+
+2) After cloning the repository, change permissions for the 
+Snakefile:
+
+```
+chmod 755 Snakefile
+```
+
+3) Create the GenErode conda environment or update an earlier 
 version. The latest conda environment contains the Snakemake 
 executor plugin for slurm:
 
@@ -54,7 +68,7 @@ executor plugin for slurm:
 conda create -f environment.yaml -n generode
 ```
 
-2) Copy the configuration file `config/slurm/profile/config_plugin_dardel.yaml` 
+4) Copy the configuration file `config/slurm/profile/config_plugin_dardel.yaml` 
 to `slurm/config.yaml`. This file specifies compute resources 
 for each rule or group jobs to be run on Dardel. Any rule or 
 group job that is not listed under `set-threads` or `set-resources` 
@@ -62,15 +76,12 @@ uses default resources specified under `default-resources`. If
 any rule or group jobs fail due to too little memory or run 
 time, their compute resources can be updated in this file. 
 
-3) Start GenErode the following:
+> Note that the current version of `config/slurm/profile/config_plugin_dardel.yaml` 
+is still being tested. 
 
-- Load the following modules:
+5) Start GenErode the following:
 
-```
-module load PDC UPPMAX bioinfo-tools conda singularity tmux
-```
-
-- Open a tmux session
+- Open a tmux session (alternatively, you can use screen)
 
 - Activate the GenErode conda environment (create or update 
 from `environment.yaml`), replacing the path to the location 
