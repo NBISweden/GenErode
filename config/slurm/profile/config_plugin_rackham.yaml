@@ -106,8 +106,10 @@ set-resources:
     cpus_per_task: 2
   fastqc_historical_raw:
     mem_mb: 12800
+    cpus_per_task: 2
   fastqc_modern_raw:
     mem_mb: 12800
+    cpus_per_task: 2
   fastp_historical:
     runtime: 600
     mem_mb: 32000

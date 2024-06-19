@@ -1,0 +1,74 @@
+# Configuration file for slurm plugin (Snakemake >8.0.0) for Dardel cluster at PDC/KTH
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+printshellcmds: true
+software-deployment-method: apptainer
+
+# slurm resources
+## default-resources: applied to all jobs, overruled by resources defined below for jobs
+default-resources: 
+  slurm_account: XXX-XX-XXX # update this to your slurm account
+  slurm_partition: shared # use Dardel’s shared partition
+  runtime: 120 # default runtime in minutes
+  mem_mb: 8000
+  nodes: 1 # one node on Dardel from the shared partition
+  ntasks: 1 # number of concurrent tasks / ranks
+  cpus_per_task: 8 # number of hyperthreads per task, corresponds to 1 GB RAM
+
+## map rule names to threads
+set-threads:
+  extract_number_of_samples: 16
+  find_fixed_homozygote_alt_sites: 32
+  remove_fixed_homozygote_alt_sites_merged_vcf: 32
+  find_intron_intergenic_variants: 16
+  remove_sites_snpEff_vcf: 32
+  extract_high_impact_snps: 16
+  extract_moderate_impact_snps: 16
+  extract_low_impact_snps: 16
+  extract_synonymous_variant_snps: 16
+  total_load: 8
+  realised_load: 8
+
+## set-resources: map rule names to resources in general
+set-resources:
+  extract_number_of_samples:
+    mem_mb: 16000
+    runtime: 30
+    cpus_per_task: 16
+  find_fixed_homozygote_alt_sites:
+    mem_mb: 32000
+    runtime: 300
+    cpus_per_task: 32
+  remove_fixed_homozygote_alt_sites_merged_vcf:
+    mem_mb: 32000
+    runtime: 300
+    cpus_per_task: 32
+  find_intron_intergenic_variants:
+    mem_mb: 16000
+    runtime: 300
+    cpus_per_task: 16
+  remove_sites_snpEff_vcf:
+    mem_mb: 32000
+    runtime: 300
+    cpus_per_task: 32
+  extract_high_impact_snps:
+    mem_mb: 16000
+    cpus_per_task: 16
+  extract_moderate_impact_snps:
+    mem_mb: 16000
+    cpus_per_task: 16
+  extract_low_impact_snps:
+    mem_mb: 16000
+    cpus_per_task: 16
+  extract_synonymous_variant_snps:
+    mem_mb: 16000
+    cpus_per_task: 16
+  total_load:
+    mem_mb: 8000
+    runtime: 30
+    cpus_per_task: 8
+  realised_load:
+    mem_mb: 8000
+    runtime: 30
+    cpus_per_task: 8

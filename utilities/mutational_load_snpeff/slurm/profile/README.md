@@ -1,4 +1,4 @@
-# GenErode execution on Dardel (PDC/KTH)
+# GenErode execution on Dardel
 
 1) Load the following modules:
 
