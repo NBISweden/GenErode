@@ -142,15 +142,17 @@ rule merged_index_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """
@@ -228,13 +230,15 @@ rule rmdup_modern_bams:
         rmdup=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam"),
         metrix=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup_metrics.txt"),
     threads: 2
+    resources:
+        mem_mb=16000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_rmdup_modern_bams.log",
     singularity:
         "docker://quay.io/biocontainers/picard:2.26.6--hdfd78af_0"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         picard MarkDuplicates -Xmx${{mem}}g INPUT={input.merged} OUTPUT={output.rmdup} METRICS_FILE={output.metrix} 2> {log}
         """
 
@@ -285,15 +289,17 @@ rule rmdup_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """
@@ -441,15 +447,17 @@ rule merged_sample_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """
@@ -510,13 +518,15 @@ rule indel_realigner_targets:
     output:
         target_list=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn_targets.list"),
     threads: 8
+    resources:
+        mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner_targets.log",
     singularity:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output.target_list} -nt {threads} 2> {log}
         """
 
@@ -533,13 +543,15 @@ rule indel_realigner:
     output:
         realigned="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
     threads: 8
+    resources:
+        mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner.log",
     singularity:
         "docker://broadinstitute/gatk3:3.7-0"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         java -jar -Xmx${{mem}}g /usr/GenomeAnalysisTK.jar -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.target_list} -o {output.realigned} 2> {log}
         """
 
@@ -613,15 +625,17 @@ rule realigned_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """

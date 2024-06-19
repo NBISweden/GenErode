@@ -227,6 +227,8 @@ rule build_snpEff_db:
     output:
         db=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEffectPredictor.bin",
     threads: 1
+    resources:
+        mem_mb=8000,
     params:
         ref_name=REF_NAME,
         abs_gtf=lambda wildcards, input: os.path.abspath(input.gtf),
@@ -240,7 +242,7 @@ rule build_snpEff_db:
         "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         cd {params.abs_db_dir}
         java -jar -Xmx${{mem}}g /usr/local/share/snpeff-4.3.1t-3/snpEff.jar build -gtf22 -c {params.abs_config} \
         -dataDir {params.abs_data_dir} -treatAllAsProteinCoding -v {params.ref_name} 2> {log}
@@ -258,6 +260,8 @@ rule annotate_vcf:
         csv="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
         html="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.html",
     threads: 1
+    resources:
+        mem_mb=8000,
     params:
         ref_name=REF_NAME,
         abs_config=lambda wildcards, input: os.path.abspath(input.config),
@@ -268,7 +272,7 @@ rule annotate_vcf:
         "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         java -jar -Xmx${{mem}}g /usr/local/share/snpeff-4.3.1t-3/snpEff.jar  -c {params.abs_config} -dataDir {params.abs_data_dir} -s {output.html} -csvStats {output.csv} \
         -treatAllAsProteinCoding -v -d -lof {params.ref_name} {input.vcf} > {output.ann} 2> {log}
         """

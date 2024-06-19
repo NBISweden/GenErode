@@ -88,7 +88,7 @@ rule sorted_bcf2vcf_CpG_removal:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_removal.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -124,7 +124,7 @@ rule CpG_vcf2bcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_vcf2bcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
@@ -142,7 +142,7 @@ rule index_CpG_bcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_index_CpG_bcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -161,7 +161,7 @@ rule CpG_filtered_vcf_stats:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_filtered_vcf_stats.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
