@@ -2,7 +2,6 @@
 # snakemake CLI flags
 executor: slurm
 jobs: 100
-cores: 1
 printshellcmds: true
 software-deployment-method: apptainer
 
