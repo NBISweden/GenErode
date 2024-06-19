@@ -67,9 +67,9 @@ jobs:
       - name: gerp_dry
         shell: bash -l {0}
         run: |
-          snakemake -npr --configfile .test/config/config_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake -np -k --configfile .test/config/config_gerp.yaml -j 4 --cores 1 --use-singularity
 
       - name: gerp
         shell: bash -l {0}
         run: |
-          snakemake --configfile .test/config/config_gerp.yaml -j 4 --cores 1 --use-singularity
+          snakemake -k --configfile .test/config/config_gerp.yaml -j 4 --cores 1 --use-singularity

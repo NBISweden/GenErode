@@ -72,7 +72,7 @@ rule compress_roh_vcf:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
+        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
         """
         bcftools view -Oz -o {output.compressed} {input.vcf} 2> {log} &&
@@ -98,7 +98,7 @@ rule vcf2plink_hwe:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_hwe.log",
     singularity:
-        "docker://quay.io/biocontainers/plink:1.90b6.12--heea4ae3_0"
+        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
     shell:
         """
         plink --vcf {input.vcf} --make-bed --allow-extra-chr --out {params.bfile} 2> {log}
@@ -127,7 +127,7 @@ rule ROHs:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}_ROHs.log",
     singularity:
-        "docker://quay.io/biocontainers/plink:1.90b6.12--heea4ae3_0"
+        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
     shell:
         """
         plink --bfile {params.bfile} --homozyg --homozyg-window-threshold 0.05 --allow-extra-chr \

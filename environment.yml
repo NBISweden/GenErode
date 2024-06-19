@@ -2,9 +2,10 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - python=3.8.15
-  - snakemake=7.20.0
-  - biopython=1.76
-  - matplotlib=3.4.2
-  - pandas=1.0.3
-  - numpy=1.18.4
+  - python=3.12.3
+  - snakemake=8.14.0
+  - biopython=1.83
+  - matplotlib=3.8.4
+  - pandas=2.2.2
+  - numpy=1.26.4
+  - snakemake-executor-plugin-slurm=0.6.0

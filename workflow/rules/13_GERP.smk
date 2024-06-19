@@ -445,7 +445,7 @@ rule split_ref_contigs:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
     singularity:
-        "docker://quay.io/biocontainers/seqtk:1.3--hed695b0_2"
+        "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then
@@ -525,7 +525,7 @@ rule compute_gerp:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/gerp:2.1--hfc679d8_0"
+        "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
     shell:
         """
         if [ ! -d {output.gerp_dir} ]; then 

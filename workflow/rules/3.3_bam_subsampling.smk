@@ -141,15 +141,17 @@ rule subsampled_bam_qualimap:
         results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/genome_results.txt",
         outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap"),
     threads: 8
+    resources:
+        mem_mb=64000,
     params:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap",
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_qualimap.log",
     singularity:
-        "docker://quay.io/biocontainers/qualimap:2.2.2d--1"
+        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
-        mem=$(((6 * {threads}) - 2))
+        mem=$((({resources.mem_mb} - 2000)/1000))
         unset DISPLAY
         qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -outdir {params.outdir} -outformat html 2> {log}
         """

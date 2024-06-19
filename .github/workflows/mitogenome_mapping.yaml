@@ -91,10 +91,10 @@ jobs:
       - name: mitogenome_mapping_dry
         shell: bash -l {0}
         run: |
-          snakemake -npr --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+          snakemake -np -k --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
       - name: mitogenome_mapping
         shell: bash -l {0}
         run: |
-          snakemake --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
+          snakemake -k --configfile .test/config/config_mitogenomes.yaml -j 4 --cores 1 --use-singularity
 
