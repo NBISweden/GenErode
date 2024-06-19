@@ -112,8 +112,10 @@ set-resources:
     cpus_per_task: 16
   fastqc_historical_raw:
     mem_mb: 16000
+    cpus_per_task: 16
   fastqc_modern_raw:
     mem_mb: 16000
+    cpus_per_task: 16
   fastp_historical:
     runtime: 600
     mem_mb: 32000
@@ -225,9 +227,7 @@ set-resources:
     cpus_per_task: 32
   sort_vcfs:
     runtime: 1440
-  sort_vcfs:
     mem_mb: 16000
-  sort_vcfs:
     cpus_per_task: 16
   sorted_bcf2vcf:
     runtime: 300

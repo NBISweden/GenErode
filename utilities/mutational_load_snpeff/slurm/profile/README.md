@@ -11,27 +11,24 @@ executor plugin for slurm:
 conda create -f environment.yaml -n generode
 ```
 
-2) Copy one of the example configuration files `config/slurm/profile/config_plugin_rackham.yaml` 
-or `config/slurm/profile/config_plugin_dardel.yaml` to 
-`slurm/config.yaml`. This file specifies compute resources 
+2) Copy the example configuration file `slurm/profile/config_plugin_dardel.yaml` 
+to `slurm/config.yaml`. This file specifies compute resources 
 for each rule or group jobs. Any rule or group job that is 
 not listed under `set-threads` or `set-resources` uses 
 default resources specified under `default-resources`. If 
 any rule or group jobs fail due to too little memory or run 
 time, their compute resources can be updated in this file. 
 
-> Note that the current configuration files were adjusted to the 
-HPC clusters Rackham from UPPMAX and Dardel from PDC/KTH. Details 
-on how to configure and run GenErode on Dardel are provided below. 
-Memory requirements are specified three times in these configuration 
-files: 1) under `set-threads` (used by Snakemake to specify threads 
-in rules), 2) under `set-resources` and therein under `mem_mb`, 
-specifying the memory in Megabytes (multiplying the number of threads 
-with the available memory per thread), and 3) under `set-resources` 
-and therein under `cpus-per-task` (the same number as specified under 
-`set-threads`, required for correct memory assignment on Dardel). The 
-configuration file for Snakemake version 7 was kept for comparison, 
-which was also written for Rackham/UPPMAX. 
+> Note that the current configuration file was adjusted to the 
+HPC cluster Dardel from PDC/KTH. Details on how to configure and 
+run GenErode on Dardel are provided below. Memory requirements are 
+specified three times in the configuration file: 1) under 
+`set-threads` (used by Snakemake to specify threads in rules), 2) 
+under `set-resources` and therein under `mem_mb`, specifying the 
+memory in Megabytes (multiplying the number of threads with the 
+available memory per thread), and 3) under `set-resources` and 
+therein under `cpus-per-task` (the same number as specified under 
+`set-threads`, required for correct memory assignment on Dardel). 
 
 3) Start GenErode the following:
 
@@ -40,7 +37,7 @@ which was also written for Rackham/UPPMAX.
 - Start the dry run:
 
 ```
-snakemake --profile slurm -np &> YYMMDD_dry.out
+snakemake --profile slurm -n &> YYMMDD_dry.out
 ```
 
 - Start the main run:
