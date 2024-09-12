@@ -4,6 +4,8 @@ executor: slurm
 jobs: 100
 printshellcmds: true
 software-deployment-method: apptainer
+use-apptainer: True
+apptainer-args: "-B $PWD"
 
 # slurm resources
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
