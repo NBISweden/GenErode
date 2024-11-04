@@ -3,11 +3,11 @@
 1) Load the following modules:
 
 ```
-module load PDC UPPMAX bioinfo-tools conda singularity tmux
+module load PDC bioinfo-tools conda singularity tmux
 ```
 
-> Note that tmux is only available as a module on Dardel 
-but the equivalent tool screen is pre-installed and does 
+> Note that `tmux` is only available as a module on Dardel 
+but the equivalent tool `screen` is pre-installed and does 
 not need to be loaded. 
 
 2) After cloning the repository, change permissions for the 
@@ -31,7 +31,9 @@ for each rule or group jobs to be run on Dardel. Any rule or
 group job that is not listed under `set-threads` or `set-resources` 
 uses default resources specified under `default-resources`. If 
 any rule or group job fails due to too little memory or run 
-time, their compute resources can be updated in this file. 
+time, their compute resources can be updated in this file. Please
+add your slurm compute project ID in line 13 of `slurm/config.yaml`
+(`slurm_account`). 
 
 > Note that memory requirements are specified three times in 
 the configuration file: 1) under `set-threads` (used by Snakemake 
