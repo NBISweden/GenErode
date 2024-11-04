@@ -22,7 +22,15 @@ version. The latest conda environment contains the Snakemake
 executor plugin for slurm:
 
 ```
-conda create -f environment.yaml -n generode
+conda create -f environment.yml -n generode
+```
+
+If you want to create a conda environment in a different location 
+than your home directory, you can provide a path to a directory 
+for the conda environment to be installed in:
+
+```
+conda create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
 ```
 
 4) Copy the configuration file `config/slurm/profile/config_plugin_dardel.yaml` 
@@ -48,9 +56,16 @@ correct memory assignment on Dardel).
 
 - Open a tmux session (alternatively, you can use screen)
 
-- Activate the GenErode conda environment (create or update 
-from `environment.yaml`), replacing the path to the location 
-of the conda environment:
+- Activate the GenErode conda environment (created or updated 
+from `environment.yml`):
+
+```
+conda activate generode
+```
+
+If you have created the conda environment in a different directory 
+than your home directory, run the following commands, replacing the 
+path to the location of the conda environment accordingly:
 
 ```
 export CONDA_ENVS_PATH=/cfs/klemming/home/.../
