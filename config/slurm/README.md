@@ -22,7 +22,7 @@ version. The latest conda environment contains the Snakemake
 executor plugin for slurm:
 
 ```
-conda create -f environment.yml -n generode
+conda env create -f environment.yml -n generode
 ```
 
 If you want to create a conda environment in a different location 
@@ -30,7 +30,7 @@ than your home directory, you can provide a path to a directory
 for the conda environment to be installed in:
 
 ```
-conda create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
+conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
 ```
 
 4) Copy the configuration file `config/slurm/profile/config_plugin_dardel.yaml` 
