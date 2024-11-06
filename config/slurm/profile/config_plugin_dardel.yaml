@@ -5,7 +5,7 @@ jobs: 100
 printshellcmds: true
 software-deployment-method: apptainer
 use-apptainer: True
-apptainer-args: "-B $PWD"
+apptainer-args: "-B /cfs/klemming/projects/supr/sllstoreXXXXXXXX:/cfs/klemming/projects/supr/sllstoreXXXXXXXX" # Update this path to the path to your project on Dardel where all input data is located (twice the same path)
 
 # slurm resources
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
