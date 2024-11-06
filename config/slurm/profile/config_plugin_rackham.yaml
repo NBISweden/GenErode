@@ -337,6 +337,10 @@ set-resources:
     runtime: 300
     mem_mb: 12800
     cpus_per_task: 2
+  build_snpEff_db:
+    runtime: 300
+  annotate_vcf:
+    runtime: 300
   outgroup_fastqc:
     runtime: 1440
     mem_mb: 12800
