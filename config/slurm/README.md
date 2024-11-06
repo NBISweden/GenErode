@@ -35,25 +35,13 @@ conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../g
 ```
 
 4) Copy the configuration file `config/slurm/profile/config_plugin_dardel.yaml` 
-to `slurm/config.yaml`. This file specifies Snakemake parameters
-that are used to run the pipeline, as well as compute resources 
-for each rule or group jobs to be run on Dardel. When you start
-the pipeline on the command line with `--profile slurm` (as
-described below), it expects a folder `slurm` with the file
-`config.yaml` therein. 
-
-The following changes to `slurm/config.yaml` are mandatory for
-the pipeline to work for you on Dardel: 
-
-- Please update the paths in line 8 (`apptainer-args`) with
-  the path to the project where all input data for GenErode
-  is located. Enter the same path before and after the `:`.
-  This is required for Apptainer (singularity) to correctly
-  bind (mount) the project directory so that the containers
-  run by the pipeline can find the input data. 
-
-- Please add your slurm compute project ID in line 13
-  (`slurm_account`). 
+to `slurm/config.yaml`. This file specifies Snakemake and apptainer 
+parameters that are used to run the pipeline, as well as compute 
+resources for each rule or group jobs to be run on Dardel. When 
+you start the pipeline on the command line with `--profile slurm` 
+(as described below), it expects a folder `slurm` with the file
+`config.yaml` therein. Please make sure to add your slurm compute 
+project ID in line 13 of `slurm/config.yaml` (`slurm_account`). 
 
 > If any rule or group job fails due to too little memory or
 run time, their compute resources can be updated in `slurm/config.yaml`.
