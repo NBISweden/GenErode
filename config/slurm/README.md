@@ -25,9 +25,10 @@ executor plugin for slurm:
 conda env create -f environment.yml -n generode
 ```
 
-If you want to create a conda environment in a different location 
+- If you want to create a conda environment in a different location 
 than your home directory, you can provide a path to a directory 
-for the conda environment to be installed in:
+for the conda environment to be installed in, and run the following
+command instead of the command above:
 
 ```
 conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
