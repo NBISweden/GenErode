@@ -331,7 +331,7 @@ rule align2target:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
@@ -349,7 +349,7 @@ rule index_gerp_bams:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_index_gerp_bams.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -366,7 +366,7 @@ rule gerp_bam_stats:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_gerp_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -411,7 +411,7 @@ rule bam2fasta:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"  # This container includes python 3.7.6 with default python modules
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"  # This container includes python 3.7.6 with default python modules
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then

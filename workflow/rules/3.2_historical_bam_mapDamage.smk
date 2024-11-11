@@ -55,7 +55,7 @@ rule index_rescaled_bams:
     group:
         "rescaled_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -76,7 +76,7 @@ rule rescaled_bam_stats:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}

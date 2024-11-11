@@ -63,7 +63,7 @@ rule sai2bam:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     threads: 8
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
@@ -104,7 +104,7 @@ rule map_modern:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     threads: 8
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
@@ -122,7 +122,7 @@ rule index_sorted_bams:
     group:
         "sorted_bam_stats_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -141,7 +141,7 @@ rule sorted_bam_stats:
     group:
         "sorted_bam_stats_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
