@@ -52,6 +52,12 @@ def read_gerp_windows(gerpFile, chrom, start, end):
                     break
                 elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= int(start) and currentGerpPos > int(end):
                     break
+            if len(lineDeque) == 1: # handle the last line in the file
+                lastGerpChrom = lineDeque[0].strip().split('\t')[0] # get the chromosome name of the line in the deque
+                lastGerpPos = int(lineDeque[0].strip().split('\t')[1]) # get the position of the line
+                if lastGerpChrom == chrom and lastGerpPos >= int(start) and lastGerpPos == int(end):
+                    n_rows += 1
+                    break
     if n_rows > 0:
         gerpDF = pd.read_csv(gerpFile, sep='\t', skiprows=skip_rows, nrows=n_rows, 
                                 names=['#CHROM', 'POS', 'ancestral_state', 'gerp_score'], 
@@ -94,6 +100,12 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                     elif currentVcfChrom == chrom and nextVcfChrom == chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
                         break
                     elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
+                        break
+                if len(lineDeque) == 1: # handle the last line in the file
+                    lastVcfChrom = lineDeque[0].strip().split('\t')[0] # get the chromosome name of the line in the deque
+                    lastVcfPos = int(lineDeque[0].strip().split('\t')[1]) # get the position of the line
+                    if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos == int(end):
+                        n_rows += 1
                         break
     usecols_list = [0,1,3,4] + [*range(9,len(header))]
     usecols_header = [header[i] for i in usecols_list]
