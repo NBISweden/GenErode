@@ -48,7 +48,7 @@ rule samtools_fasta_index:
     group:
         "reference_prep_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools_python:57d090a0dc055d93"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools faidx {input.ref} 2> {log}
