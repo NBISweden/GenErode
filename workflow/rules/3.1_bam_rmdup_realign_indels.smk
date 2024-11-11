@@ -56,7 +56,7 @@ rule merge_historical_bams_per_index:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_merge_historical_bams_per_index.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -82,7 +82,7 @@ rule merge_modern_bams_per_index:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_merge_modern_bams_per_index.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -106,7 +106,7 @@ rule index_merged_index_bams:
     group:
         "merged_index_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -125,7 +125,7 @@ rule merged_index_bam_stats:
     group:
         "merged_index_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -214,7 +214,7 @@ rule rmdup_historical_bams:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_rmdup_historical_bams.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools view -@ {threads} -h {input.merged} | python3 workflow/scripts/samremovedup.py  | samtools view -b -o {output.rmdup} 2> {log}
@@ -253,7 +253,7 @@ rule index_rmdup_bams:
     group:
         "rmdup_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -272,7 +272,7 @@ rule rmdup_bam_stats:
     group:
         "rmdup_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -361,7 +361,7 @@ rule merge_historical_bams_per_sample:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_merge_historical_bams_per_sample.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -387,7 +387,7 @@ rule merge_modern_bams_per_sample:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_merge_modern_bams_per_sample.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -411,7 +411,7 @@ rule index_merged_sample_bams:
     group:
         "merged_sample_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -430,7 +430,7 @@ rule merged_sample_bam_stats:
     group:
         "merged_sample_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -566,7 +566,7 @@ rule index_realigned_bams:
     group:
         "realigned_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -585,7 +585,7 @@ rule realigned_bam_stats:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_stats.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -661,7 +661,7 @@ rule realigned_bam_depth:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_depth.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         if [ {params.cov} = "True" ] # include sites with missing data / zero coverage

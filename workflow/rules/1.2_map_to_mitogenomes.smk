@@ -228,7 +228,7 @@ rule mitogenome_bam_stats:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -320,7 +320,7 @@ rule merge_historical_mitogenome_bams_per_sample:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merge_historical_mitogenome_bams_per_sample.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -345,7 +345,7 @@ rule merged_mitogenome_bam_stats:
     group:
         "historical_merged_mito_bams_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}

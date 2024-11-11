@@ -122,7 +122,7 @@ rule index_sorted_bams:
     group:
         "sorted_bam_stats_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -141,7 +141,7 @@ rule sorted_bam_stats:
     group:
         "sorted_bam_stats_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
