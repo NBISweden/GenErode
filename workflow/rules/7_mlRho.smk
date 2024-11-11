@@ -362,7 +362,7 @@ rule bam2pro_autos:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_autos.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -396,7 +396,7 @@ rule mlRho_autos:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_autos.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -427,7 +427,7 @@ rule bam2pro_sexchr:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_sexchr.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -461,7 +461,7 @@ rule mlRho_sexchr:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_sexchr.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -492,7 +492,7 @@ rule bam2pro_genome:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_genome.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -526,7 +526,7 @@ rule mlRho_genome:
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_genome.log",
     singularity:
-        "oras://community.wave.seqera.io/library/mlrho_samtools:ae1ee6e4a1a7ef5d"
+        "docker://nbisweden/generode-mlrho"
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
