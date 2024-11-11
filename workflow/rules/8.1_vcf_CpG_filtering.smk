@@ -107,7 +107,7 @@ rule remove_CpG_vcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}

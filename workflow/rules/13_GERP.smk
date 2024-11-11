@@ -331,7 +331,7 @@ rule align2target:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
-        "docker://nbisweden/generode-bwa:latest"
+        "community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
@@ -696,7 +696,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
@@ -712,7 +712,7 @@ rule split_chunk_bed_files:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
     shell:
         """
         bedtools makewindows -b {input.chunk_bed} -w 10000000 > {output.chunk_win_bed} 2> {log}
