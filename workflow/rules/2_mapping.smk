@@ -63,7 +63,7 @@ rule sai2bam:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     threads: 8
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
@@ -104,7 +104,7 @@ rule map_modern:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     threads: 8
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \

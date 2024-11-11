@@ -123,7 +123,7 @@ rule sort_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
@@ -141,7 +141,7 @@ rule make_no_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log}
