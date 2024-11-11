@@ -48,7 +48,7 @@ rule samtools_fasta_index:
     group:
         "reference_prep_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools faidx {input.ref} 2> {log}
