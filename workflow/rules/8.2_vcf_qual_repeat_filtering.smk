@@ -367,7 +367,7 @@ rule remove_repeats_vcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_repeats_vcf.log",
     singularity:
-        "community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:62540682b559998a"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}

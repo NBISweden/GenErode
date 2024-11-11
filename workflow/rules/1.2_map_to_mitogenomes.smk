@@ -185,7 +185,7 @@ rule map_historical_merged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     singularity:
-        "community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
+        "oras://community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
@@ -208,7 +208,7 @@ rule map_historical_unmerged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     singularity:
-        "community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
+        "oras://community.wave.seqera.io/library/bwa_samtools:2aa9aa78aef87695"
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
