@@ -3,7 +3,7 @@
 """
 Script to add the number of derived alleles per sample to the gerp output file, run separately for modern and historical VCF files.
 Homozygous sites are coded as 2, heterozygous sites as 1.
-Written to be run per window, by providing contig (or scaffold/chromosome) name, start and end position (1-based) on the command line.
+Written to be run per window, by providing contig (or scaffold/chromosome) name, start and end position (0-based) on the command line.
 
 Author: Verena Kutschera
 
@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore")
 gerp=argv[1] # gerp output file with ancestral state and gerp score per site
 vcf=argv[2] # VCF file to be merged
 contig=argv[3] # contig to be processed
-start=argv[4] # start position for window (1-based)
+start=int(argv[4])+1 # start position for window (0-based)
 end=argv[5] # end position for window
 outfile=argv[6] # output file path
 
@@ -41,22 +41,22 @@ def read_gerp_windows(gerpFile, chrom, start, end):
                 nextGerpChrom = lineDeque[1].strip().split('\t')[0] # get the chromosome name of the second line
                 if currentGerpChrom != chrom:
                     skip_rows += 1
-                elif currentGerpChrom == chrom and currentGerpPos < int(start):
+                elif currentGerpChrom == chrom and currentGerpPos < start:
                     skip_rows += 1
-                elif currentGerpChrom == chrom and nextGerpChrom == chrom and currentGerpPos >= int(start) and currentGerpPos <= int(end):
+                elif currentGerpChrom == chrom and nextGerpChrom == chrom and currentGerpPos >= start and currentGerpPos <= int(end):
                     n_rows += 1
-                elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= int(start) and currentGerpPos <= int(end):
+                elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= start and currentGerpPos <= int(end):
                     n_rows += 1
                     break
-                elif currentGerpChrom == chrom and nextGerpChrom == chrom and currentGerpPos >= int(start) and currentGerpPos > int(end):
+                elif currentGerpChrom == chrom and nextGerpChrom == chrom and currentGerpPos >= start and currentGerpPos > int(end):
                     break
-                elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= int(start) and currentGerpPos > int(end):
+                elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= start and currentGerpPos > int(end):
                     break
         if len(lineDeque) == 1: # handle the last line in the file
             last_line = lineDeque[0]
             lastGerpChrom = last_line.strip().split('\t')[0]  # get the chromosome name of the line in the deque
             lastGerpPos = int(last_line.strip().split('\t')[1])  # get the position of the line
-            if lastGerpChrom == chrom and lastGerpPos >= int(start) and lastGerpPos <= int(end):
+            if lastGerpChrom == chrom and lastGerpPos >= start and lastGerpPos <= int(end):
                 n_rows += 1
     if n_rows > 0:
         gerpDF = pd.read_csv(gerpFile, sep='\t', skiprows=skip_rows, nrows=n_rows, 
@@ -89,16 +89,16 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                     nextVcfChrom = lineDeque[1].decode('utf8').strip().split('\t')[0] # get the chromosome name of the second line 
                     if currentVcfChrom != chrom:
                         skip_rows += 1
-                    elif currentVcfChrom == chrom and currentVcfPos < int(start):
+                    elif currentVcfChrom == chrom and currentVcfPos < start:
                         skip_rows += 1
-                    elif currentVcfChrom == chrom and nextVcfChrom == chrom and currentVcfPos >= int(start) and currentVcfPos <= int(end):
+                    elif currentVcfChrom == chrom and nextVcfChrom == chrom and currentVcfPos >= start and currentVcfPos <= int(end):
                         n_rows += 1
-                    elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= int(start) and currentVcfPos <= int(end):
+                    elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= start and currentVcfPos <= int(end):
                         n_rows += 1
                         break
-                    elif currentVcfChrom == chrom and nextVcfChrom == chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
+                    elif currentVcfChrom == chrom and nextVcfChrom == chrom and currentVcfPos >= start and currentVcfPos > int(end):
                         break
-                    elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
+                    elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= start and currentVcfPos > int(end):
                         break
         if len(lineDeque) == 1: # handle the last line in the file
             last_line = lineDeque[0]
@@ -108,7 +108,7 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                 last_line = last_line.strip()
             lastVcfChrom = last_line.split('\t')[0]  # get the chromosome name of the line in the deque
             lastVcfPos = int(last_line.split('\t')[1])  # get the position of the line
-            if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos <= int(end):
+            if lastVcfChrom == chrom and lastVcfPos >= start and lastVcfPos <= int(end):
                 n_rows += 1
     usecols_list = [0, 1, 3, 4] + [*range(9, len(header))]
     usecols_header = [header[i] for i in usecols_list]
