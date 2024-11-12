@@ -109,7 +109,7 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                         last_line = last_line.strip()
                     lastVcfChrom = last_line.split('\t')[0]  # get the chromosome name of the line in the deque
                     lastVcfPos = int(last_line.split('\t')[1])  # get the position of the line
-                    if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos == int(end):
+                    if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos <= int(end):
                         n_rows += 1
                         break
     usecols_list = [0,1,3,4] + [*range(9,len(header))]
