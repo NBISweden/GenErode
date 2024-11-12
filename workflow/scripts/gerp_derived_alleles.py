@@ -52,12 +52,12 @@ def read_gerp_windows(gerpFile, chrom, start, end):
                     break
                 elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= int(start) and currentGerpPos > int(end):
                     break
-            if len(lineDeque) == 1: # handle the last line in the file
-                lastGerpChrom = lineDeque[0].strip().split('\t')[0] # get the chromosome name of the line in the deque
-                lastGerpPos = int(lineDeque[0].strip().split('\t')[1]) # get the position of the line
-                if lastGerpChrom == chrom and lastGerpPos >= int(start) and lastGerpPos == int(end):
-                    n_rows += 1
-                    break
+        if len(lineDeque) == 1: # handle the last line in the file
+            last_line = lineDeque[0]
+            lastGerpChrom = last_line.strip().split('\t')[0]  # get the chromosome name of the line in the deque
+            lastGerpPos = int(last_line.strip().split('\t')[1])  # get the position of the line
+            if lastGerpChrom == chrom and lastGerpPos >= int(start) and lastGerpPos <= int(end):
+                n_rows += 1
     if n_rows > 0:
         gerpDF = pd.read_csv(gerpFile, sep='\t', skiprows=skip_rows, nrows=n_rows, 
                                 names=['#CHROM', 'POS', 'ancestral_state', 'gerp_score'], 
@@ -65,9 +65,8 @@ def read_gerp_windows(gerpFile, chrom, start, end):
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Chromosome", chrom, "from position", start, "to position", end, "from GERP file read into memory")
     else: # Add a row with "NaN" in case the window is missing from the file
         gerpDF = pd.DataFrame(columns=['#CHROM', 'POS', 'ancestral_state', 'gerp_score']).set_index(['#CHROM', 'POS'])
-        gerpDF.loc[(chrom,start),:] = (np.nan)
+        gerpDF.loc[(chrom, start), :] = np.nan
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Chromosome", chrom, "from position", start, "to position", end, "not present in GERP file, will be set to 'NaN'")
-    #print(gerpDF.info(memory_usage="deep"))
     return gerpDF
 
 # Function to read the VCF file per window for further processing
@@ -101,18 +100,17 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                         break
                     elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
                         break
-                if len(lineDeque) == 1:  # handle the last line in the file
-                    last_line = lineDeque[0]
-                    if isinstance(last_line, bytes):
-                        last_line = last_line.decode('utf8').strip()
-                    else:
-                        last_line = last_line.strip()
-                    lastVcfChrom = last_line.split('\t')[0]  # get the chromosome name of the line in the deque
-                    lastVcfPos = int(last_line.split('\t')[1])  # get the position of the line
-                    if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos <= int(end):
-                        n_rows += 1
-                        break
-    usecols_list = [0,1,3,4] + [*range(9,len(header))]
+        if len(lineDeque) == 1: # handle the last line in the file
+            last_line = lineDeque[0]
+            if isinstance(last_line, bytes):
+                last_line = last_line.decode('utf8').strip()
+            else:
+                last_line = last_line.strip()
+            lastVcfChrom = last_line.split('\t')[0]  # get the chromosome name of the line in the deque
+            lastVcfPos = int(last_line.split('\t')[1])  # get the position of the line
+            if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos <= int(end):
+                n_rows += 1
+    usecols_list = [0, 1, 3, 4] + [*range(9, len(header))]
     usecols_header = [header[i] for i in usecols_list]
     if n_rows > 0:
         vcfDF = pd.read_csv(vcfFile, sep='\t', skiprows=skip_rows, nrows=n_rows, usecols=usecols_list, 
@@ -120,9 +118,8 @@ def read_vcf_windows(vcfFile, chrom, start, end):
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Chromosome", chrom, "from position", start, "to position", end, "from VCF file read into memory")
     else: # Add a row with "NaN" in case the window is missing from the file
         vcfDF = pd.DataFrame(columns=usecols_header).set_index(['#CHROM', 'POS'])
-        vcfDF.loc[(chrom,start),:] = (np.nan)
+        vcfDF.loc[(chrom, start), :] = np.nan
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Chromosome", chrom, "from position", start, "to position", end, "not present in VCF file, will be set to 'NaN'")
-    #print(vcfDF.info(memory_usage="deep"))
     return vcfDF
 
 # Join GERP and VCFs for each window
