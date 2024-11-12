@@ -101,9 +101,14 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                         break
                     elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= int(start) and currentVcfPos > int(end):
                         break
-                if len(lineDeque) == 1: # handle the last line in the file
-                    lastVcfChrom = lineDeque[0].strip().split('\t')[0] # get the chromosome name of the line in the deque
-                    lastVcfPos = int(lineDeque[0].strip().split('\t')[1]) # get the position of the line
+                if len(lineDeque) == 1:  # handle the last line in the file
+                    last_line = lineDeque[0]
+                    if isinstance(last_line, bytes):
+                        last_line = last_line.decode('utf8').strip()
+                    else:
+                        last_line = last_line.strip()
+                    lastVcfChrom = last_line.split('\t')[0]  # get the chromosome name of the line in the deque
+                    lastVcfPos = int(last_line.split('\t')[1])  # get the position of the line
                     if lastVcfChrom == chrom and lastVcfPos >= int(start) and lastVcfPos == int(end):
                         n_rows += 1
                         break
