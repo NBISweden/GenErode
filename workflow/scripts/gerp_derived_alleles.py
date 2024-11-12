@@ -52,8 +52,8 @@ def read_gerp_windows(gerpFile, chrom, start, end):
                     break
                 elif currentGerpChrom == chrom and nextGerpChrom != chrom and currentGerpPos >= start and currentGerpPos > int(end):
                     break
-        if len(lineDeque) == 1: # handle the last line in the file
-            last_line = lineDeque[0]
+        if len(lineDeque) == 2: # handle the last line of the file
+            last_line = lineDeque[1]
             lastGerpChrom = last_line.strip().split('\t')[0]  # get the chromosome name of the line in the deque
             lastGerpPos = int(last_line.strip().split('\t')[1])  # get the position of the line
             if lastGerpChrom == chrom and lastGerpPos >= start and lastGerpPos <= int(end):
@@ -100,8 +100,8 @@ def read_vcf_windows(vcfFile, chrom, start, end):
                         break
                     elif currentVcfChrom == chrom and nextVcfChrom != chrom and currentVcfPos >= start and currentVcfPos > int(end):
                         break
-        if len(lineDeque) == 1: # handle the last line in the file
-            last_line = lineDeque[0]
+        if len(lineDeque) == 2: # handle the last line of the file
+            last_line = lineDeque[1]
             if isinstance(last_line, bytes):
                 last_line = last_line.decode('utf8').strip()
             else:
