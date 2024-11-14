@@ -3,7 +3,7 @@
 1) Load the following modules:
 
 ```
-module load PDC bioinfo-tools conda apptainer tmux
+module load PDC bioinfo-tools apptainer tmux
 ```
 
 > Note that `tmux` is only available as a module on Dardel 
