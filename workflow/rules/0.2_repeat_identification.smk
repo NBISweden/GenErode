@@ -37,7 +37,7 @@ rule repeatmodeler:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
+        "docker://dfam/tetools:1.89.1"
     shell:
         """
         cd {params.dir}
@@ -79,7 +79,7 @@ rule repeatmasker:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
+        "docker://dfam/tetools:1.89.1"
     shell:
         """
         cd {params.dir} &&
