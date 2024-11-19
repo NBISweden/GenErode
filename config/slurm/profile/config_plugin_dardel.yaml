@@ -99,12 +99,10 @@ set-threads:
 ## set-resources: map rule names to resources in general
 set-resources:
   repeatmodeler:
-    slurm_partition: long # switch to Dardel's long partition for shorter wait time in queue
     runtime: 10080
     mem_mb: 128000
     cpus_per_task: 128
   repeatmasker:
-    slurm_partition: long # switch to Dardel's long partition for shorter wait time in queue
     runtime: 10080
     mem_mb: 128000
     cpus_per_task: 128
