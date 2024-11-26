@@ -37,7 +37,7 @@ rule repeatmodeler:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
+        "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir}
@@ -46,7 +46,7 @@ rule repeatmodeler:
         BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
 
         # Run RepeatModeler
-        RepeatModeler -engine ncbi -threads {threads} -database {params.name} 2>> {log} &&
+        RepeatModeler -engine ncbi -threads {threads} -database {params.name} -quick 2>> {log} &&
 
         # copy the output files to a new directory
         cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
@@ -79,7 +79,7 @@ rule repeatmasker:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
     singularity:
-        "docker://quay.io/biocontainers/repeatmodeler:2.0.4--pl5321hdfd78af_0"
+        "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
     shell:
         """
         cd {params.dir} &&
