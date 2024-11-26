@@ -47,18 +47,14 @@ you start the pipeline on the command line with `--profile slurm`
 `config.yaml` therein. Please make sure to add your slurm compute 
 project ID in line 13 of `slurm/config.yaml` (`slurm_account`). 
 
-> If any rule or group job fails due to too little memory or
-run time, their compute resources can be updated in `slurm/config.yaml`.
-Note that memory requirements are specified three times in the
-configuration file: 1) under `set-threads` (used by Snakemake 
-to specify threads in rules), 2) under `set-resources` and therein 
-under `mem_mb`, specifying the memory in Megabytes (multiplying 
-the number of threads with the available memory per thread), 
-and 3) under `set-resources` and therein under `cpus-per-task` 
-(the same number as specified under `set-threads`, required for 
-correct memory assignment on Dardel). Any rule or group job that
-is not listed under `set-threads` or `set-resources` uses the
-resources specified under`default-resources`. 
+> If a rule or group job fails due to too little memory or run time,
+their compute resources can be updated in `slurm/config.yaml`. 
+Rule or group jobs are using `default-resources` unless more threads
+(corresponding to cpus-per-task) or longer run times are required,
+which are specified per rule or group job under `set-threads` or
+`set-resources`, respectively. Memory in MB is automatically calculated
+from the number of threads specified under `default-resources` or
+`set-threads`, respectively.  
 
 5) Start GenErode the following:
 
