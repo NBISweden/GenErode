@@ -20,7 +20,7 @@ default-resources:
 
 ## set-threads: map rule names to threads
 set-threads:
-  repeatmodeler: 128
+  repeatmodeler: 64
   repeatmasker: 128
   historical_fastq_before_group: 16
   fastqc_historical_raw: 16
@@ -101,7 +101,7 @@ set-resources:
   repeatmodeler:
     runtime: 10080
     mem_mb: 102400
-    cpus_per_task: 128
+    cpus_per_task: 64
   repeatmasker:
     runtime: 10080
     mem_mb: 102400
