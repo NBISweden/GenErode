@@ -42,7 +42,7 @@ rule make_autosomes_bed:
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_autosomes_bed.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sexchr_bed} > {output.autosome_bed} 2> {log}
@@ -61,7 +61,7 @@ rule intersect_sexchr_repma_beds:
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_intersect_sexchr_repma_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.no_rep_bed} -b {input.sexchr_bed} > {output.repma_sex_chr} 2> {log}
@@ -80,7 +80,7 @@ rule intersect_autos_repma_beds:
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_intersect_autos_repma_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.no_rep_bed} -b {input.autosome_bed} > {output.repma_autos} 2> {log}
@@ -99,7 +99,7 @@ rule intersect_sexchr_noCpG_repma_beds:
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_intersect_sexchr_noCpG_repma_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.no_CpG_repma_bed} -b {input.sexchr_bed} > {output.no_CpG_repma_sexchr} 2> {log}
@@ -118,7 +118,7 @@ rule intersect_autos_noCpG_repma_beds:
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_intersect_autos_noCpG_repma_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.no_CpG_repma_bed} -b {input.autosome_bed} > {output.no_CpG_repma_autos} 2> {log}

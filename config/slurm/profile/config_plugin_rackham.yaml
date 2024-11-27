@@ -9,9 +9,9 @@ software-deployment-method: apptainer
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
 default-resources: 
   slurm_account: XXX-XX-XXX # update this to your slurm account
+  threads: 1 # number of threads (=cpus/cores), corresponds to 6.4 GB RAM
+  mem_mb: f"{threads*6400}" # calculate available memory in MB for specific number of threads
   runtime: 120 # default runtime in minutes
-  mem_mb: 6400
-  cpus_per_task: 1 # number of threads per task, corresponds to 6.4 GB RAM
 
 ## set-threads: map rule names to threads
 set-threads:
@@ -92,308 +92,84 @@ set-threads:
 
 ## set-resources: map rule names to resources in general
 set-resources:
-  repeatmodeler:
-    runtime: 10080
-    mem_mb: 128000
-    cpus_per_task: 20
-  repeatmasker:
-    runtime: 10080
-    mem_mb: 128000
-    cpus_per_task: 20
-  historical_fastq_before_group:
-    runtime: 600
-    mem_mb: 12800
-    cpus_per_task: 2
-  fastqc_historical_raw:
-    mem_mb: 12800
-    cpus_per_task: 2
-  fastqc_modern_raw:
-    mem_mb: 12800
-    cpus_per_task: 2
-  fastp_historical:
-    runtime: 600
-    mem_mb: 32000
-    cpus_per_task: 5
-  fastp_modern:
-    runtime: 600
-    mem_mb: 32000
-    cpus_per_task: 5
-  fastqc_historical_merged:
-    mem_mb: 12800
-    cpus_per_task: 2
-  fastqc_historical_unmerged:
-    mem_mb: 12800
-    cpus_per_task: 2
-  fastqc_modern_trimmed:
-    mem_mb: 12800
-    cpus_per_task: 2
-  map_historical:
-    runtime: 10080
-    mem_mb: 64000
-    cpus_per_task: 10
-  sai2bam:
-    runtime: 10080
-    mem_mb: 64000
-    cpus_per_task: 10
-  map_modern:
-    runtime: 10080
-    mem_mb: 64000
-    cpus_per_task: 10
-  sorted_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  merge_historical_bams_per_index:
-    runtime: 2880
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_modern_bams_per_index:
-    runtime: 2880
-    mem_mb: 12800
-    cpus_per_task: 2
-  merged_index_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  rmdup_historical_bams:
-    runtime: 5320
-    mem_mb: 64000
-    cpus_per_task: 10
-  rmdup_modern_bams:
-    runtime: 5320
-    mem_mb: 12800
-    cpus_per_task: 2
-  rmdup_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  merge_historical_bams_per_sample:
-    runtime: 2880
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_modern_bams_per_sample:
-    runtime: 2880
-    mem_mb: 12800
-    cpus_per_task: 2
-  merged_sample_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  indel_realigner_targets:
-    runtime: 7200
-    mem_mb: 64000
-    cpus_per_task: 10
-  indel_realigner:
-    runtime: 7200
-    mem_mb: 64000
-    cpus_per_task: 10
-  realigned_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  realigned_bam_group:
-    runtime: 2880
-    mem_mb: 12800
-    cpus_per_task: 2
-  rescale_historical:
-    runtime: 5320
-    mem_mb: 32000
-    cpus_per_task: 5
-  rescaled_bam_qualimap:
-    runtime: 5760
-  rescaled_bam_group:
-    runtime: 600
-  filter_bam_mapped_mq:
-    runtime: 1440
-  subsample_bams:
-    runtime: 5760
-    mem_mb: 12800
-    cpus_per_task: 2
-  subsampled_bam_qualimap:
-    runtime: 5760
-    mem_mb: 64000
-    cpus_per_task: 10
-  subsampled_bam_group:
-    runtime: 2880
-  variant_calling:
-    runtime: 2880
-    mem_mb: 32000
-    cpus_per_task: 5
-  sort_vcfs:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  make_CpG_genotype_bed:
-    runtime: 1440
-  CpG_genotype_bed_formatting_group:
-    runtime: 1440
-    mem_mb: 32000
-    cpus_per_task: 5
-  all_CpG_bed_formatting_group:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  make_noCpG_bed:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  CpG_repeats_bed_formatting_group:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_noCpG_noRepeats_beds:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  make_noCpG_repma_bed:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  make_autosomes_bed:
-    runtime: 300
-  intersect_sexchr_repma_beds:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  intersect_autos_repma_beds:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  intersect_sexchr_CpG_repma_beds:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  intersect_autos_CpG_repma_beds:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  bam2pro_autos:
-    runtime: 1440
-  bam2pro_sexchr:
-    runtime: 1440
-  bam2pro_all:
-    runtime: 1440
-  remove_CpG_vcf:
-    runtime: 300
-    mem_mb: 64000
-    cpus_per_task: 10
-  CpG_vcf2bcf:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  remove_snps_near_indels:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  filter_vcfs_qual_dp:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  filter_vcfs_allelic_balance:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  remove_repeats_vcf:
-    runtime: 300
-    mem_mb: 64000
-    cpus_per_task: 10
-  filtered_vcf2bcf:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_all_vcfs:
-    runtime: 5320
-    mem_mb: 64000
-    cpus_per_task: 10
-  filter_vcf_biallelic:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  filter_vcf_missing:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  remove_chromosomes:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  extract_historical_samples:
-    runtime: 300
-  extract_modern_samples:
-    runtime: 300
-  repmasked_bcf2vcf:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  filter_biallelic_missing_vcf:
-    runtime: 1440
-    mem_mb: 64000
-    cpus_per_task: 10
-  vcf2plink_pca:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  vcf2plink_hwe:
-    runtime: 300
-    mem_mb: 12800
-    cpus_per_task: 2
-  build_snpEff_db:
-    runtime: 300
-  annotate_vcf:
-    runtime: 300
-  outgroup_fastqc:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  align2target:
-    runtime: 5320
-    mem_mb: 64000
-    cpus_per_task: 10
-  bam2fasta:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  concatenate_fasta_per_contig:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  compute_gerp:
-    runtime: 1440
-    mem_mb: 32000
-    cpus_per_task: 5
-  gerp2coords:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  get_ancestral_state:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  produce_contig_out:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_per_chunk:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_gerp_gz:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
-  gerp_derived_alleles:
-    runtime: 10080
-    mem_mb: 12800
-    cpus_per_task: 2
-  merge_gerp_alleles_per_chunk:
-    runtime: 1440
-    mem_mb: 32000
-    cpus_per_task: 5
-  merge_gerp_alleles_gz:
-    runtime: 1440
-    mem_mb: 32000
-    cpus_per_task: 5
-  relative_mutational_load_per_sample:
-    runtime: 1440
-    mem_mb: 12800
-    cpus_per_task: 2
+  - repeatmodeler:runtime=10080
+  - repeatmasker:runtime=10080
+  - historical_fastq_before_group:runtime=600
+  - fastp_historical:runtime=600
+  - fastp_modern:runtime=600
+  - map_historical:runtime=10080
+  - sai2bam:runtime=10080
+  - map_modern:runtime=10080
+  - sorted_bam_qualimap:runtime=5760
+  - merge_historical_bams_per_index:runtime=2880
+  - merge_modern_bams_per_index:runtime=2880
+  - merged_index_bam_qualimap:runtime=5760
+  - rmdup_historical_bams:runtime=4400
+  - rmdup_modern_bams:runtime=4400
+  - rmdup_bam_qualimap:runtime=5760
+  - merge_historical_bams_per_sample:runtime=2880
+  - merge_modern_bams_per_sample:runtime=2880
+  - merged_sample_bam_qualimap:runtime=5760
+  - indel_realigner_targets:runtime=7200
+  - indel_realigner:runtime=7200
+  - realigned_bam_qualimap:runtime=5760
+  - realigned_bam_group:runtime=2880
+  - rescale_historical:runtime=4400
+  - rescaled_bam_qualimap:runtime=5760
+  - rescaled_bam_group:runtime=600
+  - filter_bam_mapped_mq:runtime=1440
+  - subsample_bams:runtime=5760
+  - subsampled_bam_qualimap:runtime=5760
+  - subsampled_bam_group:runtime=2880
+  - variant_calling:runtime=2880
+  - sort_vcfs:runtime=1440
+  - sorted_bcf2vcf:runtime=300
+  - make_CpG_genotype_bed:runtime=1440
+  - CpG_genotype_bed_formatting_group:runtime=1440
+  - all_CpG_bed_formatting_group:runtime=1440
+  - make_noCpG_bed:runtime=300
+  - CpG_repeats_bed_formatting_group:runtime=1440
+  - merge_noCpG_noRepeats_beds:runtime=300
+  - make_noCpG_repma_bed:runtime=300
+  - make_autosomes_bed:runtime=300
+  - intersect_sexchr_repma_beds:runtime=300
+  - intersect_autos_repma_beds:runtime=300
+  - intersect_sexchr_CpG_repma_beds:runtime=300
+  - intersect_autos_CpG_repma_beds:runtime=300
+  - bam2pro_autos:runtime=1440
+  - bam2pro_sexchr:runtime=1440
+  - bam2pro_all:runtime=1440
+  - remove_CpG_vcf:runtime=300
+  - CpG_vcf2bcf:runtime=300
+  - remove_snps_near_indels:runtime=300
+  - filter_vcfs_qual_dp:runtime=300
+  - filter_vcfs_allelic_balance:runtime=300
+  - remove_repeats_vcf:runtime=300
+  - filtered_vcf2bcf:runtime=300
+  - merge_all_vcfs:runtime=4400
+  - filter_vcf_biallelic:runtime=1440
+  - filter_vcf_missing:runtime=1440
+  - remove_chromosomes:runtime=1440
+  - extract_historical_samples:runtime=300
+  - extract_modern_samples:runtime=300
+  - repmasked_bcf2vcf:runtime=300
+  - filter_biallelic_missing_vcf:runtime=1440
+  - vcf2plink_pca:runtime=300
+  - filter_vcf_hwe:runtime=300
+  - vcf2plink_hwe:runtime=300
+  - build_snpEff_db:runtime=300
+  - annotate_vcf:runtime=300
+  - outgroup_fastqc:runtime=20
+  - align2target:runtime=4400
+  - bam2fasta:runtime=1440
+  - concatenate_fasta_per_contig:runtime=1440
+  - compute_gerp:runtime=1440
+  - gerp2coords:runtime=1440
+  - get_ancestral_state:runtime=1440
+  - produce_contig_out:runtime=1440
+  - merge_per_chunk:runtime=1440
+  - merge_gerp_gz:runtime=1440
+  - gerp_derived_alleles:runtime=10080
+  - merge_gerp_alleles_per_chunk:runtime=1440
+  - merge_gerp_alleles_gz:runtime=1440
+  - relative_mutational_load_per_sample:runtime=1440

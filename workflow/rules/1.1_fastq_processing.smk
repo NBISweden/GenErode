@@ -170,8 +170,9 @@ rule fastp_historical:
         "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
     shell:
         """
-        fastp -i {input.R1} -I {input.R2} -p -c --merge --merged_out={output.merged} -o {output.R1_un} -O {output.R2_un} \
-        -h {output.html} -j {output.json} -R '{params.report}' -w {threads} -l {params.readlength} 2> {log}
+        fastp -i {input.R1} -I {input.R2} -p -c --merge --overlap_len_require 15 --overlap_diff_limit 1 \
+        --merged_out={output.merged} -o {output.R1_un} -O {output.R2_un} -h {output.html} -j {output.json} \
+        -R '{params.report}' -w {threads} -l {params.readlength} 2> {log}
         """
 
 

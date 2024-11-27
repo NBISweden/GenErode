@@ -128,7 +128,7 @@ rule merge_CpG_genotype_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -154,7 +154,7 @@ rule sort_CpG_genotype_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -174,7 +174,7 @@ rule merge_all_CpG_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -200,7 +200,7 @@ rule sort_all_CpG_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -217,7 +217,7 @@ rule make_noCpG_bed:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} > {output.no_CpG_bed} 2> {log}
@@ -238,7 +238,7 @@ rule merge_CpG_repeats_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
@@ -257,7 +257,7 @@ rule sort_CpG_repeats_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -274,7 +274,7 @@ rule make_noCpG_repma_bed:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.merged_bed} > {output.no_CpG_repma_bed} 2> {log}

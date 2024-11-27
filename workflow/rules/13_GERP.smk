@@ -331,7 +331,7 @@ rule align2target:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
-        "docker://nbisweden/generode-bwa:latest"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
@@ -349,7 +349,7 @@ rule index_gerp_bams:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_index_gerp_bams.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -366,7 +366,7 @@ rule gerp_bam_stats:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_gerp_bam_stats.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -411,7 +411,7 @@ rule bam2fasta:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"  # This container includes python 3.7.6 with default python modules
+        "oras://community.wave.seqera.io/library/samtools_python:2e56d0f345426c81"
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then
@@ -420,7 +420,7 @@ rule bam2fasta:
 
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          samtools mpileup -aa -r $contig {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2> {log} &&
+          samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2> {log} &&
           python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log} &&
           echo "BAM file converted to fasta for" $contig >> {log}
         done
@@ -696,7 +696,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
@@ -712,7 +712,7 @@ rule split_chunk_bed_files:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools makewindows -b {input.chunk_bed} -w 10000000 > {output.chunk_win_bed} 2> {log}

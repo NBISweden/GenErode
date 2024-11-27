@@ -23,7 +23,7 @@ rule filter_bam_mapped_mq:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_bam_mapped_mq.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools view -h -b -F 4 -q 30 -@ {threads} -o {output.filtered} {input.bam} 2> {log}
@@ -43,7 +43,7 @@ rule subsample_bams:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsample_bams.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         depth=`head -n 1 {input.dp} | cut -d' ' -f 1`
@@ -68,7 +68,7 @@ rule index_subsampled_bams:
     group:
         "subsampled_bam_group"
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -87,7 +87,7 @@ rule subsampled_bam_stats:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_stats.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -114,7 +114,7 @@ rule subsampled_bam_depth:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_depth.log",
     singularity:
-        "docker://biocontainers/samtools:v1.9-4-deb_cv1"
+        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
         if [ {params.cov} = "True" ] # include sites with missing data / zero coverage

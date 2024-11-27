@@ -517,7 +517,7 @@ rule filtered_vcf2bed:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.{chr}_filtered_vcf2bed.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         gzip -cd {input.vcf} | grep -v "^#" | awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.bed} 2> {log}
@@ -661,7 +661,7 @@ rule filter_biallelic_missing_vcf:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
     singularity:
-        "docker://nbisweden/generode-bedtools-2.29.2"
+        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
