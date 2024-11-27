@@ -80,6 +80,7 @@ set-threads:
   vcf2plink_pca: 20
   filter_vcf_hwe: 20
   vcf2plink_hwe: 20
+  outgroups2fastq: 20
   outgroup_fastqc: 20
   align2target: 80
   bam2fasta: 20

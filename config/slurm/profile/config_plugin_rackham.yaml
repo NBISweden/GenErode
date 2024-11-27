@@ -75,6 +75,7 @@ set-threads:
   plink_eigenvec: 1
   filter_vcf_hwe: 2
   vcf2plink_hwe: 2
+  outgroups2fastq: 2
   outgroup_fastqc: 2
   align2target: 10
   bam2fasta: 2
