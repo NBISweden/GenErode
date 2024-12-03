@@ -14,9 +14,13 @@ not need to be loaded.
 default in your home directory which will quickly run out of 
 storage space. You can tell it to use your `scratch` instead, a 
 temporary directory with unlimited space by adding this row 
-to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`.
-The files in this temporary directory are deleted if they have
-not been used for 30 days. 
+to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`. 
+The files in this temporary directory are deleted if they have 
+not been used for 30 days. Alternatively, you can set the cache 
+directory to a directory in your storage project, adding this 
+line to your `~/.bashrc` (replacing the path to an existing 
+directory in your storage project):
+`export APPTAINER_CACHEDIR=/cfs/klemming/projects/supr/sllstore.../.../apptainer-cache` 
 
 2) After cloning the repository, change permissions for the 
 Snakefile:
