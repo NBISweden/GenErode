@@ -15,6 +15,8 @@ default in your home directory which will quickly run out of
 storage space. You can tell it to use your `scratch` instead, a 
 temporary directory with unlimited space by adding this row 
 to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`.
+The files in this temporary directory are deleted if they have
+not been used for 30 days. 
 
 2) After cloning the repository, change permissions for the 
 Snakefile:
