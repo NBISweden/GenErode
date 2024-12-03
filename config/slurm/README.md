@@ -28,10 +28,13 @@ version. The latest conda environment contains the Snakemake
 executor plugin for slurm. Since home directories on Dardel 
 are limited in storage space, you need to create a directory in 
 your storage project for the conda environment to be installed 
-in, and run the following command instead of the command above:
+in, and run the following command instead of the command above
+(replacing the path with the path to the directory in your storage
+project for the conda environment): 
 
 ```
-conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
+export CONDA_ENVS_PATH=/cfs/klemming/projects/supr/sllstore.../.../conda-envs
+conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../.../conda-envs/generode
 ```
 
 > Note that you can save storage space in your storage project 
@@ -65,7 +68,7 @@ following commands, replacing the path to the location of
 the conda environment accordingly:
 
 ```
-export CONDA_ENVS_PATH=/cfs/klemming/home/.../
+export CONDA_ENVS_PATH=/cfs/klemming/projects/supr/sllstore.../.../conda-envs/
 conda activate generode
 ```
 
