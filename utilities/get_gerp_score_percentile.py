@@ -47,12 +47,11 @@ def gerp_hist(file, low, high):
     return bin_edges, total
 
 def approx_percentile(p, bin_edges, total):
-    # find the 99th percentile from the histogram
-    p = 99
+    print(p, "th percentile:")
     # calculate the cumulative sums of histogram counts in percentages
     cs = np.cumsum(total)/np.sum(total) * 100
     # how many values of the cumulative sum in percentage are lower or equal to p? This is used as index in the next step.
-    i = len(cs[cs <= p])
+    i = len(cs[cs <= int(p)])
     # return the maximum gerp score of the bin that is equal or lower to p% with i as index. All gerp scores higher than that are the top 1-p%.
     print(bin_edges[i])
 
