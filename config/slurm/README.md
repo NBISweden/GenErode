@@ -3,7 +3,7 @@
 1) Load the following modules:
 
 ```
-module load PDC bioinfo-tools conda apptainer tmux
+module load PDC bioinfo-tools apptainer tmux
 ```
 
 > Note that `tmux` is only available as a module on Dardel 
@@ -14,7 +14,13 @@ not need to be loaded.
 default in your home directory which will quickly run out of 
 storage space. You can tell it to use your `scratch` instead, a 
 temporary directory with unlimited space by adding this row 
-to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`.
+to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`. 
+The files in this temporary directory are deleted if they have 
+not been used for 30 days. Alternatively, you can set the cache 
+directory to a directory in your storage project, adding this 
+line to your `~/.bashrc` (replacing the path to an existing 
+directory in your storage project):
+`export APPTAINER_CACHEDIR=/cfs/klemming/projects/supr/sllstore.../.../apptainer-cache` 
 
 2) After cloning the repository, change permissions for the 
 Snakefile:
@@ -28,10 +34,13 @@ version. The latest conda environment contains the Snakemake
 executor plugin for slurm. Since home directories on Dardel 
 are limited in storage space, you need to create a directory in 
 your storage project for the conda environment to be installed 
-in, and run the following command instead of the command above:
+in, and run the following command instead of the command above
+(replacing the path with the path to the directory in your storage
+project for the conda environment): 
 
 ```
-conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../generode
+export CONDA_ENVS_PATH=/cfs/klemming/projects/supr/sllstore.../.../conda-envs
+conda env create -f environment.yml -p /cfs/klemming/projects/supr/sllstore.../.../conda-envs/generode
 ```
 
 > Note that you can save storage space in your storage project 
@@ -65,7 +74,7 @@ following commands, replacing the path to the location of
 the conda environment accordingly:
 
 ```
-export CONDA_ENVS_PATH=/cfs/klemming/home/.../
+export CONDA_ENVS_PATH=/cfs/klemming/projects/supr/sllstore.../.../conda-envs/
 conda activate generode
 ```
 
