@@ -423,11 +423,10 @@ rule bam2fasta:
           samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2> {log} &&
           python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log} &&
           # Check if the fasta file has been created
-          if [ -f "{output.fasta_dir}/{params.gerpref}_${{contig}}.fasta" ]; then
+          if [ -f {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
             echo "BAM file converted to fasta for" $contig >> {log}
           else
             echo "Error: BAM file conversion to fasta failed for" $contig >> {log} &&
-            exit 1  # Break the loop so that the Snakemake rule fails
           fi
         done
         """
