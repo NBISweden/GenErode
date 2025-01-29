@@ -416,6 +416,8 @@ rule bam2fasta:
         """
         if [ ! -d {output.fasta_dir} ]; then
           mkdir -p {output.fasta_dir}
+        else
+          touch -m {output.fasta_dir}
         fi
 
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
