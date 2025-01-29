@@ -426,7 +426,8 @@ rule bam2fasta:
           if [ -f {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
             echo "BAM file converted to fasta for" $contig >> {log}
           else
-            echo "Error: BAM file conversion to fasta failed for" $contig >> {log} &&
+            echo "BAM file conversion to fasta failed for" $contig >> {log} &&
+            exit 1 # Break the loop so that the Snakemake rule fails 
           fi
         done
         """
