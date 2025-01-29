@@ -427,6 +427,7 @@ rule bam2fasta:
             echo "BAM file converted to fasta for" $contig >> {log}
           else
             echo "BAM file conversion to fasta failed for" $contig >> {log} &&
+            rm -r {output.fasta_dir} && # Remove the output directory so that Snakemake knows the rule failed
             exit 1 # Break the loop so that the Snakemake rule fails 
           fi
         done
