@@ -423,13 +423,18 @@ rule bam2fasta:
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
           samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2> {log} &&
-          python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log} &&
-          # Check if the fasta file has been created
+          python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log}
+        done
+
+        # Check if the fasta files have been created
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # check each contig
+        do
           if [ -f {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
             echo "BAM file converted to fasta for" $contig >> {log}
           else
             echo "BAM file conversion to fasta failed for" $contig >> {log} &&
             rm -r {output.fasta_dir} && # Remove the output directory so that Snakemake knows the rule failed
+            echo "Removed {output.fasta_dir}" >> {log} &&
             exit 1 # Break the loop so that the Snakemake rule fails 
           fi
         done
