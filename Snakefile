@@ -276,20 +276,24 @@ if config["snpEff"]:
 
 ###
 if config["gerp"]:
-    include: "workflow/rules/0.1_reference_genome_preps.smk"
-    include: "workflow/rules/0.2_repeat_identification.smk"
-    include: "workflow/rules/1.1_fastq_processing.smk"
-    include: "workflow/rules/2_mapping.smk"
-    include: "workflow/rules/3.1_bam_rmdup_realign_indels.smk"
-    include: "workflow/rules/3.2_historical_bam_mapDamage.smk"
-    include: "workflow/rules/3.3_bam_subsampling.smk"
-    include: "workflow/rules/4_genotyping.smk"
-    include: "workflow/rules/5_CpG_identification.smk"
-    include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
-    include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
-    include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
-    include: "workflow/rules/9_merge_vcfs.smk"
-    include: "workflow/rules/13_GERP.smk"
+    if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]): 
+        include: "workflow/rules/0.1_reference_genome_preps.smk"
+        include: "workflow/rules/0.2_repeat_identification.smk"
+        include: "workflow/rules/1.1_fastq_processing.smk"
+        include: "workflow/rules/2_mapping.smk"
+        include: "workflow/rules/3.1_bam_rmdup_realign_indels.smk"
+        include: "workflow/rules/3.2_historical_bam_mapDamage.smk"
+        include: "workflow/rules/3.3_bam_subsampling.smk"
+        include: "workflow/rules/4_genotyping.smk"
+        include: "workflow/rules/5_CpG_identification.smk"
+        include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
+        include: "workflow/rules/8.1_vcf_CpG_filtering.smk"
+        include: "workflow/rules/8.2_vcf_qual_repeat_filtering.smk"
+        include: "workflow/rules/9_merge_vcfs.smk"
+        include: "workflow/rules/13_GERP.smk"
+    else:
+        include: "workflow/rules/0.1_reference_genome_preps.smk"
+        include: "workflow/rules/13_GERP.smk"
 ###
 
 
