@@ -702,7 +702,7 @@ rule plot_gerp_hist:
 rule split_vcf_files:
     """Split individual VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf=rules.filter_biallelic_missing_vcf.output.filtered,
+        vcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:
