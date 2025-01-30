@@ -30,6 +30,8 @@ set-threads:
   fastqc_historical_merged: 20
   fastqc_historical_unmerged: 20
   fastqc_modern_trimmed: 20
+  historical_mito_bams_qualimap: 10
+  historical_merged_mito_bams_qualimap: 10
   map_historical: 80
   sai2bam: 80
   map_modern: 80
@@ -78,8 +80,11 @@ set-threads:
   repmasked_bcf2vcf: 20
   filter_biallelic_missing_vcf: 60
   vcf2plink_pca: 20
+  plink_eigenvec: 20
   filter_vcf_hwe: 20
   vcf2plink_hwe: 20
+  build_snpEff_db: 20
+  annotate_vcf: 20
   outgroups2fastq: 20
   outgroup_fastqc: 20
   align2target: 80

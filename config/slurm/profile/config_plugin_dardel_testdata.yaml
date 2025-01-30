@@ -16,24 +16,88 @@ default-resources:
   nodes: 1 # one node on Dardel from the shared partition
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 8 # number of threads per task, corresponds to cpus-per-task or cores
+  mem_mb: f"{threads*800}" # calculate available memory in MB for specific number of threads
   runtime: 30 # default runtime in minutes
 
 ## set-threads: map rule names to threads
 set-threads:
   repeatmodeler: 16
   repeatmasker: 16
+  fastqc_historical_raw: 8
+  fastqc_modern_raw: 8
+  fastp_historical: 8
+  fastp_modern: 8
+  fastqc_historical_merged: 8
+  fastqc_historical_unmerged: 8
+  fastqc_modern_trimmed: 8
+  historical_mito_bams_qualimap: 8
+  historical_merged_mito_bams_qualimap: 8
   map_historical: 16
   sai2bam: 16
   map_modern: 16
   sorted_bam_qualimap: 16
+  merge_historical_bams_per_index: 8
+  merge_modern_bams_per_index: 8
   merged_index_bam_qualimap: 16
+  rmdup_historical_bams: 16
+  rmdup_modern_bams: 8
   rmdup_bam_qualimap: 16
+  merge_historical_bams_per_sample: 8
+  merge_modern_bams_per_sample: 8
   merged_sample_bam_qualimap: 16
   indel_realigner_targets: 16
   indel_realigner: 16
   realigned_bam_qualimap: 16
+  realigned_bam_group: 8
+  rescale_historical: 8
   rescaled_bam_qualimap: 16
+  rescaled_bam_group: 8
+  filter_bam_mapped_mq: 8
+  subsample_bams: 8
+  subsampled_bam_qualimap: 16
+  variant_calling: 8
+  sort_vcfs: 8
+  make_noCpG_bed: 8
+  make_noCpG_repma_bed: 8
+  intersect_sexchr_repma_beds: 8
+  intersect_autos_repma_beds: 8
+  intersect_sexchr_CpG_repma_beds: 8
+  intersect_autos_CpG_repma_beds: 8
+  remove_CpG_vcf: 16
+  CpG_vcf2bcf: 8
+  remove_snps_near_indels: 8
+  filter_vcfs_qual_dp: 8
+  filter_vcfs_allelic_balance: 8
+  remove_repeats_vcf: 16
+  filtered_vcf2bcf: 8
+  merge_all_vcfs: 16
+  filter_vcf_biallelic: 8
+  filter_vcf_missing: 8
+  remove_chromosomes: 8
+  repmasked_bcf2vcf: 8
+  filter_biallelic_missing_vcf: 16
+  vcf2plink_pca: 8
+  plink_eigenvec: 8
+  filter_vcf_hwe: 8
+  vcf2plink_hwe: 8
+  build_snpEff_db: 8
+  annotate_vcf: 8
+  outgroups2fastq: 8
+  outgroup_fastqc: 8
   align2target: 16
+  bam2fasta: 8
+  concatenate_fasta_per_contig: 8
+  compute_gerp: 8
+  gerp2coords: 8
+  get_ancestral_state: 8
+  produce_contig_out: 8
+  merge_per_chunk: 8
+  merge_gerp_gz: 8
+  gerp_derived_alleles: 8
+  merge_gerp_alleles_per_chunk: 8
+  merge_gerp_alleles_gz: 8
+  relative_mutational_load_per_sample: 8
+
 
 ## set-resources: map rule names to resources in general
 set-resources:
