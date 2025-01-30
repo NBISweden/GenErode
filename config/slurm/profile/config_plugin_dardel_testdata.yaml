@@ -1,0 +1,45 @@
+# Configuration file for slurm plugin (Snakemake >8.0.0) for Dardel cluster at PDC/KTH
+# Updated for github actions test data (in .test/data)
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+printshellcmds: true
+software-deployment-method: apptainer
+use-apptainer: True
+apptainer-args: "-B /cfs/klemming"
+
+# slurm resources
+## default-resources: applied to all jobs, overruled by resources defined below for jobs
+default-resources: 
+  slurm_account: XXX-XX-XXX # update this to your slurm account
+  slurm_partition: shared # use Dardel’s shared partition
+  nodes: 1 # one node on Dardel from the shared partition
+  ntasks: 1 # number of concurrent tasks / ranks
+  threads: 8 # number of threads per task, corresponds to cpus-per-task or cores
+  runtime: 30 # default runtime in minutes
+
+## set-threads: map rule names to threads
+set-threads:
+  repeatmodeler: 16
+  repeatmasker: 16
+  map_historical: 16
+  sai2bam: 16
+  map_modern: 16
+  sorted_bam_qualimap: 16
+  merged_index_bam_qualimap: 16
+  rmdup_bam_qualimap: 16
+  merged_sample_bam_qualimap: 16
+  indel_realigner_targets: 16
+  indel_realigner: 16
+  realigned_bam_qualimap: 16
+  rescaled_bam_qualimap: 16
+   align2target: 16
+
+## set-resources: map rule names to resources in general
+set-resources:
+  - repeatmodeler:runtime=240
+  - repeatmasker:runtime=240
+  - map_historical:runtime=120
+  - sai2bam:runtime=120
+  - map_modern:runtime=120
+  - gerp_derived_alleles:runtime=120
