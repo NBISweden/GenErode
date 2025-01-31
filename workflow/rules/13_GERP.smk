@@ -429,7 +429,7 @@ rule bam2fasta:
         # Check if the fasta files have been created
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # check each contig
         do
-          if [ -f {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
+          if [ -s {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
             echo "BAM file converted to fasta for" $contig >> {log}
           else
             echo "BAM file conversion to fasta failed for" $contig >> {log} &&
