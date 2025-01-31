@@ -94,8 +94,6 @@ rule rescaled_bam_fastqc:
         dir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc"),
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc",
-    group:
-        "rescaled_bam_group"
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_fastqc.log",
     threads: 2
