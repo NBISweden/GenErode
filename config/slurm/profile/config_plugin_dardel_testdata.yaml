@@ -16,10 +16,9 @@ default-resources:
   nodes: 1 # one node on Dardel from the shared partition
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 8 # number of threads per task, corresponds to cpus-per-task or cores
-  mem_mb: f"{threads*800}" # calculate available memory in MB for specific number of threads
   runtime: 30 # default runtime in minutes
 
-## set-threads: map rule names to threads
+## set-threads: map rule names to cpus-per-task
 set-threads:
   repeatmodeler: 16
   repeatmasker: 16
@@ -107,3 +106,5 @@ set-resources:
   - sai2bam:runtime=120
   - map_modern:runtime=120
   - gerp_derived_alleles:runtime=120
+  - outgroup_fastqc:mem_mb=8000
+  - align2target:mem_mb=16000
