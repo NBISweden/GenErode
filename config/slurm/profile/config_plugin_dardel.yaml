@@ -14,13 +14,18 @@ default-resources:
   slurm_partition: shared # use Dardel’s shared partition
   nodes: 1 # one node on Dardel from the shared partition
   ntasks: 1 # number of concurrent tasks / ranks
-  threads: 10 # number of threads, corresponding to cpus-per-task or cores
-  runtime: 120 # default runtime in minutes
+  threads: 10 # number of threads, corresponding to cpus-per-task or cores (adjust per rule under set-threads)
+  runtime: 120 # default runtime in minutes (adjust per rule under set-resources)
 
 ## set-threads: map rule names to threads
 set-threads:
+  bwa_index_reference: 40
+  picard_fasta_dict: 40
   repeatmodeler: 80
   repeatmasker: 80
+  make_repeats_bed: 80
+  sort_repeats_bed: 80
+  make_no_repeats_bed: 80
   fastqc_historical_raw: 20
   fastqc_modern_raw: 20
   fastp_historical: 40
@@ -28,10 +33,18 @@ set-threads:
   fastqc_historical_merged: 20
   fastqc_historical_unmerged: 20
   fastqc_modern_trimmed: 20
-  map_historical_merged_to_mito: 10
-  map_historical_unmerged_to_mito: 10
-  historical_mito_bams_qualimap: 10
-  historical_merged_mito_bams_qualimap: 10
+  symlink_mito_genome: 40
+  bwa_index_mito_ref: 40
+  map_historical_merged_to_mito: 80
+  map_historical_unmerged_to_mito: 80  
+  mitogenome_bam_stats: 40
+  historical_mito_bams_qualimap: 80
+  mapped_reads_ratios: 20
+  merge_read_ratio_files: 20
+  merge_historical_mitogenome_bams_per_sample: 80
+  merged_mitogenome_bam_stats: 40
+  historical_merged_mito_bams_qualimap: 80
+  historical_mito_bams_multiqc: 80
   map_historical: 80
   sai2bam: 80
   map_modern: 80
@@ -42,15 +55,16 @@ set-threads:
   rmdup_historical_bams: 60
   rmdup_modern_bams: 20
   rmdup_bam_qualimap: 80
-  merge_historical_bams_per_sample: 20
+  merge_historical_bams_per_sample: 40
   merge_modern_bams_per_sample: 20
-  merged_sample_bam_qualimap: 80
+  merged_sample_bam_qualimap: 120
   indel_realigner_targets: 80
   indel_realigner: 80
   realigned_bam_qualimap: 80
-  realigned_bam_group: 20
+  realigned_bam_group: 120
   realigned_bam_fastqc: 20
-  rescale_historical: 40
+  realigned_bam_depth: 120
+  rescale_historical: 80
   rescaled_bam_qualimap: 80
   rescaled_bam_group: 20
   rescaled_bam_fastqc: 20
@@ -119,10 +133,10 @@ set-resources:
   - fastqc_historical_merged:mem_mb=20000
   - fastqc_historical_unmerged:mem_mb=20000
   - fastqc_modern_trimmed:mem_mb=20000
-  - map_historical_merged_to_mito:mem_mb=10000
-  - map_historical_unmerged_to_mito:mem_mb=10000
-  - historical_mito_bams_qualimap:mem_mb=10000
-  - historical_merged_mito_bams_qualimap:mem_mb=10000
+  - map_historical_merged_to_mito:mem_mb=80000
+  - map_historical_unmerged_to_mito:mem_mb=80000
+  - historical_mito_bams_qualimap:mem_mb=80000
+  - historical_merged_mito_bams_qualimap:mem_mb=80000
   - map_historical:runtime=10080
   - map_historical:mem_mb=80000
   - sai2bam:runtime=10080
@@ -143,7 +157,7 @@ set-resources:
   - merge_historical_bams_per_sample:runtime=2880
   - merge_modern_bams_per_sample:runtime=2880
   - merged_sample_bam_qualimap:runtime=5760
-  - merged_sample_bam_qualimap:mem_mb=80000
+  - merged_sample_bam_qualimap:mem_mb=120000
   - indel_realigner_targets:runtime=7200
   - indel_realigner_targets:mem_mb=80000
   - indel_realigner:runtime=7200
