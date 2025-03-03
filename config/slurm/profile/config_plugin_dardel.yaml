@@ -45,9 +45,9 @@ set-threads:
   merged_mitogenome_bam_stats: 40
   historical_merged_mito_bams_qualimap: 80
   historical_mito_bams_multiqc: 80
-  map_historical: 80
+  map_historical: 20
   sai2bam: 80
-  map_modern: 80
+  map_modern: 20
   sorted_bam_qualimap: 80
   merge_historical_bams_per_index: 20
   merge_modern_bams_per_index: 20
