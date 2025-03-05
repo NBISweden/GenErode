@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.6.0        #
+# Configuration settings for the GenErode pipeline 0.6.2        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -231,8 +231,8 @@ genotyping: False
 
 #####
 # OPTIONAL:
-# Identify CpG sites for removal from VCF files and from 
-# downstream analyses and define samples to be CpG filtered. 
+# Identify CpG sites for removal from mlRho analyses, from VCF files 
+# and downstream analyses and define samples to be CpG filtered. 
 # Three different methods are available to identify CpG sites.
 
 # This step will generate several BED files containing genome 
@@ -293,7 +293,7 @@ CpG_samplenames: []
 
 #################################################################
 #################################################################
-# Rules for BAM file processing for mlRho, and mlRho            #
+# Rules for mlRho analyses                                      #
 #################################################################
 
 #####
@@ -500,8 +500,9 @@ gerp_ref_path: ".test/data/gerp_data"
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
 # time estimates.
-# Divergence time estimates must be in millions of years for correct scaling 
-# of GERP scores (see dated phylogenetic trees from www.timetree.org).
+# Divergence time estimates must be in millions of years for consistent scaling 
+# of GERP scores across GenErode runs. Dated phylogenetic trees in millions of years 
+# are e.g. available from www.timetree.org.
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".
 tree: ".test/data/gerp_data/gerp_tree.nwk"

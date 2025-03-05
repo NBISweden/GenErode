@@ -603,8 +603,6 @@ rule realigned_bam_fastqc:
         dir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc"),
     params:
         dir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc",
-    group:
-        "realigned_bam_group"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
@@ -688,7 +686,6 @@ rule plot_dp_hist:
         pdf=report("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
             caption="../report/depth_plot.rst",
             category="BAM file processing",),
-    threads: 2
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_plot_dp_hist.log",
     script:

@@ -416,13 +416,27 @@ rule bam2fasta:
         """
         if [ ! -d {output.fasta_dir} ]; then
           mkdir -p {output.fasta_dir}
+        else
+          touch -m {output.fasta_dir}
         fi
 
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2> {log} &&
-          python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log} &&
-          echo "BAM file converted to fasta for" $contig >> {log}
+          samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2>> {log} &&
+          python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log}
+        done
+
+        # Check if the fasta files have been created
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # check each contig
+        do
+          if [ -s {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
+            echo "BAM file converted to fasta for" $contig >> {log}
+          else
+            echo "BAM file conversion to fasta failed for" $contig >> {log} &&
+            rm -r {output.fasta_dir} && # Remove the output directory so that Snakemake knows the rule failed
+            echo "Removed {output.fasta_dir}" >> {log} &&
+            exit 1 # Break the loop so that the Snakemake rule fails 
+          fi
         done
         """
 
@@ -688,7 +702,7 @@ rule plot_gerp_hist:
 rule split_vcf_files:
     """Split individual VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf=rules.filter_biallelic_missing_vcf.output.filtered,
+        vcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:

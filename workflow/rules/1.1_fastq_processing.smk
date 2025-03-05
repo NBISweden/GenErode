@@ -44,8 +44,6 @@ rule fastqc_historical_raw:
         dir=directory("data/raw_reads_symlinks/historical/stats/{sample}_{index}_{lane}_R{nr}_fastqc"),
     params:
         dir="data/raw_reads_symlinks/historical/stats",
-    group:
-        "historical_fastq_raw_group"
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
     threads: 2
@@ -216,8 +214,6 @@ rule fastqc_historical_merged:
         dir="results/historical/trimming/stats",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
-    group:
-        "historical_fastq_trimmed_group"
     threads: 2
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
@@ -239,8 +235,6 @@ rule fastqc_historical_unmerged:
         dir="results/historical/trimming/stats",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
-    group:
-        "historical_fastq_trimmed_group"
     threads: 2
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
