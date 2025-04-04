@@ -9,6 +9,9 @@ dir_list = os.listdir(directory)
 
 depth_table = "depth_table.txt"
 
+# Add header line to the depth_table file
+with open(depth_table, 'w') as file:
+    file.write("sample mean_depth minimum_depth_threshold maximum_depth_threshold\n")
 
 for f in dir_list:
     if f.endswith('dpstats.txt'):
@@ -16,6 +19,4 @@ for f in dir_list:
             line = file.readlines()[0]
             with open(depth_table, 'a') as file:
                 file.write(f.split('.')[0] + ' ' + line + '\n')
-            file.close()
-        file.close()
 
