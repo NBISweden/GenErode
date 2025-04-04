@@ -152,6 +152,7 @@ set-resources:
   - rmdup_historical_bams:runtime=4400
   - rmdup_historical_bams:mem_mb=60000
   - rmdup_modern_bams:runtime=4400
+  - rmdup_modern_bams:mem_mb=20000
   - rmdup_bam_qualimap:runtime=5760
   - rmdup_bam_qualimap:mem_mb=80000
   - merge_historical_bams_per_sample:runtime=2880
