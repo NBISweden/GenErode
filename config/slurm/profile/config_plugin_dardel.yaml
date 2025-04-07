@@ -113,7 +113,7 @@ set-threads:
   produce_contig_out: 40
   merge_per_chunk: 40
   merge_gerp_gz: 40
-  gerp_derived_alleles: 40
+  gerp_derived_alleles: 60
   merge_gerp_alleles_per_chunk: 80
   merge_gerp_alleles_gz: 80
   relative_mutational_load_per_sample: 40
@@ -249,6 +249,7 @@ set-resources:
   - merge_per_chunk:runtime=1440
   - merge_gerp_gz:runtime=1440
   - gerp_derived_alleles:runtime=10080
+  - gerp_derived_alleles:mem_mb=128000
   - merge_gerp_alleles_per_chunk:runtime=1440
   - merge_gerp_alleles_gz:runtime=1440
   - relative_mutational_load_per_sample:runtime=1440
