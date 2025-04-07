@@ -102,21 +102,21 @@ set-threads:
   vcf2plink_hwe: 20
   build_snpEff_db: 20
   annotate_vcf: 20
-  outgroups2fastq: 20
-  outgroup_fastqc: 20
-  align2target: 80
-  bam2fasta: 20
-  concatenate_fasta_per_contig: 20
-  compute_gerp: 40
-  gerp2coords: 20
-  get_ancestral_state: 20
-  produce_contig_out: 20
-  merge_per_chunk: 20
-  merge_gerp_gz: 20
-  gerp_derived_alleles: 20
-  merge_gerp_alleles_per_chunk: 40
-  merge_gerp_alleles_gz: 40
-  relative_mutational_load_per_sample: 20
+  outgroups2fastq: 40
+  outgroup_fastqc: 40
+  align2target: 40
+  bam2fasta: 60
+  concatenate_fasta_per_contig: 80
+  compute_gerp: 60
+  gerp2coords: 80
+  get_ancestral_state: 60
+  produce_contig_out: 40
+  merge_per_chunk: 40
+  merge_gerp_gz: 40
+  gerp_derived_alleles: 40
+  merge_gerp_alleles_per_chunk: 80
+  merge_gerp_alleles_gz: 80
+  relative_mutational_load_per_sample: 40
 
 ## set-resources: map rule names to resources in general
 set-resources:
@@ -223,15 +223,20 @@ set-resources:
   - vcf2plink_hwe:runtime=300
   - build_snpEff_db:runtime=300
   - annotate_vcf:runtime=300
-  - outgroup_fastqc:runtime=20
-  - outgroup_fastqc:mem_mb=20000
+  - outgroups2fastq:runtime=300
+  - outgroups2fastq:mem_mb=100000
+  - outgroup_fastqc:runtime=60
+  - outgroup_fastqc:mem_mb=80000
   - align2target:runtime=4400
   - align2target:mem_mb=80000
   - bam2fasta:runtime=1440
+  - bam2fasta:mem_mb=120000
   - concatenate_fasta_per_contig:runtime=1440
   - compute_gerp:runtime=1440
+  - compute_gerp:mem_mb=120000
   - gerp2coords:runtime=1440
   - get_ancestral_state:runtime=1440
+  - get_ancestral_state:mem_mb=120000
   - produce_contig_out:runtime=1440
   - merge_per_chunk:runtime=1440
   - merge_gerp_gz:runtime=1440
