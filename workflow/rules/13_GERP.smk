@@ -327,7 +327,7 @@ rule align2target:
         bam=temp("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam"),
     threads: 8
     params:
-        extra=r"-R '@RG\tID:{input.fastq}\tSM:{input.fastq}\tPL:ILLUMINA\tPI:330'",
+        extra=r"-R '@RG\tID:{gerpref}\tSM:{gerpref}\tPL:ILLUMINA\tPI:330'",
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
