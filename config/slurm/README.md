@@ -10,6 +10,17 @@ module load PDC bioinfo-tools apptainer tmux
 but the equivalent tool `screen` is pre-installed and does 
 not need to be loaded. 
 
+> The Snakemake cache is stored per default in your home directory
+and will quickly run out of storage space. You can tell
+Snakemake to use a directory in your storage project instead by 
+running the following commands (replacing the path with the
+path to an existing directory in your storage project):
+`mkdir -p /cfs/klemming/projects/supr/sllstore.../.../GenErode/.cache`
+`export XDG_CACHE_HOME=/cfs/klemming/projects/supr/sllstore.../.../GenErode/.cache`
+You will have to run the export command every time you start a new 
+tmux session. Alternatively, you can add the export command to 
+your `~/.bashrc` file. 
+
 > Apptainer (former singularity) will store its cache per 
 default in your home directory which will quickly run out of 
 storage space. You can tell it to use your `scratch` instead, a 
@@ -61,11 +72,15 @@ their compute resources can be updated in `slurm/config.yaml`.
 Rule or group jobs are using `default-resources` unless more threads
 (corresponding to cpus-per-task) or longer run times are required,
 which are specified per rule or group job under `set-threads` or
-`set-resources`, respectively. Memory in MB is automatically calculated
-from the number of threads specified under `default-resources` or
-`set-threads`, respectively.  
+`set-resources`, respectively. 
 
-5) Start GenErode the following:
+> Note that software that can be run with multi-threading (e.g. `fastp`, 
+`bwa`, `samtools`) require 2-4X more memory (specified with `mem_mb` 
+under `set-resources`) than the number of threads. Java tools like 
+`Picard` can be optimized by providing a very small number of 
+threads and a large amount of memory. 
+
+5) Once the setup (1-4) is complete, start GenErode the following:
 
 - Open a tmux session (alternatively, you can use screen)
 
