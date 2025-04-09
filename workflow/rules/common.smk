@@ -384,32 +384,6 @@ if config["snpEff"]:
 
 ###
 # GERP
-# Functions to run GERP analysis in parallel by splitting the genome into chunks
-def create_refbedfile(reference_fasta, bedfile):
-    from itertools import groupby
-    with open(reference_fasta, "r") as fasta_in, open(bedfile, "w") as bedfile_out:
-        for header, seq in groupby(fasta_in, lambda x: x.startswith(">")):
-            if header:
-                contig = next(seq).strip(">").strip()
-            seq_length = len("".join(seq).replace("\n", ""))
-            if seq_length > 0:
-                bedfile_out.write(contig + "\t0\t" + str(seq_length) + "\n")
-
-def split_ref_bed(refbedfile, outdir, chromosomelist):
-    bed_df = pd.read_csv(refbedfile, sep="\t", header=None)
-    bed_df = bed_df[~bed_df[0].isin(chromosomelist)] # remove any scaffolds/contigs in the list of sex-chromosomal scaffolds/contigs, if provided
-    if len(bed_df) >= 200:
-        lines = len(bed_df) // 200
-    elif len(bed_df) < 200:
-        lines = len(bed_df) // len(bed_df)
-    chunks = [bed_df[i : i + lines] for i in range(0, bed_df.shape[0], lines)]
-    c = 1
-    for chunk in chunks:
-        outfile = outdir + "chunk" + str(c) + ".bed"
-        chunk.to_csv(outfile, sep="\t", index=False, header=False)
-        c += 1
-
-# Only run this code if the GERP step is run
 if config["gerp"]:
     # GERP input fasta path
     if config["gerp_ref_path"].endswith("/"):
@@ -424,29 +398,11 @@ if config["gerp"]:
     ALL_GERP_REF_NAMES = GERP_REF_NAMES[:]
     ALL_GERP_REF_NAMES.append(REF_NAME)  # names of all genomes in the analysis, incl. the target species
 
-    # create chunk bed files and chunk list
-    # ref_bed = REF_DIR + "/" + REF_NAME + ".bed"
-    # if len(sexchromosomeList) > 0:
-    #     chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_autos/"
-    # elif len(sexchromosomeList) == 0:
-    #     chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_genome/"
-
-    # create output directory for chunk bed files, if not present yet
-    # if not os.path.exists(chunk_bed_outdir):
-    #     os.makedirs(chunk_bed_outdir)
-    #     print("Created output directory for chunk bed files: ", chunk_bed_outdir)
-
-    # # create bed file of the genome, if not present yet
-    # if not os.path.isfile(ref_bed):
-    #     create_refbedfile(config["ref_path"], ref_bed)
-    #     print("Created reference genome bed file: ", config["ref_path"], ref_bed)
-
-    # split the reference bed file into chunks and store a list of the chunk names in a list
-    # split_ref_bed(ref_bed, chunk_bed_outdir, sexchromosomeList)
-    # CHUNK_BED_FILES = [file for file in os.listdir(chunk_bed_outdir) if file.endswith(".bed")]  # list of the chunk bed files present in the directory after running the splitting
-    # if len(sexchromosomeList) > 0:
-    #     print("Split the reference genome bed file into chunks, excluding sex-chromosomal scaffolds/contigs")
-    # elif len(sexchromosomeList) == 0:
-    #     print("Split the reference genome bed file into chunks")
-
-    # CHUNKS = [bed.replace(".bed", "") for bed in CHUNK_BED_FILES]
+    # Create list of chunk names for parallelization of GERP step
+    # Adjust zero padding depending on the number of chunks set in the config file
+    if config["gerp_chunks"] < 100:
+        CHUNKS = ["chunk" + str(i).zfill(2) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+    elif config["gerp_chunks"] >= 100:
+        CHUNKS = ["chunk" + str(i).zfill(3) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+    elif config["gerp_chunks"] >= 1000:
+        CHUNKS = ["chunk" + str(i).zfill(4) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names

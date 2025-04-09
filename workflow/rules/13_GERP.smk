@@ -250,20 +250,27 @@ def all_GERP_outputs(wildcards):
 
 # snakemake rules
 localrules:
+    split_ref_bed,
     fasta_to_fa,
     fna_to_fa,
     split_chunk_bed_files,
     relative_mutational_load_plot,
 
 rule split_ref_bed:
+    """Split bed files to run the analysis in chunks."""
     input:
-        ref_bed = REF_DIR + "/" + REF_NAME + ".bed",
+        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
     output:
-        split_beds = directory(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/"),
+        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
+    params:
+        chunks=config["gerp_chunks"],
+        prefix="chunk",
     log:
         "results/logs/13_GERP/split_ref_bed.log",
-    run:
-        # Split bed files to run the analysis in chunks
+    shell:
+        """
+        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.prefix}
+        """
 
 rule fasta_to_fa:
     """Rename fasta files for outgroup species."""
