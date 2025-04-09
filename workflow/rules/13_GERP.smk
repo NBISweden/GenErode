@@ -244,12 +244,14 @@ rule split_ref_bed:
         chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
             chr=CHR, chunk=CHUNKS,),
     params:
+        chunk_bed_dir=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/",
         chunks=config["gerp_chunks"],
         prefix="chunk",
     log:
         "results/logs/13_GERP/split_ref_bed.log",
     shell:
         """
+        cd {params.chunk_bed_dir}
         split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.prefix}
         """
 
