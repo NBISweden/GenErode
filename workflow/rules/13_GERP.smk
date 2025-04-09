@@ -34,7 +34,7 @@ all_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam
     gerpref=GERP_REF_NAMES,))
 all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", 
     chr=CHR, 
-    chunk=CHUNK_NAMES,))
+    chunk=CHUNKS,))
 
 # Functions used by rules of this part of the pipeline
 def rel_load_table_inputs(wildcards):
