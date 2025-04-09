@@ -492,7 +492,8 @@ gerp: True
 
 # Number of genome chunks for parallelization of GERP step. 
 # Set this to the number of contigs/scaffolds in the reference genome
-# assembly if the assembly consists of less than 200 contigs/scaffolds. 
+# assembly or smaller if the assembly consists of less than 200 
+# contigs/scaffolds. 
 gerp_chunks: 3 # default: 200
 
 # Full path to directory containing reference genomes of outgroup species in 
