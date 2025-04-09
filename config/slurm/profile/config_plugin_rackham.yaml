@@ -84,7 +84,7 @@ set-threads:
   gerp2coords: 2
   get_ancestral_state: 2
   produce_contig_out: 2
-  merge_per_chunk: 2
+  merge_gerp_per_chunk: 2
   merge_gerp_gz: 2
   gerp_derived_alleles: 2
   merge_gerp_alleles_per_chunk: 5
@@ -168,7 +168,7 @@ set-resources:
   - gerp2coords:runtime=1440
   - get_ancestral_state:runtime=1440
   - produce_contig_out:runtime=1440
-  - merge_per_chunk:runtime=1440
+  - merge_gerp_per_chunk:runtime=1440
   - merge_gerp_gz:runtime=1440
   - gerp_derived_alleles:runtime=10080
   - merge_gerp_alleles_per_chunk:runtime=1440

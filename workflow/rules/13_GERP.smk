@@ -662,7 +662,7 @@ rule merge_gerp_per_chunk:
     output:
         gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
     log:
-        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_gerp_per_chunk.log",
     threads: 2
     run:
         chunk_contigs = []

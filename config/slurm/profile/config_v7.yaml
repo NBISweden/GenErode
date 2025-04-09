@@ -101,7 +101,7 @@ set-threads:
   - gerp2coords=2
   - get_ancestral_state=2
   - produce_contig_out=2
-  - merge_per_chunk=2
+  - merge_gerp_per_chunk=2
   - merge_gerp_gz=2
   - gerp_derived_alleles=2
   - merge_gerp_alleles_per_chunk=4
@@ -276,8 +276,8 @@ set-resources:
   - get_ancestral_state:mem_mb=12800
   - produce_contig_out:runtime=1440
   - produce_contig_out:mem_mb=12800
-  - merge_per_chunk:runtime=1440
-  - merge_per_chunk:mem_mb=12800
+  - merge_gerp_per_chunk:runtime=1440
+  - merge_gerp_per_chunk:mem_mb=12800
   - merge_gerp_gz:runtime=1440
   - merge_gerp_gz:mem_mb=12800
   - split_vcf_files:runtime=300
