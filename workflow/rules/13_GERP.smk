@@ -251,8 +251,7 @@ rule split_ref_bed:
         "results/logs/13_GERP/split_ref_bed.log",
     shell:
         """
-        cd {params.chunk_bed_dir}
-        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.prefix}
+        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.chunk_bed_dir}/{params.prefix}
         """
 
 rule fasta_to_fa:
