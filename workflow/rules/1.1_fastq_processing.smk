@@ -165,7 +165,7 @@ rule fastp_historical:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastp_historical.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
+        "docker://quay.io/biocontainers/fastp:0.24.0--h125f33a_0"
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c --merge --overlap_len_require 15 --overlap_diff_limit 1 \
@@ -194,7 +194,7 @@ rule fastp_modern:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastp_modern.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
+        "docker://quay.io/biocontainers/fastp:0.24.0--h125f33a_0"
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c -o {output.R1_trimmed} -O {output.R2_trimmed} \

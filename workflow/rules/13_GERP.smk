@@ -27,6 +27,14 @@ elif os.path.exists(config["modern_samples"]):
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
+# Collect output files flagged as temporary
+all_outputs.append(expand("results/gerp/fastq_files/{gerpref}.fq.gz", 
+    gerpref=GERP_REF_NAMES,))
+all_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam", 
+    gerpref=GERP_REF_NAMES,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", 
+    chr=CHR, 
+    chunk=CHUNKS,))
 
 # Functions used by rules of this part of the pipeline
 def rel_load_table_inputs(wildcards):
@@ -663,7 +671,7 @@ rule merge_gerp_per_chunk:
     output:
         gerp_chunks_merged=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates"),
     log:
-        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_per_chunk.log",
+        "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_gerp_per_chunk.log",
     threads: 2
     run:
         chunk_contigs = []

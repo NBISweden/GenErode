@@ -126,7 +126,7 @@ def sample_dict_func(dataframe):
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
-    historical_df = pd.read_csv(config["historical_samples"], sep=" ")  # read in the metadata as dataframe
+    historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
     hist_sm = samplename_list_func(historical_df)
     hist_sm_idx = samplename_index_list_func(historical_df)
@@ -148,7 +148,7 @@ else:
 
 
 if os.path.exists(config["modern_samples"]):
-    modern_df = pd.read_csv(config["modern_samples"], sep=" ")  # read in the metadata as dataframe
+    modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
     mod_sm = samplename_list_func(modern_df)
     mod_sm_idx = samplename_index_list_func(modern_df)
