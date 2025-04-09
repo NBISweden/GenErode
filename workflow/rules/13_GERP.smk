@@ -223,6 +223,15 @@ localrules:
     split_chunk_bed_files,
     relative_mutational_load_plot,
 
+rule split_ref_bed:
+    input:
+        ref_bed = REF_DIR + "/" + REF_NAME + ".bed",
+    output:
+        split_beds = directory(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/"),
+    log:
+        "results/logs/13_GERP/split_ref_bed.log",
+    run:
+        # Split bed files to run the analysis in chunks
 
 rule fasta_to_fa:
     """Rename fasta files for outgroup species."""
