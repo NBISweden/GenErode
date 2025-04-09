@@ -241,7 +241,8 @@ rule split_ref_bed:
     input:
         ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
     output:
-        chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
+        chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
+            chr=CHR, chunk=CHUNKS,),
     params:
         chunks=config["gerp_chunks"],
         prefix="chunk",
