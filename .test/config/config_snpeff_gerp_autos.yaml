@@ -492,10 +492,9 @@ gtf_path: ".test/data/references/sumatran_rhino.gtf"
 gerp: True
 
 # Number of genome chunks for parallelization of GERP step. 
-# Set this to the number of contigs/scaffolds in the reference genome
-# assembly or smaller if the assembly consists of less than 200 
-# contigs/scaffolds. 
-gerp_chunks: 3 # default: 200
+# In case the assembly consists of 200 contigs/scaffolds or less,
+# set this number to a smaller value than the number of contigs/scaffolds. 
+gerp_chunks: 2 # default: 200
 
 # Full path to directory containing reference genomes of outgroup species in 
 # FASTA format for GERP++ score estimation.
