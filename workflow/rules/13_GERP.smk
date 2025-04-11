@@ -27,6 +27,18 @@ elif os.path.exists(config["modern_samples"]):
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
+# Collect output files flagged as temporary
+all_outputs.append(expand("results/gerp/fastq_files/{gerpref}.fq.gz",                                   gerpref=GERP_REF_NAMES,))
+all_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam",                      gerpref=GERP_REF_NAMES,))
+all_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam.bai",                  gerpref=GERP_REF_NAMES,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/",        chr=CHR, gerpref=GERP_REF_NAMES, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/", chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/",     chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/",          chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/",       chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/",   chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/",       chr=CHR, chunk=CHUNKS,))
+all_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chr=CHR, chunk=CHUNKS,))
 
 # Functions used by rules of this part of the pipeline
 def rel_load_table_inputs(wildcards):
@@ -218,11 +230,29 @@ def all_GERP_outputs(wildcards):
 
 # snakemake rules
 localrules:
+    split_ref_bed,
     fasta_to_fa,
     fna_to_fa,
     split_chunk_bed_files,
     relative_mutational_load_plot,
 
+rule split_ref_bed:
+    """Split bed files to run the analysis in chunks."""
+    input:
+        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
+    output:
+        chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
+            chr=CHR, chunk=CHUNKS,),
+    params:
+        chunk_bed_dir=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/", chr=CHR,),
+        chunks=config["gerp_chunks"],
+        prefix="chunk",
+    log:
+        "results/logs/13_GERP/split_ref_bed.log",
+    shell:
+        """
+        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.chunk_bed_dir}/{params.prefix}
+        """
 
 rule fasta_to_fa:
     """Rename fasta files for outgroup species."""
