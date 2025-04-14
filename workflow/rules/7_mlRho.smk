@@ -79,7 +79,7 @@ def bed_file_genome_mlRho(wildcards):
         elif config["CpG_from_vcf_and_reference"] == True:
             bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.bed"
         else:
-            bed = "results/" + REF_NAME + ".repma.bed"
+            bed = REF_DIR + "/" + REF_NAME + ".repma.bed"
     return bed
 
 def all_mlRho_outputs(wildcards):
