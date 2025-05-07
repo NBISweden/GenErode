@@ -418,6 +418,7 @@ rule index_merged_sample_bams:
         samtools index {input.bam} {output.index} 2> {log}
         """
 
+# TODO: add rule to create symbolic links to user-provided bam files, see e.g. https://github.com/zjnolen/PopGLen/blob/b5184004f5b8650ba3a30f4565677e8ad00aeef4/workflow/rules/2.0_mapping.smk#L285
 
 rule merged_sample_bam_stats:
     """Basic statistics on mapping output"""

@@ -123,6 +123,7 @@ def sample_dict_func(dataframe):
             sample_dict[sm] = [row["samplename_index_lane"]]  # add "sample_index_lane" for "sample"
     return sample_dict
 
+# TODO: add function to collect user-provided bam files (one per sample)
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
