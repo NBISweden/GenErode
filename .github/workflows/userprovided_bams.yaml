@@ -1,4 +1,4 @@
-name: gerp
+name: userprovided_bams
 
 on:
   push:
