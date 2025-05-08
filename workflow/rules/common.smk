@@ -141,8 +141,7 @@ def user_bam_symlinks_dict_func(dataframe):
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
-    historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
-    historical_df[["samplename","library_id","lane"]] = historical_df[["samplename","library_id","lane"]].astype(str)  # convert the columns to string
+    historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
     hist_sm = samplename_func(historical_df)
     hist_sm_idx = samplename_index_func(historical_df)
@@ -166,8 +165,7 @@ else:
 
 
 if os.path.exists(config["modern_samples"]):
-    modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
-    modern_df[["samplename","library_id","lane"]] = modern_df[["samplename","library_id","lane"]].astype(str)  # convert the columns to string
+    modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
     mod_sm = samplename_func(modern_df)
     mod_sm_idx = samplename_index_func(modern_df)
