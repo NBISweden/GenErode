@@ -136,11 +136,21 @@ def sample_dict_func(dataframe):
                 sample_dict[sm] = [smidln]  # add "sample_index_lane" for "sample"
     return sample_dict
 
-# Functions to collect user-provided bam files (one per sample)
+# Functions to collect user-provided bam files
+# symbolic links dictionaries
+def user_bam_symlinks_dict_func(dataframe):
+    if "path_to_processed_bam_file" in dataframe.columns:
+        user_bam_symlinks_dict = {}
+        for index, row in dataframe.iterrows():
+            user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
+        return user_bam_symlinks_dict
+
 # lists of samples with user-provided bams and pipeline-generated bams
 def user_bam_samples_func(dataframe):
     if "path_to_processed_bam_file" in dataframe.columns:
-        user_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique())
+        user_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()])
+        if len(user_bam_samples) != len(set(user_bam_samples)):
+            raise WorkflowError("Samples found with duplicate user-provided bam files. Please check your metadata file.")
     else:
         user_bam_samples = []
     return user_bam_samples
@@ -149,16 +159,8 @@ def pipeline_bam_samples_func(dataframe):
     if "path_to_processed_bam_file" in dataframe.columns:
         pipeline_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].isnull()].unique())
     else:
-        pipeline_bam_samples = list(samples.index)
+        pipeline_bam_samples = list(dataframe["samplename"].drop_duplicates())
     return pipeline_bam_samples
-
-# symbolic links dictionaries
-def user_bam_symlinks_dict_func(dataframe):
-    if "path_to_processed_bam_file" in dataframe.columns:
-        user_bam_symlinks_dict = {}
-        for index, row in dataframe.iterrows():
-            user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
-        return user_bam_symlinks_dict
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
@@ -174,6 +176,8 @@ if os.path.exists(config["historical_samples"]):
     hist_sampleidxln_dict = sampleidxln_dict_func(historical_df)
     hist_sampleidx_dict = sampleidx_dict_func(historical_df)
     hist_user_bam_symlinks_dict = user_bam_symlinks_dict_func(historical_df)
+    hist_user_bam_sm = user_bam_samples_func(historical_df)
+    hist_pipeline_bam_sm = pipeline_bam_samples_func(historical_df)
 else:
     hist_sm = []
     hist_sm_idx = []
@@ -184,6 +188,8 @@ else:
     hist_sampleidxln_dict = {}
     hist_sampleidx_dict = {}
     hist_user_bam_symlinks_dict = {}
+    hist_user_bam_sm = []
+    hist_pipeline_bam_sm = []
 
 
 if os.path.exists(config["modern_samples"]):
@@ -198,6 +204,8 @@ if os.path.exists(config["modern_samples"]):
     mod_sampleidxln_dict = sampleidxln_dict_func(modern_df)
     mod_sampleidx_dict = sampleidx_dict_func(modern_df)
     mod_user_bam_symlinks_dict = user_bam_symlinks_dict_func(modern_df)
+    mod_user_bam_sm = user_bam_samples_func(modern_df)
+    mod_pipeline_bam_sm = pipeline_bam_samples_func(modern_df)
 else:
     mod_sm = []
     mod_sm_idx = []
@@ -207,6 +215,8 @@ else:
     mod_sampleidxln_dict = {}
     mod_sampleidx_dict = {}
     mod_user_bam_symlinks_dict = {}
+    mod_user_bam_sm = []
+    mod_pipeline_bam_sm = []
 
 
 ### Parameters regarding optional steps

@@ -53,6 +53,7 @@ if config["bam_rmdup_realign_indels"]:
     include: "workflow/rules/1.1_fastq_processing.smk"
     include: "workflow/rules/2_mapping.smk"
     include: "workflow/rules/3.1_bam_rmdup_realign_indels.smk"
+    include: "workflow/rules/3.1.1_user_provided_bam_stats.smk"
 
 
 if config["historical_bam_mapDamage"]:
