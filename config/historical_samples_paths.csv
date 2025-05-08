@@ -1,0 +1,3 @@
+samplename,library_id,lane,readgroup_id,readgroup_platform,path_to_R1_fastq_file,path_to_R2_fastq_file,path_to_processed_bam_file
+S01,07,L2,BHJ5YVABCD.L2.07,illumina,/proj/DeepSeq/P12345_1007_S7_L002_R1_001.fastq.gz,/proj/DeepSeq/P12345_1007_S7_L002_R2_001.fastq.gz
+S02,,,,,,,/proj/DeepSeq/S02_merged_processed.bam

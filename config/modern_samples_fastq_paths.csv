@@ -1,2 +1,0 @@
-samplename,library_id,lane,,readgroup_id,readgroup_platform,path_to_R1_fastq_file,path_to_R2_fastq_file
-S47,01,L7,AHCHL7XYZA.L7.01,illumina,/proj/modern/P1234_101_S47_L007_R1_001.fastq.gz,/proj/modern/P1234_101_S47_L007_R2_001.fastq.gz
