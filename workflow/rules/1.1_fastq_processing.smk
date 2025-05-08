@@ -31,7 +31,7 @@ rule fastq_historical_symbolic_links:
         shell("""
         ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
         ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_symlinks_dict[FULLSAMPLENAME]))
+        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_fastq_symlinks_dict[FULLSAMPLENAME]))
 
 
 rule fastqc_historical_raw:
@@ -96,7 +96,7 @@ rule fastq_modern_symbolic_links:
         shell("""
         ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
         ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_symlinks_dict[FULLSAMPLENAME]))
+            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_fastq_symlinks_dict[FULLSAMPLENAME]))
 
 
 rule fastqc_modern_raw:

@@ -32,76 +32,67 @@ wildcard_constraints:
 ### Code to generate lists and dictionaries from the metadata tables
 # Create sample lists
 # sample list for each fastq-file (["samplename_index_lane"])
-def samplename_index_lane_list_func(dataframe):
+def samplename_index_lane_func(dataframe):
+    # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
+    if dataframe["samplename_index_lane"].duplicated().any():
+        raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
     # convert the first column into a list
-    samplename_index_lane = list(dataframe["samplename_index_lane"])
-    sm_idx_ln = list(sorted(set(samplename_index_lane)))  # keep only unique entries and sort the lists
-    return sm_idx_ln
+    return dataframe["samplename_index_lane"].drop_duplicates()
 
 
 # sample list for merging of files per lane (["samplename_index"])
-def samplename_index_list_func(dataframe):
-    char = "_"
-    samplename_index = []
-    for i in list(dataframe["samplename_index_lane"]): # loop through the first column of the dataframe (converted to a list)
-        smid = char.join(i.split(char)[:2])  # split the string by "_" and join the elements up to the second "_" by "_" to get sample name plus index
-        samplename_index.append(smid)  # add samplename_index to the list
-    sm_idx = list(sorted(set(samplename_index)))  # keep only unique entries and sort the lists
-    return sm_idx
+def samplename_index_func(dataframe):
+    dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str)
+    return dataframe["samplename_index"].drop_duplicates()
 
 
 # sample list (["samplename"])
-def samplename_list_func(dataframe):
-    char = "_"
-    samplename = []
-    for i in list(dataframe["samplename_index_lane"]):
-        sm = i.split(char)[0]  # split the string by "_" and take the first element to get the sample name
-        samplename.append(sm)  # add the sample name to the list of sample names
-    sm = list(sorted(set(samplename)))  # keep only unique entries and sort the lists
-    return sm
+def samplename_func(dataframe):
+    return dataframe["samplename"].drop_duplicates()
 
 
 # Functions to create symbolic links to fastq files, to look up read group information and for merging of bam files
 # symbolic links dictionary
-def symlinks_dict_func(dataframe):
-    symlinks_dict = {}
+def fastq_symlinks_dict_func(dataframe):
+    # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
+    fastq_symlinks_dict = {}
     for index, row in dataframe.iterrows():
-        symlinks_dict[row["samplename_index_lane"]] = {"R1": os.path.abspath(row["path_to_R1_fastq_file"]), "R2": os.path.abspath(row["path_to_R2_fastq_file"])}
-    return symlinks_dict
+        fastq_symlinks_dict[row["samplename_index_lane"]] = {"R1": os.path.abspath(row["path_to_R1_fastq_file"]), "R2": os.path.abspath(row["path_to_R2_fastq_file"])}
+    return fastq_symlinks_dict
 
 
 # read group dictionary
 def rg_dict_func(dataframe):
-    char = "_"
+    # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
     rg_dict = {}
     for index, row in dataframe.iterrows():
-        sm = row["samplename_index_lane"].split(char)[0] # take the sample name from the first column of each line
-        lb = row["samplename_index_lane"].split(char)[1]  # take the library id from the first column of each line
-        rg_dict[row["samplename_index_lane"]] = {"ID": row["readgroup_id"], "SM": sm, "PL": row["readgroup_platform"], "LB": lb}
+        rg_dict[row["samplename_index_lane"]] = {"ID": row["readgroup_id"], "SM": row["samplename"], "PL": row["readgroup_platform"], "LB": row["library_id"]}
     return rg_dict
 
 
 # dictionary for bam file merging per lane
 def sampleidxln_dict_func(dataframe):
-    char = "_"
     sampleidxln_dict = {}
     for index, row in dataframe.iterrows():
-        smid = char.join(row["samplename_index_lane"].split(char)[:2])  # take the sample name plus index from the first column of each line
+        smid = row["samplename"] + "_" + row["library_id"].astype(str)  # take the sample name plus index
+        smidln = row["samplename"] + "_" + row["library_id"].astype(str) + "_" + row["lane"].astype(str)
         if (smid in sampleidxln_dict):  # if "sample_index" is already in the dictionary
-            if (row["samplename_index_lane"] not in sampleidxln_dict[smid]):  # if "sample_index_lane" is not in the list for "sample_index"
-                sampleidxln_dict[smid].append(row["samplename_index_lane"])  # add "sample_index_lane" for "sample_index"
+            if (smidln not in sampleidxln_dict[smid]):  # if "sample_index_lane" is not in the list for "sample_index"
+                sampleidxln_dict[smid].append(smidln)  # add "sample_index_lane" for "sample_index"
         else:  # if "sample_index" is not yet in the dictionary
-            sampleidxln_dict[smid] = [row["samplename_index_lane"]]  # add "sample_index_lane" for "sample_index"
+            sampleidxln_dict[smid] = [smidln]  # add "sample_index_lane" for "sample_index"
     return sampleidxln_dict
 
 
-# dictionary for bam file merging per PCR
+# dictionary for bam file merging per library ID
 def sampleidx_dict_func(dataframe):
-    char = "_"
     sampleidx_dict = {}
     for index, row in dataframe.iterrows():
-        sm = row["samplename_index_lane"].split(char)[0]  # take the sample name from the first column of each line
-        smid = char.join(row["samplename_index_lane"].split(char)[:2])  # take the sample name plus index from the first column of each line
+        sm = row["samplename"]  # take the sample name from the first column of each line
+        smid = row["samplename"] + "_" + row["library_id"].astype(str)  # take the sample name plus index
         if sm in sampleidx_dict:  # if "sample" is already in the dictionary
             if (smid not in sampleidx_dict[sm]):  # if "sample_index" is not in the list for "sample"
                 sampleidx_dict[sm].append(smid)  # add "sample_index" for "sample"
@@ -112,60 +103,71 @@ def sampleidx_dict_func(dataframe):
 
 # dictionary for bam file merging per sample (mitochondrial genomes)
 def sample_dict_func(dataframe):
-    char = "_"
     sample_dict = {}
     for index, row in dataframe.iterrows():
-        sm = row["samplename_index_lane"].split(char)[0]  # take the sample name from the first column of each line
+        sm = row["samplename"]  # take the sample name from the first column of each line
+        smidln = row["samplename"] + "_" + row["library_id"].astype(str) + "_" + row["lane"].astype(str)
         if sm in sample_dict:  # if "sample" is already in the dictionary
-            if (row["samplename_index_lane"] not in sample_dict[sm]):  # if "sample_index_lane" is not in the list for "sample"
-                sample_dict[sm].append(row["samplename_index_lane"])  # add "sample_index_lane" for "sample"
+            if (smidln not in sample_dict[sm]):  # if "sample_index_lane" is not in the list for "sample"
+                sample_dict[sm].append(smidln)  # add "sample_index_lane" for "sample"
         else:  # if "sample" is not yet in the dictionary
-            sample_dict[sm] = [row["samplename_index_lane"]]  # add "sample_index_lane" for "sample"
+            sample_dict[sm] = [smidln]  # add "sample_index_lane" for "sample"
     return sample_dict
 
 # TODO: add function to collect user-provided bam files (one per sample)
+
+# symbolic links dictionary
+def user_bam_symlinks_dict_func(dataframe):
+    user_bam_symlinks_dict = {}
+    for index, row in dataframe.iterrows():
+        user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
+    return user_bam_symlinks_dict
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
     historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
-    hist_sm = samplename_list_func(historical_df)
-    hist_sm_idx = samplename_index_list_func(historical_df)
-    hist_sm_idx_ln = samplename_index_lane_list_func(historical_df)
-    hist_symlinks_dict = symlinks_dict_func(historical_df)
+    hist_sm = samplename_func(historical_df)
+    hist_sm_idx = samplename_index_func(historical_df)
+    hist_sm_idx_ln = samplename_index_lane_func(historical_df)
+    hist_fastq_symlinks_dict = fastq_symlinks_dict_func(historical_df)
     hist_sample_dict = sample_dict_func(historical_df)
     hist_rg_dict = rg_dict_func(historical_df)
     hist_sampleidxln_dict = sampleidxln_dict_func(historical_df)
     hist_sampleidx_dict = sampleidx_dict_func(historical_df)
+    hist_user_bam_symlinks_dict = user_bam_symlinks_dict_func(historical_df)
 else:
     hist_sm = []
     hist_sm_idx = []
     hist_sm_idx_ln = []
-    hist_symlinks_dict = {}
+    hist_fastq_symlinks_dict = {}
     hist_sample_dict = {}
     hist_rg_dict = {}
     hist_sampleidxln_dict = {}
     hist_sampleidx_dict = {}
+    hist_user_bam_symlinks_dict = {}
 
 
 if os.path.exists(config["modern_samples"]):
     modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
-    mod_sm = samplename_list_func(modern_df)
-    mod_sm_idx = samplename_index_list_func(modern_df)
-    mod_sm_idx_ln = samplename_index_lane_list_func(modern_df)
-    mod_symlinks_dict = symlinks_dict_func(modern_df)
+    mod_sm = samplename_func(modern_df)
+    mod_sm_idx = samplename_index_func(modern_df)
+    mod_sm_idx_ln = samplename_index_lane_func(modern_df)
+    mod_fastq_symlinks_dict = fastq_symlinks_dict_func(modern_df)
     mod_rg_dict = rg_dict_func(modern_df)
     mod_sampleidxln_dict = sampleidxln_dict_func(modern_df)
     mod_sampleidx_dict = sampleidx_dict_func(modern_df)
+    mod_user_bam_symlinks_dict = user_bam_symlinks_dict_func(modern_df)
 else:
     mod_sm = []
     mod_sm_idx = []
     mod_sm_idx_ln = []
-    mod_symlinks_dict = {}
+    mod_fastq_symlinks_dict = {}
     mod_rg_dict = {}
     mod_sampleidxln_dict = {}
     mod_sampleidx_dict = {}
+    mod_user_bam_symlinks_dict = {}
 
 
 ### Parameters regarding optional steps
