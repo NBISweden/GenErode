@@ -4,12 +4,15 @@ type: object
 properties:
   samplename:
     type: string
+    pattern: (^[A-Za-z0-9]+$)
     description: sample identifier
   library_id:
     type: string
+    pattern: (^[A-Za-z0-9]+$)
     description: library identifier
   lane:
     type: string
+    pattern: (^[A-Za-z0-9]+$)
     description: lane number
   readgroup_id:
     type: string
