@@ -1,0 +1,66 @@
+name: gerp
+
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'workflow/docker'
+      - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.3.5
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          channels: conda-forge,bioconda
+          activate-environment: generode
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: conda_environment
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      - name: Free Up GitHub Actions Ubuntu Runner Disk Space 🔧
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
+          tool-cache: false
+
+          # All of these default to true, but feel free to set to "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: gerp_dry
+        shell: bash -l {0}
+        run: |
+          snakemake -np -k --configfile .test/config/config_userprovided_bams.yaml -j 4 --cores 1 --use-singularity
+
+      - name: gerp
+        shell: bash -l {0}
+        run: |
+          snakemake -k --configfile .test/config/config_userprovided_bams.yaml -j 4 --cores 1 --use-singularity

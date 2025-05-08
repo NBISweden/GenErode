@@ -128,28 +128,32 @@ mapping: False
 #####
 # BAM file processing: merge samples from different lanes per PCR/index, 
 # remove duplicates, merge BAM files per sample, realign indels, 
-# calculate average genome-wide depth of coverage for depth filtering
+# calculate mean genome-wide depth of coverage for depth filtering
 # of BAM and VCF files.
+# If the user provides paths to BAM files of historical and/or modern samples,
+# symbolic links will be created and basic statistics will be calculated for 
+# these BAM files, including the mean genome-wide depth of coverage for depth 
+# filtering of BAM and VCF files.
 bam_rmdup_realign_indels: False
 
 # Parameters related to depth filtering of BAM and VCF files.
-# After BAM file processing, the average genome-wide depth is calculated 
+# After BAM file processing, the mean genome-wide depth is calculated 
 # per sample, from which minimum and maximum depth thresholds for quality 
 # filtering are determined. 
 # Sites with mapping quality < 30 or in repeat elements are excluded 
-# by default from the calculation of the average genome-wide depth 
+# by default from the calculation of the mean genome-wide depth 
 # of coverage.
 # Sites with missing data (i.e. zero coverage) can be included or 
-# excluded in the average depth calculation.
+# excluded in the mean depth calculation.
 # Set to True if sites with missing data (zero coverage) should be 
-# included in the average depth calculation.
+# included in the mean depth calculation.
 # Set to False if sites with missing data (zero coverage) should be 
-# excluded from the average depth calculation.
+# excluded from the mean depth calculation.
 zerocoverage: False
 
 # Minimum depth threshold calculation per sample.
 # Will be applied to mlRho analysis and in VCF file filtering.
-# Factor by which the average genome-wide depth should be multiplied 
+# Factor by which the mean genome-wide depth should be multiplied 
 # to set a minimum depth threshold. For ultra low coverage samples, a 
 # minimum hard threshold of 3X is applied that overrides this parameter.
 # A minimum depth of 6X should be aimed for.
@@ -157,7 +161,7 @@ minDP: 0.33
 
 # Maximum depth threshold calculation per sample.
 # Will be applied to mlRho analysis and in VCF file filtering.
-# Factor by which the average genome-wide depth should be multiplied 
+# Factor by which the mean genome-wide depth should be multiplied 
 # to set a maximum depth threshold.
 maxDP: 10
 #####

@@ -34,7 +34,7 @@ ref_path: ".test/data/references/sumatran_rhino.fasta"
 # and BCF files.
 # Leave empty ("") if identity of sex chromosomes is unknown and/or 
 # if the pipeline should be run on all scaffolds/contigs of the genome.
-sexchromosomes: ".test/config/seq_to_exclude.txt" # for example, "config/chrX_candidate_scaffolds.txt"
+sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 #################################################################
 #################################################################
 
@@ -43,8 +43,8 @@ sexchromosomes: ".test/config/seq_to_exclude.txt" # for example, "config/chrX_ca
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
 # Example files can be found in "config/"
-historical_samples: ".test/config/historical_fastq_paths.txt" # leave empty ("") if not run for historical samples.
-modern_samples: ".test/config/modern_fastq_paths.txt" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_bam_paths.txt" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_bam_paths.txt" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
@@ -134,7 +134,7 @@ mapping: False
 # symbolic links will be created and basic statistics will be calculated for 
 # these BAM files, including the mean genome-wide depth of coverage for depth 
 # filtering of BAM and VCF files.
-bam_rmdup_realign_indels: False
+bam_rmdup_realign_indels: True
 
 # Parameters related to depth filtering of BAM and VCF files.
 # After BAM file processing, the mean genome-wide depth is calculated 
@@ -419,26 +419,26 @@ ROH: False
 # See https://www.cog-genomics.org/plink/1.9/ibd#homozyg for more details.
 
 # Minimum SNP count. For example, 10, 25. Abbreviation in file name: homsnp.
-homozyg-snp: 25
+homozyg-snp: 10
 # Minimum size of ROH in kilobases. Abbreviation in file name: homkb.
-homozyg-kb: 1000 
+homozyg-kb: 1
 # Window size for ROH estimation. For example, 20, 50, 100, 1000. 
 # Abbreviation in file name: homwinsnp.
-homozyg-window-snp: 1000 
+homozyg-window-snp: 10
 # Maximum number of heterozygote sites per window. 
 # For example, 1 for a stringent analysis, 3 for a relaxed setting. 
 # Abbreviation in file name: homwinhet.
-homozyg-window-het: 1 
+homozyg-window-het: 10
 # Maximum number of missing sites per window. 
 # For example, 1 or 5 for a stringent analysis, 
 # 10 for intermediate filtering and 15 for relaxed filtering. 
 # Abbreviation in file name: homwinmis.
-homozyg-window-missing: 5 
+homozyg-window-missing: 50
 # Maximum number of heterozygote sites per ROH. 
 # For example, 1 for a stringent analysis, 
 # 3 as a relaxed setting. Disable this parameter by setting it to 999. 
 # Abbreviation in file name: homhet.
-homozyg-het: 999 
+homozyg-het: 999
 #####
 
 
@@ -453,7 +453,7 @@ homozyg-het: 999
 # BCF files.
 # Requires sample lists and parameters for any desired optional 
 # data filtering step (as described above). 
-snpEff: True
+snpEff: False
 
 # Full path to GTF file (GTF format version 2.2) with gene model predictions 
 # for the reference genome specified at the top of this config file.
@@ -462,7 +462,7 @@ snpEff: True
 # Output files from building the snpEff database will be placed into the 
 # same directory as the GTF file.
 # That way, the database has to be built only once for a given GTF file.
-gtf_path: ".test/data/references/sumatran_rhino.gtf"
+gtf_path: ""
 #################################################################
 #################################################################
 
@@ -493,18 +493,18 @@ gtf_path: ".test/data/references/sumatran_rhino.gtf"
 # metadata files with historical and/or modern samples are required.
 # If metadata files are provided, sample lists and parameters for any 
 # desired optional data filtering step (as described above) are required. 
-gerp: True
+gerp: False
 
 # Number of genome chunks for parallelization of GERP step. 
 # In case the assembly consists of 200 contigs/scaffolds or less,
 # set this number to a smaller value than the number of contigs/scaffolds. 
-gerp_chunks: 2 # default: 200
+gerp_chunks: 200 # default: 200
 
 # Full path to directory containing reference genomes of outgroup species in 
 # FASTA format for GERP++ score estimation.
 # Files must be gzipped and FASTA file name extensions can be 
 # "*.fa.gz", "*.fasta.gz" or "*.fna.gz".
-gerp_ref_path: ".test/data/gerp_data"
+gerp_ref_path: ""
 
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
@@ -514,7 +514,7 @@ gerp_ref_path: ".test/data/gerp_data"
 # are e.g. available from www.timetree.org.
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".
-tree: ".test/data/gerp_data/gerp_tree.nwk"
+tree: ""
 
 # Minimum and maximum GERP score for a site to be included into calculations 
 # of relative mutational load.
