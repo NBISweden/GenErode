@@ -34,7 +34,7 @@ wildcard_constraints:
 # sample list for each fastq-file (["samplename_index_lane"])
 def samplename_index_lane_func(dataframe):
     # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
-    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"] + "_" + dataframe["lane"]
     if dataframe["samplename_index_lane"].duplicated().any():
         raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
     # convert the first column into a list
@@ -43,7 +43,7 @@ def samplename_index_lane_func(dataframe):
 
 # sample list for merging of files per lane (["samplename_index"])
 def samplename_index_func(dataframe):
-    dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str)
+    dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"]
     return dataframe["samplename_index"].drop_duplicates()
 
 
@@ -56,7 +56,7 @@ def samplename_func(dataframe):
 # symbolic links dictionary
 def fastq_symlinks_dict_func(dataframe):
     # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
-    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"] + "_" + dataframe["lane"]
     if "path_to_R1_fastq_file" in dataframe.columns and "path_to_R2_fastq_file" in dataframe.columns:
         fastq_symlinks_dict = {}
         for index, row in dataframe.iterrows():
@@ -67,7 +67,7 @@ def fastq_symlinks_dict_func(dataframe):
 # read group dictionary
 def rg_dict_func(dataframe):
     # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
-    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
+    dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"] + "_" + dataframe["lane"]
     rg_dict = {}
     for index, row in dataframe.iterrows():
         rg_dict[row["samplename_index_lane"]] = {"ID": row["readgroup_id"], "SM": row["samplename"], "PL": row["readgroup_platform"], "LB": row["library_id"]}
@@ -78,8 +78,8 @@ def rg_dict_func(dataframe):
 def sampleidxln_dict_func(dataframe):
     sampleidxln_dict = {}
     for index, row in dataframe.iterrows():
-        smid = row["samplename"] + "_" + row["library_id"].astype(str)  # take the sample name plus index
-        smidln = row["samplename"] + "_" + row["library_id"].astype(str) + "_" + row["lane"].astype(str)
+        smid = row["samplename"] + "_" + row["library_id"]  # take the sample name plus index
+        smidln = row["samplename"] + "_" + row["library_id"] + "_" + row["lane"]
         if (smid in sampleidxln_dict):  # if "sample_index" is already in the dictionary
             if (smidln not in sampleidxln_dict[smid]):  # if "sample_index_lane" is not in the list for "sample_index"
                 sampleidxln_dict[smid].append(smidln)  # add "sample_index_lane" for "sample_index"
@@ -93,7 +93,7 @@ def sampleidx_dict_func(dataframe):
     sampleidx_dict = {}
     for index, row in dataframe.iterrows():
         sm = row["samplename"]  # take the sample name from the first column of each line
-        smid = row["samplename"] + "_" + row["library_id"].astype(str)  # take the sample name plus index
+        smid = row["samplename"] + "_" + row["library_id"]  # take the sample name plus index
         if sm in sampleidx_dict:  # if "sample" is already in the dictionary
             if (smid not in sampleidx_dict[sm]):  # if "sample_index" is not in the list for "sample"
                 sampleidx_dict[sm].append(smid)  # add "sample_index" for "sample"
@@ -107,7 +107,7 @@ def sample_dict_func(dataframe):
     sample_dict = {}
     for index, row in dataframe.iterrows():
         sm = row["samplename"]  # take the sample name from the first column of each line
-        smidln = row["samplename"] + "_" + row["library_id"].astype(str) + "_" + row["lane"].astype(str)
+        smidln = row["samplename"] + "_" + row["library_id"] + "_" + row["lane"]
         if sm in sample_dict:  # if "sample" is already in the dictionary
             if (smidln not in sample_dict[sm]):  # if "sample_index_lane" is not in the list for "sample"
                 sample_dict[sm].append(smidln)  # add "sample_index_lane" for "sample"
