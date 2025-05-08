@@ -57,10 +57,11 @@ def samplename_func(dataframe):
 def fastq_symlinks_dict_func(dataframe):
     # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
     dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"].astype(str) + "_" + dataframe["lane"].astype(str)
-    fastq_symlinks_dict = {}
-    for index, row in dataframe.iterrows():
-        fastq_symlinks_dict[row["samplename_index_lane"]] = {"R1": os.path.abspath(row["path_to_R1_fastq_file"]), "R2": os.path.abspath(row["path_to_R2_fastq_file"])}
-    return fastq_symlinks_dict
+    if "path_to_R1_fastq_file" in dataframe.columns and "path_to_R2_fastq_file" in dataframe.columns:
+        fastq_symlinks_dict = {}
+        for index, row in dataframe.iterrows():
+            fastq_symlinks_dict[row["samplename_index_lane"]] = {"R1": os.path.abspath(row["path_to_R1_fastq_file"]), "R2": os.path.abspath(row["path_to_R2_fastq_file"])}
+        return fastq_symlinks_dict
 
 
 # read group dictionary
@@ -114,14 +115,29 @@ def sample_dict_func(dataframe):
             sample_dict[sm] = [smidln]  # add "sample_index_lane" for "sample"
     return sample_dict
 
-# TODO: add function to collect user-provided bam files (one per sample)
+# functions to collect user-provided bam files (one per sample)
+# lists of samples with user-provided bams and pipeline-generated bams
+def user_bam_samples_func(dataframe):
+    if "path_to_processed_bam_file" in dataframe.columns:
+        user_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique())
+    else:
+        user_bam_samples = []
+    return user_bam_samples
 
-# symbolic links dictionary
+def pipeline_bam_samples_func(dataframe):
+    if "path_to_processed_bam_file" in dataframe.columns:
+        pipeline_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].isnull()].unique())
+    else:
+        pipeline_bam_samples = list(samples.index)
+    return pipeline_bam_samples
+
+# symbolic links dictionaries
 def user_bam_symlinks_dict_func(dataframe):
-    user_bam_symlinks_dict = {}
-    for index, row in dataframe.iterrows():
-        user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
-    return user_bam_symlinks_dict
+    if "path_to_processed_bam_file" in dataframe.columns:
+        user_bam_symlinks_dict = {}
+        for index, row in dataframe.iterrows():
+            user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
+        return user_bam_symlinks_dict
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
