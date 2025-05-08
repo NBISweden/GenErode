@@ -574,6 +574,9 @@ rule index_realigned_bams:
         samtools index {input.bam} {output.index} 2> {log}
         """
 
+# TODO: Add rule to create symbolic links to user-provided bam files.
+# Replace "merged.rmdup.merged.realn" with "userprovided" in the output path
+# and adjust all downstream rules accordingly.
 
 rule realigned_bam_stats:
     """Basic statistics on mapping output"""
