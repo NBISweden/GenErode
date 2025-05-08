@@ -38,18 +38,18 @@ def samplename_index_lane_func(dataframe):
     if dataframe["samplename_index_lane"].duplicated().any():
         raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
     # convert the first column into a list
-    return dataframe["samplename_index_lane"].drop_duplicates()
+    return list(dataframe["samplename_index_lane"].drop_duplicates())
 
 
 # sample list for merging of files per lane (["samplename_index"])
 def samplename_index_func(dataframe):
     dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"]
-    return dataframe["samplename_index"].drop_duplicates()
+    return list(dataframe["samplename_index"].drop_duplicates())
 
 
 # sample list (["samplename"])
 def samplename_func(dataframe):
-    return dataframe["samplename"].drop_duplicates()
+    return list(dataframe["samplename"].drop_duplicates())
 
 
 # Functions to create symbolic links to fastq files, to look up read group information and for merging of bam files
