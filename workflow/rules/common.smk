@@ -31,15 +31,7 @@ wildcard_constraints:
 
 ### Code to generate lists and dictionaries from the metadata tables
 def check_metadata_file(dataframe):
-    # raise an error if a sample exists with both fastq and bam files
-    if "path_to_processed_bam_file" in dataframe.columns and "path_to_R1_fastq_file" in dataframe.columns:
-        # check if any sample has both fastq and bam files
-        fastq_samples = dataframe["samplename"][dataframe["path_to_R1_fastq_file"].notnull()].unique()
-        bam_samples = dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique()
-        # check if any sample has both fastq and bam files
-        if set(fastq_samples) & set(bam_samples):
-            # raise an error if any sample has both fastq and bam files
-            raise WorkflowError("Both fastq files and bam files are provided for some samples. Please check your metadata file.")
+    # add columns for merging of bam files
     if "samplename" in dataframe.columns and "library_id" in dataframe.columns and "lane" in dataframe.columns:
         if dataframe["library_id"].notnull() and dataframe["lane"].notnull():
             # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
@@ -50,6 +42,15 @@ def check_metadata_file(dataframe):
             dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"]
             # set entries to NA if "samplename_index" ends with "_" (schema validation checks for "_" in original columns)
             dataframe.loc[dataframe["samplename_index"].str.endswith("_"), "samplename_index"] = pd.NA
+    # raise an error if a sample exists with both fastq and bam files
+    if "path_to_processed_bam_file" in dataframe.columns and "path_to_R1_fastq_file" in dataframe.columns:
+        # check if any sample has both fastq and bam files
+        fastq_samples = dataframe["samplename"][dataframe["path_to_R1_fastq_file"].notnull()].unique()
+        bam_samples = dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique()
+        # check if any sample has both fastq and bam files
+        if set(fastq_samples) & set(bam_samples):
+            # raise an error if any sample has both fastq and bam files
+            raise WorkflowError("Both fastq files and bam files are provided for some samples. Please check your metadata file.")
     return dataframe
 
 # Create sample lists
@@ -136,6 +137,7 @@ def mito_sample_dict_func(dataframe):
                     mito_sample_dict[row["samplename"]] = [row["samplename_index_lane"]]  # add "sample_index_lane" for "sample"
     return mito_sample_dict
 
+
 # Functions to collect user-provided bam files
 # symbolic links dictionaries
 def user_bam_symlinks_dict_func(dataframe):
@@ -145,6 +147,7 @@ def user_bam_symlinks_dict_func(dataframe):
             if pd.notnull(row["path_to_processed_bam_file"]):
                 user_bam_symlinks_dict[row["samplename"]] = {"bam": os.path.abspath(row["path_to_processed_bam_file"])}
         return user_bam_symlinks_dict
+
 
 # lists of samples with user-provided bams and pipeline-generated bams
 def user_bam_samples_func(dataframe):
@@ -159,12 +162,14 @@ def user_bam_samples_func(dataframe):
         user_bam_samples = []
     return user_bam_samples
 
+
 def pipeline_bam_samples_func(dataframe):
     if "path_to_processed_bam_file" in dataframe.columns:
         pipeline_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].isnull()].unique())
     else:
         pipeline_bam_samples = list(dataframe["samplename"].drop_duplicates())
     return pipeline_bam_samples
+
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
