@@ -31,6 +31,15 @@ wildcard_constraints:
 
 ### Code to generate lists and dictionaries from the metadata tables
 def check_metadata_file(dataframe):
+    # raise an error if a sample exists with both fastq and bam files
+    if "path_to_processed_bam_file" in dataframe.columns and "path_to_R1_fastq_file" in dataframe.columns:
+        # check if any sample has both fastq and bam files
+        fastq_samples = dataframe["samplename"][dataframe["path_to_R1_fastq_file"].notnull()].unique()
+        bam_samples = dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique()
+        # check if any sample has both fastq and bam files
+        if set(fastq_samples) & set(bam_samples):
+            # raise an error if any sample has both fastq and bam files
+            raise WorkflowError("Both fastq files and bam files are provided for some samples. Please check your metadata file.")
     # add columns for merging of bam files
     if "samplename" in dataframe.columns and "library_id" in dataframe.columns and "lane" in dataframe.columns:
         if dataframe["library_id"].notnull() and dataframe["lane"].notnull():
@@ -42,15 +51,6 @@ def check_metadata_file(dataframe):
             dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"]
             # set entries to NA if "samplename_index" ends with "_" (schema validation checks for "_" in original columns)
             dataframe.loc[dataframe["samplename_index"].str.endswith("_"), "samplename_index"] = pd.NA
-    # raise an error if a sample exists with both fastq and bam files
-    if "path_to_processed_bam_file" in dataframe.columns and "path_to_R1_fastq_file" in dataframe.columns:
-        # check if any sample has both fastq and bam files
-        fastq_samples = dataframe["samplename"][dataframe["path_to_R1_fastq_file"].notnull()].unique()
-        bam_samples = dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()].unique()
-        # check if any sample has both fastq and bam files
-        if set(fastq_samples) & set(bam_samples):
-            # raise an error if any sample has both fastq and bam files
-            raise WorkflowError("Both fastq files and bam files are provided for some samples. Please check your metadata file.")
     return dataframe
 
 # Create sample lists
@@ -171,26 +171,49 @@ def pipeline_bam_samples_func(dataframe):
     return pipeline_bam_samples
 
 
+# # return correct bam file path depending on bam file type
+# def processed_bam(wildcards):
+#     if wildcards.sample in hist_pipeline_bam_sm:
+#         return {
+#             "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+#             "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+#         }
+#     elif wildcards.sample in mod_pipeline_bam_sm:
+#         return {
+#             "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+#             "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+#         }
+#     elif wildcards.sample in hist_user_bam_sm:
+#         return {
+#             "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+#             "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+#         }
+#     elif wildcards.sample in mod_user_bam_sm:
+#         return {
+#             "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+#             "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+#         }
+
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
     historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
-    historical_df = check_metadata_file(historical_df)  # check metadata file format
-    hist_sm = samplename_func(historical_df) # "samplename" for all samples
-    hist_sm_idx = samplename_index_func(historical_df) # "samplename_index" for all samples
-    hist_sm_idx_ln = samplename_index_lane_func(historical_df) # "samplename_index_lane" for all samples
+    historical_df_checked = check_metadata_file(historical_df)  # check metadata file format
+    hist_sm = samplename_func(historical_df_checked) # "samplename" for all samples
+    hist_sm_idx = samplename_index_func(historical_df_checked) # "samplename_index" for all samples
+    hist_sm_idx_ln = samplename_index_lane_func(historical_df_checked) # "samplename_index_lane" for all samples
     # for pipeline-processed fastq files
-    hist_pipeline_bam_sm = pipeline_bam_samples_func(historical_df) # "samplename" for pipeline-processed samples
+    hist_pipeline_bam_sm = pipeline_bam_samples_func(historical_df_checked) # "samplename" for pipeline-processed samples
     hist_pipeline_bam_sm_idx = [smid for smid in hist_sm_idx for sm in hist_pipeline_bam_sm if sm in smid] # "samplename_index" for pipeline-processed samples
     hist_pipeline_bam_sm_idx_ln = [smidln for smidln in hist_sm_idx_ln for sm in hist_pipeline_bam_sm if sm in smidln] # "samplename_index_lane" for pipeline-processed samples
-    hist_fastq_symlinks_dict = fastq_symlinks_dict_func(historical_df)
-    hist_mito_sample_dict = mito_sample_dict_func(historical_df) # mitogenome mapping
-    hist_rg_dict = rg_dict_func(historical_df)
-    hist_sampleidxln_dict = sampleidxln_dict_func(historical_df)
-    hist_sampleidx_dict = sampleidx_dict_func(historical_df)
+    hist_fastq_symlinks_dict = fastq_symlinks_dict_func(historical_df_checked)
+    hist_mito_sample_dict = mito_sample_dict_func(historical_df_checked) # mitogenome mapping
+    hist_rg_dict = rg_dict_func(historical_df_checked)
+    hist_sampleidxln_dict = sampleidxln_dict_func(historical_df_checked)
+    hist_sampleidx_dict = sampleidx_dict_func(historical_df_checked)
     # for user-provided bam files
-    hist_user_bam_symlinks_dict = user_bam_symlinks_dict_func(historical_df)
-    hist_user_bam_sm = user_bam_samples_func(historical_df)
+    hist_user_bam_symlinks_dict = user_bam_symlinks_dict_func(historical_df_checked)
+    hist_user_bam_sm = user_bam_samples_func(historical_df_checked)
 
 else:
     hist_sm = []
@@ -211,22 +234,22 @@ else:
 if os.path.exists(config["modern_samples"]):
     modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
-    modern_df = check_metadata_file(modern_df)  # check metadata file format
-    mod_sm = samplename_func(modern_df) # "samplename" for all samples
-    mod_sm_idx = samplename_index_func(modern_df) # "samplename_index" for all samples
-    mod_sm_idx_ln = samplename_index_lane_func(modern_df) # "samplename_index_lane" for all samples
+    modern_df_checked = check_metadata_file(modern_df)  # check metadata file format
+    mod_sm = samplename_func(modern_df_checked) # "samplename" for all samples
+    mod_sm_idx = samplename_index_func(modern_df_checked) # "samplename_index" for all samples
+    mod_sm_idx_ln = samplename_index_lane_func(modern_df_checked) # "samplename_index_lane" for all samples
     # for pipeline-processed fastq files
-    mod_pipeline_bam_sm = pipeline_bam_samples_func(modern_df) # "samplename" for pipeline-processed samples
+    mod_pipeline_bam_sm = pipeline_bam_samples_func(modern_df_checked) # "samplename" for pipeline-processed samples
     mod_pipeline_bam_sm_idx = [smid for smid in mod_sm_idx for sm in mod_pipeline_bam_sm if sm in smid] # "samplename_index" for pipeline-processed samples
     mod_pipeline_bam_sm_idx_ln = [smidln for smidln in mod_sm_idx_ln for sm in mod_pipeline_bam_sm if sm in smidln] # "samplename_index_lane" for pipeline-processed samples
-    mod_fastq_symlinks_dict = fastq_symlinks_dict_func(modern_df)
-    mod_rg_dict = rg_dict_func(modern_df)
-    mod_sampleidxln_dict = sampleidxln_dict_func(modern_df)
-    mod_sampleidx_dict = sampleidx_dict_func(modern_df)
+    mod_fastq_symlinks_dict = fastq_symlinks_dict_func(modern_df_checked)
+    mod_rg_dict = rg_dict_func(modern_df_checked)
+    mod_sampleidxln_dict = sampleidxln_dict_func(modern_df_checked)
+    mod_sampleidx_dict = sampleidx_dict_func(modern_df_checked)
 
     # for user-provided bam files
-    mod_user_bam_symlinks_dict = user_bam_symlinks_dict_func(modern_df)
-    mod_user_bam_sm = user_bam_samples_func(modern_df)
+    mod_user_bam_symlinks_dict = user_bam_symlinks_dict_func(modern_df_checked)
+    mod_user_bam_sm = user_bam_samples_func(modern_df_checked)
 else:
     mod_sm = []
     mod_sm_idx = []
