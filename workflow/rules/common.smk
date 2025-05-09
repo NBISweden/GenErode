@@ -55,16 +55,22 @@ def check_metadata_file(dataframe):
 # Create sample lists
 # sample list for each fastq-file (["samplename_index_lane"])
 def samplename_index_lane_func(dataframe):
-    if dataframe["samplename_index_lane"].duplicated().any():
-        raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
+    if "samplename" in dataframe.columns and "library_id" in dataframe.columns and "lane" in dataframe.columns:
+        if dataframe["samplename_index_lane"].duplicated().any():
+            raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
+        else:
+            # convert the column into a list
+            return list(dataframe["samplename_index_lane"])
     else:
-        # convert the column into a list
-        return list(dataframe["samplename_index_lane"])
+        return []
 
 
 # sample list for merging of files per lane (["samplename_index"])
 def samplename_index_func(dataframe):
-    return list(dataframe["samplename_index"].drop_duplicates())
+    if "samplename" in dataframe.columns and "library_id" in dataframe.columns and "lane" in dataframe.columns:
+        return list(dataframe["samplename_index"].drop_duplicates())
+    else:
+        return []
 
 
 # sample list (["samplename"])
