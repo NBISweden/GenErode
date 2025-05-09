@@ -38,11 +38,11 @@ def historical_mapped_reads_ratios_species_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
         species = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_" + MITO_NAME + ".sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],)
     elif config["map_unmerged_reads"] == False:
         species = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_" + MITO_NAME + ".sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],)
     return species
 
@@ -50,11 +50,11 @@ def historical_mapped_reads_ratios_other_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
         other = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{{mitoref}}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],)
     elif config["map_unmerged_reads"] == False:
         other = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{{mitoref}}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],)
     return other
 
@@ -76,7 +76,7 @@ def historical_mito_bams_merge_files_inputs(wildcards):
 def merge_hist_mito_bams_per_sample_inputs(wildcards):
     """Input for merge_historical_mitogenome_bams_per_sample"""
     SAMPLE = "{}".format(wildcards.sample)
-    SAMPLEIDXLN_LIST = hist_sample_dict[SAMPLE]
+    SAMPLEIDXLN_LIST = hist_mito_sample_dict[SAMPLE]
     return expand("results/historical/mitogenomes_mapping/{sampleindexlane}_merged_{{mitoref}}.sorted.bam",
         sampleindexlane=SAMPLEIDXLN_LIST,)
 
@@ -84,15 +84,15 @@ def historical_mito_bams_multiqc_inputs(wildcards):
     """Input for historical_mito_bams_multiqc and all"""
     if config["map_unmerged_reads"] == True:
         quali_report = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         summary = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/genome_results.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         stats = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_and_unmerged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
@@ -108,15 +108,15 @@ def historical_mito_bams_multiqc_inputs(wildcards):
         outlist = (quali_report + summary + stats + ratios + merged_bam_stats + merged_bam_quali_report + merged_bam_summary)
     elif config["map_unmerged_reads"] == False:
         quali_report = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         summary = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/genome_results.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         stats = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
@@ -260,13 +260,13 @@ rule historical_mito_bams_qualimap:
         mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
-          unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+            unset DISPLAY
+            qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
-          mkdir -p {params.outdir} 2> {log}
-          touch {output.report} 2>> {log}
-          touch {output.summary} 2>> {log}
-          echo "Not enough reads to run QualiMap" >> {log}
+            mkdir -p {params.outdir} 2> {log}
+            touch {output.report} 2>> {log}
+            touch {output.summary} 2>> {log}
+            echo "Not enough reads to run QualiMap" >> {log}
         fi
         """
 
@@ -326,10 +326,10 @@ rule merge_historical_mitogenome_bams_per_sample:
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          samtools merge {output.merged} {input} 2> {log}
+            samtools merge {output.merged} {input} 2> {log}
         else
-          cp {input} {output.merged} && touch {output.merged} 2> {log}
-          echo "Only one file present for merging. Copying the sorted bam file." >> {log}
+            cp {input} {output.merged} && touch {output.merged} 2> {log}
+            echo "Only one file present for merging. Copying the sorted bam file." >> {log}
         fi
         """
 
@@ -378,13 +378,13 @@ rule historical_merged_mito_bams_qualimap:
         mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
-          unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+            unset DISPLAY
+            qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
-          mkdir -p {params.outdir} 2> {log}
-          touch {output.report} 2>> {log}
-          touch {output.summary} 2>> {log}
-          echo "Not enough reads to run QualiMap" >> {log}
+            mkdir -p {params.outdir} 2> {log}
+            touch {output.report} 2>> {log}
+            touch {output.summary} 2>> {log}
+            echo "Not enough reads to run QualiMap" >> {log}
         fi
         """
 

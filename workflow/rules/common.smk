@@ -171,19 +171,18 @@ if os.path.exists(config["historical_samples"]):
     historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
     historical_df = check_metadata_file(historical_df)  # check metadata file format
-    hist_sm = samplename_func(historical_df)
-    hist_sm_idx = samplename_index_func(historical_df)
-    hist_sm_idx_ln = samplename_index_lane_func(historical_df)
+    hist_sm = samplename_func(historical_df) # "samplename" for all samples
+    hist_sm_idx = samplename_index_func(historical_df) # "samplename_index" for all samples
+    hist_sm_idx_ln = samplename_index_lane_func(historical_df) # "samplename_index_lane" for all samples
     # for pipeline-processed fastq files
-    hist_pipeline_bam_sm = pipeline_bam_samples_func(historical_df)
-    hist_pipeline_bam_sm_idx
-    hist_pipeline_bam_sm_idx_ln
-    hist_fastq_symlinks_dict = fastq_symlinks_dict_func(historical_df) # pipeline processing
+    hist_pipeline_bam_sm = pipeline_bam_samples_func(historical_df) # "samplename" for pipeline-processed samples
+    hist_pipeline_bam_sm_idx = [smid for smid in hist_sm_idx for sm in hist_pipeline_bam_sm if sm in smid] # "samplename_index" for pipeline-processed samples
+    hist_pipeline_bam_sm_idx_ln = [smidln for smidln in hist_sm_idx_ln for sm in hist_pipeline_bam_sm if sm in smidln] # "samplename_index_lane" for pipeline-processed samples
+    hist_fastq_symlinks_dict = fastq_symlinks_dict_func(historical_df)
     hist_mito_sample_dict = mito_sample_dict_func(historical_df) # mitogenome mapping
     hist_rg_dict = rg_dict_func(historical_df)
     hist_sampleidxln_dict = sampleidxln_dict_func(historical_df)
     hist_sampleidx_dict = sampleidx_dict_func(historical_df)
-
     # for user-provided bam files
     hist_user_bam_symlinks_dict = user_bam_symlinks_dict_func(historical_df)
     hist_user_bam_sm = user_bam_samples_func(historical_df)
@@ -208,13 +207,13 @@ if os.path.exists(config["modern_samples"]):
     modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
     modern_df = check_metadata_file(modern_df)  # check metadata file format
-    mod_sm = samplename_func(modern_df)
-    mod_sm_idx = samplename_index_func(modern_df)
-    mod_sm_idx_ln = samplename_index_lane_func(modern_df)
+    mod_sm = samplename_func(modern_df) # "samplename" for all samples
+    mod_sm_idx = samplename_index_func(modern_df) # "samplename_index" for all samples
+    mod_sm_idx_ln = samplename_index_lane_func(modern_df) # "samplename_index_lane" for all samples
     # for pipeline-processed fastq files
-    mod_pipeline_bam_sm = pipeline_bam_samples_func(modern_df)
-    mod_pipeline_bam_sm_idx
-    mod_pipeline_bam_sm_idx_ln
+    mod_pipeline_bam_sm = pipeline_bam_samples_func(modern_df) # "samplename" for pipeline-processed samples
+    mod_pipeline_bam_sm_idx = [smid for smid in mod_sm_idx for sm in mod_pipeline_bam_sm if sm in smid] # "samplename_index" for pipeline-processed samples
+    mod_pipeline_bam_sm_idx_ln = [smidln for smidln in mod_sm_idx_ln for sm in mod_pipeline_bam_sm if sm in smidln] # "samplename_index_lane" for pipeline-processed samples
     mod_fastq_symlinks_dict = fastq_symlinks_dict_func(modern_df)
     mod_rg_dict = rg_dict_func(modern_df)
     mod_sampleidxln_dict = sampleidxln_dict_func(modern_df)

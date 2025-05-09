@@ -59,10 +59,10 @@ rule multiqc_historical_raw:
     """Summarize all fastqc results for raw historical samples"""
     input:
         expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
         expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.zip",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
     output:
         stats="data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html",
@@ -124,10 +124,10 @@ rule multiqc_modern_raw:
     """Summarize all fastqc results for all raw modern samples"""
     input:
         expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
         expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.zip",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
     output:
         stats="data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html",
@@ -242,11 +242,11 @@ rule fastqc_historical_unmerged:
         """
         if [ -s {input} ]
         then
-          fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
+            fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
         else
-          mkdir -p {output.dir} &&
-          touch {output.html} && touch {output.zip} &&
-          echo "No reads in {input} >> {log}"
+            mkdir -p {output.dir} &&
+            touch {output.html} && touch {output.zip} &&
+            echo "No reads in {input} >> {log}"
         fi
         """
 
@@ -276,12 +276,12 @@ rule multiqc_historical_trimmed:
     """Summarize all fastqc results for all trimmed and merged historical samples"""
     input:
         expand("results/historical/trimming/stats/{sampleindexlane}_trimmed_merged_fastqc.{ext}",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             ext=["html", "zip"],),
         expand("results/historical/trimming/stats/{sampleindexlane}_fastp_report.html",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
         expand("results/historical/trimming/stats/{sampleindexlane}_R{nr}_unmerged_fastqc.{ext}",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],
             ext=["html", "zip"],),
     output:
@@ -303,11 +303,11 @@ rule multiqc_modern_trimmed:
     """Summarize all fastqc results for all trimmed modern samples"""
     input:
         expand("results/modern/trimming/stats/{sampleindexlane}_R{nr}_trimmed_fastqc.{ext}",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],
             ext=["html", "zip"]),
         expand("results/modern/trimming/stats/{sampleindexlane}_fastp_report.html",
-            sampleindexlane=mod_sm_idx_ln,)
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,)
     output:
         stats="results/modern/trimming/stats/multiqc/multiqc_report.html",
     params:
