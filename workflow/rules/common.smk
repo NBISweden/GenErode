@@ -157,12 +157,9 @@ def user_bam_symlinks_dict_func(dataframe):
 # lists of samples with user-provided bams and pipeline-generated bams
 def user_bam_samples_func(dataframe):
     if "path_to_processed_bam_file" in dataframe.columns:
-        if dataframe["path_to_processed_bam_file"].notnull():
-            user_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()])
-            if len(user_bam_samples) != len(set(user_bam_samples)):
-                raise WorkflowError("Samples found with duplicate user-provided bam files. Please check your metadata file.")
-        else:
-            user_bam_samples = []
+        user_bam_samples = list(dataframe["samplename"][dataframe["path_to_processed_bam_file"].notnull()])
+        if len(user_bam_samples) != len(set(user_bam_samples)):
+            raise WorkflowError("Samples found with duplicate user-provided bam files. Please check your metadata file.")
     else:
         user_bam_samples = []
     return user_bam_samples
