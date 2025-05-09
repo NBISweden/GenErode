@@ -55,12 +55,12 @@ jobs:
           large-packages: true
           swap-storage: true
 
-      - name: gerp_dry
+      - name: userprovided_bams_dry
         shell: bash -l {0}
         run: |
           snakemake -np -k --configfile .test/config/config_userprovided_bams.yaml -j 4 --cores 1 --use-singularity
 
-      - name: gerp
+      - name: userprovided_bams
         shell: bash -l {0}
         run: |
           snakemake -k --configfile .test/config/config_userprovided_bams.yaml -j 4 --cores 1 --use-singularity
