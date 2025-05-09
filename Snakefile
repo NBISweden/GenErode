@@ -140,7 +140,7 @@ if config["mlRho"]:
             include: "workflow/rules/1.1_fastq_processing.smk"
             include: "workflow/rules/2_mapping.smk"
             include: "workflow/rules/3.1_bam_rmdup_realign_indels.smk"
-    include: "workflow/rules/3.1.1_user_provided_bam_stats.smk"
+            include: "workflow/rules/3.1.1_user_provided_bam_stats.smk"
             include: "workflow/rules/3.2_historical_bam_mapDamage.smk"
             include: "workflow/rules/3.3_bam_subsampling.smk"
             include: "workflow/rules/4_genotyping.smk"
