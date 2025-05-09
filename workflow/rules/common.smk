@@ -171,28 +171,28 @@ def pipeline_bam_samples_func(dataframe):
     return pipeline_bam_samples
 
 
-# # return correct bam file path depending on bam file type
-# def processed_bam(wildcards):
-#     if wildcards.sample in hist_pipeline_bam_sm:
-#         return {
-#             "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
-#             "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
-#         }
-#     elif wildcards.sample in mod_pipeline_bam_sm:
-#         return {
-#             "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
-#             "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
-#         }
-#     elif wildcards.sample in hist_user_bam_sm:
-#         return {
-#             "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
-#             "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
-#         }
-#     elif wildcards.sample in mod_user_bam_sm:
-#         return {
-#             "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
-#             "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
-#         }
+# return correct bam file path depending on bam file type
+def processed_bam(wildcards):
+    if wildcards.sample in hist_pipeline_bam_sm:
+        return {
+            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+        }
+    elif wildcards.sample in mod_pipeline_bam_sm:
+        return {
+            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+        }
+    elif wildcards.sample in hist_user_bam_sm:
+        return {
+            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+        }
+    elif wildcards.sample in mod_user_bam_sm:
+        return {
+            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+        }
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
