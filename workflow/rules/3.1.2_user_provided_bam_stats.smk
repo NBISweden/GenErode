@@ -1,5 +1,5 @@
 ##########################################################################
-### 3.1.1 Statistics for user-provided BAM files
+### 3.1.2 Statistics for user-provided BAM files
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]):

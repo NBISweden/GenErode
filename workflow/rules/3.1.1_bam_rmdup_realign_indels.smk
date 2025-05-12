@@ -1,5 +1,5 @@
 ##########################################################################
-### 3.1 BAM file processing: sort, merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
+### 3.1.1 BAM file processing: sort, merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]):
@@ -729,7 +729,7 @@ rule modern_realigned_bam_multiqc:
                 ".bam.stats.txt", 
                 ".bam.qualimap/qualimapReport.html",
                 "_fastqc.html",
-                "_fastqc.zip",],),),
+                "_fastqc.zip",],),
     output:
         stats=report(
             "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html",
