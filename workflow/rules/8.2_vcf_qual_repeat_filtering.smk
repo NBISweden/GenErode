@@ -50,172 +50,78 @@ def depth_file_vcf(wildcards):
 
 def historical_quality_filtered_vcf_multiqc_inputs(wildcards):
     """Input for historical_quality_filtered_vcf_multiqc"""
-    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG)
+    hist_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+        sample=HIST_NOT_CpG_SAMPLES,)
+    outlist = hist_not_CpG
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            CpG_method="CpG_vcf",)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-            CpG_method="CpG_vcf",)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            CpG_method="CpG_vcf",)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            CpG_method="CpG_vcf",)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     return outlist
 
 def modern_quality_filtered_vcf_multiqc_inputs(wildcards):
     """Input for modern_quality_filtered_vcf_multiqc"""
-    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    outlist = (not_subsampled_not_CpG + subsampled_not_CpG)
+    mod_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+        sample=MODERN_NOT_CpG_SAMPLES,)
+    outlist = mod_not_CpG
     if config["CpG_from_vcf"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
-            CpG_method="CpG_vcf",)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],
-            CpG_method="CpG_vcf",)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     elif config["CpG_from_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     elif config["CpG_from_vcf_and_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     return outlist
 
 def historical_repmasked_vcf_multiqc_inputs(wildcards):
     """Input for historical_repmasked_vcf_multiqc"""
-    rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    not_rescaled_not_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    not_rescaled_subsampled_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    outlist = (rescaled_not_subsampled_not_CpG + not_rescaled_not_subsampled_not_CpG + rescaled_subsampled_not_CpG + not_rescaled_subsampled_not_CpG)
+    hist_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+        sample=HIST_NOT_CpG_SAMPLES,)
+    outlist = hist_not_CpG
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
+        outlist += hist_CpG
     return outlist
 
 def modern_repmasked_vcf_multiqc_inputs(wildcards):
     """Input for modern_repmasked_vcf_multiqc"""
-    not_subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-    subsampled_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-        DP=config["subsampling_depth"],)
-    outlist = (not_subsampled_not_CpG + subsampled_not_CpG)
+    mod_not_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+        sample=MODERN_NOT_CpG_SAMPLES,)
+    outlist = mod_not_CpG
     if config["CpG_from_vcf"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     elif config["CpG_from_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     elif config["CpG_from_vcf_and_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist += (not_subsampled_CpG + subsampled_CpG)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
+        outlist += mod_CpG
     return outlist
 
 
@@ -223,12 +129,12 @@ def modern_repmasked_vcf_multiqc_inputs(wildcards):
 rule remove_snps_near_indels:
     """remove SNPs within 5 bp of an indel"""
     input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.bcf",
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.bcf",
     output:
-        snps=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.bcf"),
+        snps=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.bcf"),
     threads: 2
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_snps_near_indels.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_snps_near_indels.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -245,10 +151,10 @@ rule filter_vcfs_qual_dp:
         bcf=rules.remove_snps_near_indels.output,
         dp=depth_file_vcf,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.bcf"),
+        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.bcf"),
     threads: 2
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_qual_dp.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_qual_dp.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -273,10 +179,10 @@ rule filter_vcfs_allelic_balance:
     input:
         bcf=rules.filter_vcfs_qual_dp.output.filtered,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.bcf"),
+        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf"),
     threads: 2
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_vcfs_allelic_balance.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_allelic_balance.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -291,11 +197,11 @@ rule index_filtered_vcfs:
     input:
         bcf=rules.filter_vcfs_allelic_balance.output.filtered,
     output:
-        index=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.bcf.csi"),
+        index=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.csi"),
     group:
         "qual_filtered_vcf_group"
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_filtered_vcfs.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_filtered_vcfs.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -310,11 +216,11 @@ rule filtered_vcf_stats:
         bcf=rules.filter_vcfs_allelic_balance.output.filtered,
         index=rules.index_filtered_vcfs.output.index,
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
     group:
         "qual_filtered_vcf_group"
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_vcf_stats.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf_stats.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -366,9 +272,9 @@ rule filtered_bcf2vcf:
     input:
         bcf=rules.filter_vcfs_allelic_balance.output.filtered,
     output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.vcf.gz"),
+        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.vcf.gz"),
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_bcf2vcf.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_bcf2vcf.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -384,10 +290,10 @@ rule remove_repeats_vcf:
         bed=rules.make_no_repeats_bed.output.no_rep_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
+        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
     threads: 6
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_remove_repeats_vcf.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_repeats_vcf.log",
     singularity:
         "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
@@ -401,10 +307,10 @@ rule filtered_vcf2bcf:
     input:
         filtered=rules.remove_repeats_vcf.output.filtered,
     output:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
     threads: 2
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_filtered_vcf2bcf.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf2bcf.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -418,11 +324,11 @@ rule index_repmasked_vcfs:
     input:
         bcf=rules.filtered_vcf2bcf.output.bcf,
     output:
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
     group:
         "repmasked_vcf_group"
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_index_repmasked_vcfs.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_repmasked_vcfs.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -437,11 +343,11 @@ rule repmasked_vcf_stats:
         bcf=rules.filtered_vcf2bcf.output.bcf,
         index=rules.index_repmasked_vcfs.output.index,
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.{processed}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
     group:
         "repmasked_vcf_group"
     log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_repmasked_vcf_stats.log",
+        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_vcf_stats.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
