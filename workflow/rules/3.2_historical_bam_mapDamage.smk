@@ -16,14 +16,14 @@ def rescaled_bam_multiqc_inputs(wildcards):
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
         ".bam.qualimap/genome_results.txt",
-        "_fastqc.html,
+        "_fastqc.html",
         "_fastqc.zip",],)
     userprocessed_bams_rescaled = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.userprovided.rescaled{extension}",
         sample=HIST_USER_RESCALED_SAMPLES,
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
         ".bam.qualimap/genome_results.txt",
-        "_fastqc.html,
+        "_fastqc.html",
         "_fastqc.zip",],)
     return pipeline_bams_rescaled + userprocessed_bams_rescaled
 
