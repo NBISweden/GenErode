@@ -300,13 +300,32 @@ if config["map_historical_to_mitogenomes"]:
 # rescaled (prior to subsampling and CpG filtering)
 HIST_RESCALED_SAMPLES = list(
     set(hist_sm) & 
+    set(config["historical_rescaled_samplenames"])) # delete when the new lists work
+
+# pipeline-processed BAM files
+HIST_PIPELINE_RESCALED_SAMPLES = list(
+    set(hist_pipeline_bam_sm) & 
+    set(config["historical_rescaled_samplenames"]))
+
+# user-provided BAM files
+HIST_USER_RESCALED_SAMPLES = list(
+    set(hist_user_bam_sm) & 
     set(config["historical_rescaled_samplenames"]))
 
 # not rescaled (prior to subsampling and CpG filtering)
 HIST_NOT_RESCALED_SAMPLES = list(
     set(hist_sm) - 
-    set(HIST_RESCALED_SAMPLES))
+    set(HIST_RESCALED_SAMPLES)) # delete when the new lists work
 
+# pipeline-processed BAM files
+HIST_PIPELINE_NOT_RESCALED_SAMPLES = list(
+    set(hist_pipeline_bam_sm) - 
+    set(HIST_PIPELINE_RESCALED_SAMPLES))
+
+# user-provided BAM files
+HIST_USER_NOT_RESCALED_SAMPLES = list(
+    set(hist_user_bam_sm) - 
+    set(HIST_USER_RESCALED_SAMPLES))
 
 ###
 # subsampled (prior to CpG filtering)

@@ -7,33 +7,54 @@ if os.path.exists(config["historical_samples"]):
         all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html")
 
 
+# Functions for this step of the pipeline
+def rescaled_bam_multiqc_inputs(wildcards):
+    """Collect all inputs for multiqc"""
+    # Get the list of all rescaled bam files
+    pipeline_bams_rescaled = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled{extension}",
+        sample=HIST_PIPELINE_RESCALED_SAMPLES,
+        extension=[".bam.stats.txt", 
+        ".bam.qualimap/qualimapReport.html", 
+        ".bam.qualimap/genome_results.txt",
+        "_fastqc.html,
+        "_fastqc.zip",],)
+    userprocessed_bams_rescaled = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.userprovided.rescaled{extension}",
+        sample=HIST_USER_RESCALED_SAMPLES,
+        extension=[".bam.stats.txt", 
+        ".bam.qualimap/qualimapReport.html", 
+        ".bam.qualimap/genome_results.txt",
+        "_fastqc.html,
+        "_fastqc.zip",],)
+    return pipeline_bams_rescaled + userprocessed_bams_rescaled
+
+
 # snakemake rules
 rule rescale_historical:
     """Rescale base quality scores of likely damaged positions"""
     input:
-        bam="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+        bam=unpack(processed_bam),
         ref=config["ref_path"],
     output:
-        fragmis="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Fragmisincorporation_plot.pdf",
-        length="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Length_plot.pdf",
-        dna="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/dnacomp.txt",
-        dna_csv="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/dnacomp_genome.csv",
-        misin="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/misincorporation.txt",
-        mcmcstat="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_iter_summ_stat.csv",
-        mcmcprob="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_correct_prob.csv",
-        mcmchist="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_hist.pdf",
-        mcmciter="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_iter.csv",
-        mcmcpost="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_post_pred.pdf",
-        mcmctrace="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Stats_out_MCMC_trace.pdf",
-        GtoA_freq="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/3pGtoA_freq.txt",
-        CtoT_freq="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/5pCtoT_freq.txt",
-        lgdist="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/lgdistribution.txt",
-        log="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/Runtime_log.txt",
-        tmp=temp("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/{sample}.merged.rmdup.merged.realn.rescaled.bam"),
-        rescaled="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam",
+        fragmis="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Fragmisincorporation_plot.pdf",
+        length="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Length_plot.pdf",
+        dna="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/dnacomp.txt",
+        dna_csv="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/dnacomp_genome.csv",
+        misin="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/misincorporation.txt",
+        mcmcstat="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_iter_summ_stat.csv",
+        mcmcprob="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_correct_prob.csv",
+        mcmchist="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_hist.pdf",
+        mcmciter="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_iter.csv",
+        mcmcpost="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_post_pred.pdf",
+        mcmctrace="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Stats_out_MCMC_trace.pdf",
+        GtoA_freq="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/3pGtoA_freq.txt",
+        CtoT_freq="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/5pCtoT_freq.txt",
+        lgdist="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/lgdistribution.txt",
+        log="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Runtime_log.txt",
+        tmp=temp("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/{sample}.{processed}.rescaled.bam"),
+        rescaled="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam",
     threads: 4
     params:
-        dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.bam.mapDamage/",
+        dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescale_historical.log",
     singularity:
@@ -47,9 +68,9 @@ rule rescale_historical:
 
 rule index_rescaled_bams:
     input:
-        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam",
+        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam",
     output:
-        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai",
+        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{dataset}/{sample}_index_rescaled_bams.log",
     group:
@@ -66,9 +87,9 @@ rule rescaled_bam_stats:
     """Basic statistics on mapping output"""
     input:
         bam=rules.rescale_historical.output.rescaled,
-        bai="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai",
+        bai="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     output:
-        stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.stats.txt",
+        stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.stats.txt",
     group:
         "rescaled_bam_group"
     params:
@@ -87,11 +108,11 @@ rule rescaled_bam_fastqc:
     """Run fastqc on rescaled bam files"""
     input:
         bam=rules.rescale_historical.output.rescaled,
-        bai="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai",
+        bai="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     output:
-        html="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc.html",
-        zip="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc.zip",
-        dir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc"),
+        html="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc.html",
+        zip="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc.zip",
+        dir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc"),
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc",
     log:
@@ -109,16 +130,16 @@ rule rescaled_bam_qualimap:
     """More detailed stats"""
     input:
         bam=rules.rescale_historical.output.rescaled,
-        bai="results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam.bai",
+        bai="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     output:
-        stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/qualimapReport.html",
-        results="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/genome_results.txt",
-        outdir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap"),
+        stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap/qualimapReport.html",
+        results="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap/genome_results.txt",
+        outdir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap"),
     threads: 8
     resources:
         mem_mb=64000,
     params:
-        outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap",
+        outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_qualimap.log",
     singularity:
@@ -134,16 +155,7 @@ rule rescaled_bam_qualimap:
 rule rescaled_bam_multiqc:
     """Summarize all stats results from all historical bam files after rescaling"""
     input:
-        stats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.stats.txt",
-            sample=HIST_RESCALED_SAMPLES,),
-        qualimap_report=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/qualimapReport.html",
-            sample=HIST_RESCALED_SAMPLES,),
-        qualimap_results=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.merged.rmdup.merged.realn.rescaled.bam.qualimap/genome_results.txt",
-            sample=HIST_RESCALED_SAMPLES,),
-        html=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc.html",
-            sample=HIST_RESCALED_SAMPLES,),
-        zip=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc.zip",
-            sample=HIST_RESCALED_SAMPLES,),
+        rescaled_bam_multiqc_inputs
     output:
         stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html",
     params:
