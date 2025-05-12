@@ -306,7 +306,6 @@ HIST_RESCALED_SAMPLES = list(
 HIST_PIPELINE_RESCALED_SAMPLES = list(
     set(hist_pipeline_bam_sm) & 
     set(config["historical_rescaled_samplenames"]))
-
 # user-provided BAM files
 HIST_USER_RESCALED_SAMPLES = list(
     set(hist_user_bam_sm) & 
@@ -321,7 +320,6 @@ HIST_NOT_RESCALED_SAMPLES = list(
 HIST_PIPELINE_NOT_RESCALED_SAMPLES = list(
     set(hist_pipeline_bam_sm) - 
     set(HIST_PIPELINE_RESCALED_SAMPLES))
-
 # user-provided BAM files
 HIST_USER_NOT_RESCALED_SAMPLES = list(
     set(hist_user_bam_sm) - 
@@ -333,11 +331,28 @@ HIST_SUBSAMPLED_SAMPLES = list(
     set(hist_sm) & 
     set(config["subsampling_samplenames"]))
 
+# pipeline-processed BAM files
+HIST_PIPELINE_SUBSAMPLED_SAMPLES = list(
+    set(hist_pipeline_bam_sm) & 
+    set(config["subsampling_samplenames"]))
+# user-provided BAM files
+HIST_USER_SUBSAMPLED_SAMPLES = list(
+    set(hist_user_bam_sm) & 
+    set(config["subsampling_samplenames"]))
+
 # not subsampled (prior to CpG filtering)
 HIST_NOT_SUBSAMPLED_SAMPLES = list(
     set(hist_sm) - 
     set(config["subsampling_samplenames"]))
 
+# pipeline-processed BAM files
+HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES = list(
+    set(hist_pipeline_bam_sm) - 
+    set(HIST_PIPELINE_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+HIST_USER_NOT_SUBSAMPLED_SAMPLES = list(
+    set(hist_user_bam_sm) - 
+    set(HIST_USER_SUBSAMPLED_SAMPLES))
 
 ###
 # rescaled and subsampled (prior to CpG filtering)
@@ -345,21 +360,56 @@ HIST_RESCALED_SUBSAMPLED_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES) & 
     set(HIST_SUBSAMPLED_SAMPLES))
 
+# pipeline-processed BAM files
+HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES = list(
+    set(HIST_PIPELINE_RESCALED_SAMPLES) & 
+    set(HIST_PIPELINE_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+HIST_USER_RESCALED_SUBSAMPLED_SAMPLES = list(
+    set(HIST_USER_RESCALED_SAMPLES) & 
+    set(HIST_USER_SUBSAMPLED_SAMPLES))
+
 # rescaled, but not subsampled (prior to CpG filtering)
 HIST_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES) & 
     set(HIST_NOT_SUBSAMPLED_SAMPLES))
+
+# pipeline-processed BAM files
+HIST_PIPELINE_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
+    set(HIST_PIPELINE_RESCALED_SAMPLES) & 
+    set(HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+HIST_USER_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
+    set(HIST_USER_RESCALED_SAMPLES) & 
+    set(HIST_USER_NOT_SUBSAMPLED_SAMPLES))
 
 # not rescaled, but subsampled (prior to CpG filtering)
 HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES) & 
     set(HIST_SUBSAMPLED_SAMPLES))
 
+# pipeline-processed BAM files
+HIST_PIPELINE_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
+    set(HIST_PIPELINE_NOT_RESCALED_SAMPLES) & 
+    set(HIST_PIPELINE_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
+    set(HIST_USER_NOT_RESCALED_SAMPLES) & 
+    set(HIST_USER_SUBSAMPLED_SAMPLES))
+
 # neither rescaled nor subsampled (prior to CpG filtering)
 HIST_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES) & 
     set(HIST_NOT_SUBSAMPLED_SAMPLES))
 
+# pipeline-processed BAM files
+HIST_PIPELINE_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
+    set(HIST_PIPELINE_NOT_RESCALED_SAMPLES) & 
+    set(HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+HIST_USER_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
+    set(HIST_USER_NOT_RESCALED_SAMPLES) & 
+    set(HIST_USER_NOT_SUBSAMPLED_SAMPLES))
 
 ###
 # CpG filtered
@@ -440,10 +490,28 @@ MODERN_SUBSAMPLED_SAMPLES = list(
     set(mod_sm) & 
     set(config["subsampling_samplenames"]))
 
+# pipeline-processed BAM files
+MODERN_PIPELINE_SUBSAMPLED_SAMPLES = list(
+    set(mod_pipeline_bam_sm) & 
+    set(config["subsampling_samplenames"]))
+# user-provided BAM files
+MODERN_USER_SUBSAMPLED_SAMPLES = list(
+    set(mod_user_bam_sm) & 
+    set(config["subsampling_samplenames"]))
+
 # not subsampled
 MODERN_NOT_SUBSAMPLED_SAMPLES = list(
     set(mod_sm) - 
     set(config["subsampling_samplenames"]))
+
+# pipeline-processed BAM files
+MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES = list(
+    set(mod_pipeline_bam_sm) - 
+    set(MODERN_PIPELINE_SUBSAMPLED_SAMPLES))
+# user-provided BAM files
+MODERN_USER_NOT_SUBSAMPLED_SAMPLES = list(
+    set(mod_user_bam_sm) - 
+    set(MODERN_USER_SUBSAMPLED_SAMPLES))
 
 ###
 # CpG filtered

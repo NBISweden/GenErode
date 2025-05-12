@@ -134,7 +134,7 @@ mapping: False
 # symbolic links will be created and basic statistics will be calculated for 
 # these BAM files, including the mean genome-wide depth of coverage for depth 
 # filtering of BAM and VCF files.
-bam_rmdup_realign_indels: True
+bam_rmdup_realign_indels: False
 
 # Parameters related to depth filtering of BAM and VCF files.
 # After BAM file processing, the mean genome-wide depth is calculated 
@@ -192,7 +192,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: []
+historical_rescaled_samplenames: ["S08"]
 #####
 
 
@@ -200,7 +200,7 @@ historical_rescaled_samplenames: []
 # OPTIONAL: 
 # Subsample BAM files to a certain average genome-wide depth of 
 # coverage to reduce biases in downstream analyses.
-bam_subsampling: False
+bam_subsampling: True
 
 # Depth to which BAM files should be subsampled.
 # Check the GenErode pipeline report to screen the dataset for an 
@@ -210,7 +210,7 @@ bam_subsampling: False
 # Keep the variable for the entire pipeline run so that the correct 
 # files are used for downstream analyses.
 # Has to be set to False if not run.
-subsampling_depth: False
+subsampling_depth: 8
 
 # Combined list of modern and historical samples that should be 
 # subsampled to a common depth.
@@ -219,7 +219,7 @@ subsampling_depth: False
 # List has to be left empty ([]) if subsampling is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if subsampled BAM files should be used in downstream analyses.
-subsampling_samplenames: []
+subsampling_samplenames: ["S03"]
 #####
 
 
