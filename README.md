@@ -1,10 +1,12 @@
 # GenErode pipeline
 
+[![Snakemake](https://img.shields.io/badge/snakemake-≥7.0.0-brightgreen.svg)](https://snakemake.github.io)
+
 <img src="docs/source/img/logga_viridis2.png" alt="logo" width="25%"/> 
 
-GitHub repository for GenErode, a Snakemake pipeline for the analysis 
-of whole-genome sequencing data from historical and modern samples to 
-study patterns of genome erosion.
+GitHub repository for GenErode, a [Snakemake](http://snakemake.readthedocs.io/en/stable/) 
+workflow for the analysis of whole-genome sequencing data from 
+historical and modern samples to study patterns of genome erosion.
 
 ## Documentation
 
