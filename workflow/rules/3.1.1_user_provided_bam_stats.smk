@@ -12,7 +12,9 @@ if os.path.exists(config["modern_samples"]):
 
 
 # snakemake rules
-rule user_bam_historical_symbolic_links:
+localrules: userprovided_bam_historical_symbolic_links, userprovided_bam_modern_symbolic_links
+
+rule userprovided_bam_historical_symbolic_links:
     """Make symbolic links to the user-provided bam files based on a metadata table"""
     input:
         ancient(config["historical_samples"]),
@@ -21,7 +23,7 @@ rule user_bam_historical_symbolic_links:
     params:
         abs_bam=lambda wildcards, output: os.path.abspath(output.bam),
     log:
-        "data/logs/3.1.1_user_provided_bams/historical/" + REF_NAME + "/{sample}_user_bam_historical_symbolic_links.log",
+        "data/logs/3.1.1_user_provided_bams/historical/" + REF_NAME + "/{sample}_userprovided_bam_historical_symbolic_links.log",
     run:
         SAMPLENAME = "{}".format(wildcards.sample)
         shell("""
@@ -29,7 +31,7 @@ rule user_bam_historical_symbolic_links:
         """.format(SAMPLENAME=SAMPLENAME, **hist_user_bam_symlinks_dict[SAMPLENAME]))
 
 
-rule user_bam_modern_symbolic_links:
+rule userprovided_bam_modern_symbolic_links:
     """Make symbolic links to the user-provided bam files based on a metadata table"""
     input:
         ancient(config["modern_samples"]),
@@ -38,7 +40,7 @@ rule user_bam_modern_symbolic_links:
     params:
         abs_bam=lambda wildcards, output: os.path.abspath(output.bam),
     log:
-        "data/logs/3.1.1_user_provided_bams/modern/" + REF_NAME + "/{sample}_user_bam_modern_symbolic_links.log",
+        "data/logs/3.1.1_user_provided_bams/modern/" + REF_NAME + "/{sample}_userprovided_bam_modern_symbolic_links.log",
     run:
         SAMPLENAME = "{}".format(wildcards.sample)
         shell("""
@@ -138,8 +140,6 @@ rule userprovided_bam_depth:
     output:
         tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dp"),
         dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt",
-    group:
-        "userprovided_bam_group"
     params:
         minDP=config["minDP"],
         maxDP=config["maxDP"],
@@ -164,7 +164,7 @@ rule userprovided_bam_depth:
         """
 
 
-rule plot_dp_hist:
+rule plot_userprovided_bam_dp_hist:
     """Plot a depth histogram per sample with depth filtering thresholds and genome-wide average value"""
     input:
         dp=rules.userprovided_bam_depth.output.dp,
@@ -174,7 +174,7 @@ rule plot_dp_hist:
             caption="../report/depth_plot.rst",
             category="BAM file processing",),
     log:
-        "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_plot_dp_hist.log",
+        "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_plot_userprovided_bam_dp_hist.log",
     script:
         "../scripts/dp_hist_plot.py"
 
