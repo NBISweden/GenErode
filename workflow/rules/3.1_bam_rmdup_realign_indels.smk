@@ -695,18 +695,13 @@ rule plot_dp_hist:
 rule historical_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all historical bam files until indel realignment"""
     input:
-        dp=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=hist_pipeline_bam_sm,),
-        realigned=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
-            sample=hist_pipeline_bam_sm,),
-        qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/qualimapReport.html",
-            sample=hist_pipeline_bam_sm,),
-        html=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.html",
-            sample=hist_pipeline_bam_sm,),
-        zip=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.zip",
-            sample=hist_pipeline_bam_sm,),
-        pdf=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=hist_pipeline_bam_sm,),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30{extension}",
+            sample=hist_pipeline_bam_sm,
+            extension=[".bam.dp.hist.pdf", 
+                ".bam.stats.txt", 
+                ".bam.qualimap/qualimapReport.html",
+                "_fastqc.html",
+                "_fastqc.zip",],),
     output:
         stats=report(
             "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html",
@@ -728,18 +723,13 @@ rule historical_realigned_bam_multiqc:
 rule modern_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all modern bam files"""
     input:
-        dp=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=mod_pipeline_bam_sm,),
-        realigned=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
-            sample=mod_pipeline_bam_sm,),
-        qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/qualimapReport.html",
-            sample=mod_pipeline_bam_sm,),
-        html=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.html",
-            sample=mod_pipeline_bam_sm,),
-        zip=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.zip",
-            sample=mod_pipeline_bam_sm,),
-        pdf=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=mod_pipeline_bam_sm,),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
+            sample=mod_pipeline_bam_sm,
+            extension=[".bam.dp.hist.pdf", 
+                ".bam.stats.txt", 
+                ".bam.qualimap/qualimapReport.html",
+                "_fastqc.html",
+                "_fastqc.zip",],),),
     output:
         stats=report(
             "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html",
