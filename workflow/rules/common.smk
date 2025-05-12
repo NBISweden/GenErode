@@ -173,29 +173,6 @@ def pipeline_bam_samples_func(dataframe):
     return pipeline_bam_samples
 
 
-# return correct bam file path depending on bam file type
-def processed_bam(wildcards):
-    if wildcards.sample in hist_pipeline_bam_sm:
-        return {
-            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
-            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
-        }
-    elif wildcards.sample in mod_pipeline_bam_sm:
-        return {
-            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
-            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
-        }
-    elif wildcards.sample in hist_user_bam_sm:
-        return {
-            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
-            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
-        }
-    elif wildcards.sample in mod_user_bam_sm:
-        return {
-            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
-            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
-        }
-
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
     historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python', dtype=str)  # read in the metadata as dataframe
@@ -358,7 +335,7 @@ HIST_USER_NOT_SUBSAMPLED_SAMPLES = list(
 # rescaled and subsampled (prior to CpG filtering)
 HIST_RESCALED_SUBSAMPLED_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES) & 
-    set(HIST_SUBSAMPLED_SAMPLES))
+    set(HIST_SUBSAMPLED_SAMPLES)) # remove when everything works
 
 # pipeline-processed BAM files
 HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES = list(
@@ -372,7 +349,7 @@ HIST_USER_RESCALED_SUBSAMPLED_SAMPLES = list(
 # rescaled, but not subsampled (prior to CpG filtering)
 HIST_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES) & 
-    set(HIST_NOT_SUBSAMPLED_SAMPLES))
+    set(HIST_NOT_SUBSAMPLED_SAMPLES)) # remove when everything works
 
 # pipeline-processed BAM files
 HIST_PIPELINE_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
@@ -386,7 +363,7 @@ HIST_USER_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
 # not rescaled, but subsampled (prior to CpG filtering)
 HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES) & 
-    set(HIST_SUBSAMPLED_SAMPLES))
+    set(HIST_SUBSAMPLED_SAMPLES)) # remove when everything works
 
 # pipeline-processed BAM files
 HIST_PIPELINE_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
@@ -400,7 +377,7 @@ HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES = list(
 # neither rescaled nor subsampled (prior to CpG filtering)
 HIST_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES) & 
-    set(HIST_NOT_SUBSAMPLED_SAMPLES))
+    set(HIST_NOT_SUBSAMPLED_SAMPLES)) # remove when everything works
 
 # pipeline-processed BAM files
 HIST_PIPELINE_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES = list(
@@ -429,28 +406,28 @@ HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES)
     & set(HIST_SUBSAMPLED_SAMPLES)
     & set(HIST_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # rescaled, not subsampled, CpG filtered
 HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES)
     & set(HIST_NOT_SUBSAMPLED_SAMPLES)
     & set(HIST_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # not rescaled, subsampled, CpG filtered
 HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES)
     & set(HIST_SUBSAMPLED_SAMPLES)
     & set(HIST_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # not rescaled, not subsampled, CpG filtered
 HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES)
     & set(HIST_NOT_SUBSAMPLED_SAMPLES)
     & set(HIST_CpG_SAMPLES)
-)
+) # remove when everything works
 
 
 ###
@@ -459,28 +436,28 @@ HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES)
     & set(HIST_SUBSAMPLED_SAMPLES)
     & set(HIST_NOT_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # rescaled, not subsampled, not CpG filtered
 HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(HIST_RESCALED_SAMPLES)
     & set(HIST_NOT_SUBSAMPLED_SAMPLES)
     & set(HIST_NOT_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # not rescaled, subsampled, not CpG filtered
 HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES)
     & set(HIST_SUBSAMPLED_SAMPLES)
     & set(HIST_NOT_CpG_SAMPLES)
-)
+) # remove when everything works
 
 # not rescaled, not subsampled, not CpG filtered
 HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(HIST_NOT_RESCALED_SAMPLES)
     & set(HIST_NOT_SUBSAMPLED_SAMPLES)
     & set(HIST_NOT_CpG_SAMPLES)
-)
+) # remove when everything works
 
 
 # Lists of modern samples
@@ -488,7 +465,7 @@ HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES = list(
 # subsampled
 MODERN_SUBSAMPLED_SAMPLES = list(
     set(mod_sm) & 
-    set(config["subsampling_samplenames"]))
+    set(config["subsampling_samplenames"])) # remove when everything works
 
 # pipeline-processed BAM files
 MODERN_PIPELINE_SUBSAMPLED_SAMPLES = list(
@@ -502,7 +479,7 @@ MODERN_USER_SUBSAMPLED_SAMPLES = list(
 # not subsampled
 MODERN_NOT_SUBSAMPLED_SAMPLES = list(
     set(mod_sm) - 
-    set(config["subsampling_samplenames"]))
+    set(config["subsampling_samplenames"])) # remove when everything works
 
 # pipeline-processed BAM files
 MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES = list(
@@ -528,22 +505,22 @@ MODERN_NOT_CpG_SAMPLES = list(
 # subsampled and CpG filtered
 MODERN_SUBSAMPLED_CpG_SAMPLES = list(
     set(MODERN_SUBSAMPLED_SAMPLES) & 
-    set(MODERN_CpG_SAMPLES))
+    set(MODERN_CpG_SAMPLES)) # remove when everything works
 
 # subsampled but not CpG filtered
 MODERN_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(MODERN_SUBSAMPLED_SAMPLES) & 
-    set(MODERN_NOT_CpG_SAMPLES))
+    set(MODERN_NOT_CpG_SAMPLES)) # remove when everything works
 
 # not subsampled but CpG filtered
 MODERN_NOT_SUBSAMPLED_CpG_SAMPLES = list(
     set(MODERN_NOT_SUBSAMPLED_SAMPLES) & 
-    set(MODERN_CpG_SAMPLES))
+    set(MODERN_CpG_SAMPLES)) # remove when everything works
 
 # not subsampled not CpG filtered
 MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES = list(
     set(MODERN_NOT_SUBSAMPLED_SAMPLES) & 
-    set(MODERN_NOT_CpG_SAMPLES))
+    set(MODERN_NOT_CpG_SAMPLES)) # remove when everything works
 
 # VCF file merging
 ALL_SAMPLES = list(hist_sm + mod_sm)

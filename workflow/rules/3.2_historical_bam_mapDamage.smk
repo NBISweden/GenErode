@@ -8,6 +8,30 @@ if os.path.exists(config["historical_samples"]):
 
 
 # Functions for this step of the pipeline
+# return correct bam file path depending on bam file type
+def rescale_historical_bam_inputs(wildcards):
+    if wildcards.sample in hist_pipeline_bam_sm:
+        return {
+            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+        }
+    elif wildcards.sample in mod_pipeline_bam_sm:
+        return {
+            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam",
+            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
+        }
+    elif wildcards.sample in hist_user_bam_sm:
+        return {
+            "bam": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+            "bai": "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+        }
+    elif wildcards.sample in mod_user_bam_sm:
+        return {
+            "bam": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
+            "bai": "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
+        }
+
+
 def rescaled_bam_multiqc_inputs(wildcards):
     """Collect all inputs for multiqc"""
     # Get the list of all rescaled bam files
@@ -32,7 +56,7 @@ def rescaled_bam_multiqc_inputs(wildcards):
 rule rescale_historical:
     """Rescale base quality scores of likely damaged positions"""
     input:
-        bam=unpack(processed_bam),
+        bam=unpack(rescale_historical_bam_inputs),
         ref=config["ref_path"],
     output:
         fragmis="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Fragmisincorporation_plot.pdf",
