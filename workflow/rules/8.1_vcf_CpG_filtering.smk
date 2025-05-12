@@ -15,67 +15,26 @@ if os.path.exists(config["modern_samples"]):
 def historical_CpG_filtered_multiqc_inputs(wildcards):
     """Input for historical_CpG_filtered_multiqc"""
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_ref.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
-    return outlist
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
 
 def modern_CpG_filtered_multiqc_inputs(wildcards):
     """Input for modern_CpG_filtered_multiqc"""
     if config["CpG_from_vcf"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_ref.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
-    return outlist
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.bcf.stats.txt",
+            sample=MODERN_CpG_SAMPLES,)
 
 
 # snakemake rules
@@ -84,9 +43,9 @@ rule sorted_bcf2vcf_CpG_removal:
     input:
         bcf=rules.sort_vcfs.output.sort,
     output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.CpG_rm.vcf.gz"),
+        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG_rm.vcf.gz"),
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_removal.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}_sorted_bcf2vcf_CpG_removal.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -102,10 +61,10 @@ rule remove_CpG_vcf:
         bed=rules.make_noCpG_bed.output.no_CpG_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.vcf.gz"),
+        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.vcf.gz"),
     threads: 6
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
         "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
     shell:
@@ -119,10 +78,10 @@ rule CpG_vcf2bcf:
     input:
         filtered=rules.remove_CpG_vcf.output.filtered,
     output:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf",
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf",
     threads: 2
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_vcf2bcf.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_vcf2bcf.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -136,11 +95,11 @@ rule index_CpG_bcf:
     input:
         bcf=rules.CpG_vcf2bcf.output.bcf,
     output:
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf.csi",
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.csi",
     group:
         "CpG_bcf_group"
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_index_CpG_bcf.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_index_CpG_bcf.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -155,11 +114,11 @@ rule CpG_filtered_vcf_stats:
         bcf=rules.CpG_vcf2bcf.output.bcf,
         index=rules.index_CpG_bcf.output.index,
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf.stats.txt",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.stats.txt",
     group:
         "CpG_bcf_group"
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_filtered_vcf_stats.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_filtered_vcf_stats.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:

@@ -25,56 +25,30 @@ elif config["CpG_from_vcf_and_reference"] == True:
 def CpG_genotype_bed_files_to_merge(wildcards):
     """Collect bed files with CpG sites found in individual samples as input for merge_CpG_genotype_beds"""
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.CpG.bed",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.CpG.bed",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.CpG.bed",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG)
-    return outlist
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
+            sample=HIST_CpG_SAMPLES,)
+    return hist_CpG
 
 def all_CpG_bed_files_to_merge(wildcards):
     """Collect bed files with CpG sites found in individual samples and in the reference genome as input for merge_all_CpG_beds"""
     if config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.CpG.bed",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.CpG.bed",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.Q30.sorted.CpG.bed",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.CpG.bed",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
+        hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
+            sample=HIST_CpG_SAMPLES,)
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
+            sample=MODERN_CpG_SAMPLES,)
         ref = expand("results/" + REF_NAME + ".CpG_ref.bed")
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG + not_subsampled_CpG + subsampled_CpG + ref)
-    return outlist
+    return hist_CpG + mod_CpG + ref
 
 
 # snakemake rules
 rule sorted_bcf2vcf_CpG_id:
     """Convert bcf format to vcf.gz for removal of sites"""
     input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.bcf",
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.bcf",
     output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.CpG_id.vcf.gz"),
+        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG_id.vcf.gz"),
     log:
-        "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_id.log",
+        "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}_sorted_bcf2vcf_CpG_id.log",
     singularity:
         "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
     shell:
@@ -89,9 +63,9 @@ rule make_CpG_genotype_bed:
     input:
         vcf=rules.sorted_bcf2vcf_CpG_id.output.vcf,
     output:
-        bed=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.CpG.bed"),
+        bed=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed"),
     log:
-        "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}.{processed}_make_CpG_genotype_bed.log",
+        "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}_make_CpG_genotype_bed.log",
     shell:
         """
         python workflow/scripts/find_CpG_genotypes.py {input.vcf} {output.bed} 2> {log}
@@ -134,11 +108,11 @@ rule merge_CpG_genotype_beds:
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-          bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-          touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
-          echo "Only one file present for merging. Copying the input bed file." >> {log}
+            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
 
@@ -180,11 +154,11 @@ rule merge_all_CpG_beds:
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-          bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-          touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
-          echo "Only one file present for merging. Copying the input bed file." >> {log}
+            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
 
