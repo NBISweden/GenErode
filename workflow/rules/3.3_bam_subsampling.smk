@@ -12,6 +12,17 @@ if os.path.exists(config["modern_samples"]):
 
 
 # Functions for this step of the pipeline
+def subsample_bams_depth_input(wildcards):
+    """Select correct bam file for each sample"""
+    if wildcards.sample in hist_pipeline_bam_sm:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in hist_user_bam_sm:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in mod_pipeline_bam_sm:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in mod_user_bam_sm:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt"
+
 def historical_subsampled_bam_multiqc_inputs(wildcards):
     """Collect all inputs for multiqc"""
     not_rescaled_subsampled_pipeline_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}{extension}",
@@ -86,7 +97,7 @@ rule subsample_bams:
     """Subsample bam files to target depth per sample"""
     input:
         bam=rules.filter_bam_mapped_mq.output.filtered,
-        dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.{processed}.repma.Q30.bam.dpstats.txt",
+        dp=subsample_bams_depth_input,
     output:
         subsam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam",
     threads: 2
