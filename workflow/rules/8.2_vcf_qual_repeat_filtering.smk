@@ -14,17 +14,39 @@ if os.path.exists(config["modern_samples"]):
 # Functions used by rules of this part of the pipeline
 def depth_file_vcf(wildcards):
     """Select correct depth stats file for each sample"""
-    if wildcards.sample in HIST_NOT_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample)
-    elif wildcards.sample in MODERN_NOT_SUBSAMPLED_SAMPLES:
-        dpstats = "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample)
-    elif wildcards.sample in HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in HIST_RESCALED_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in MODERN_SUBSAMPLED_SAMPLES:
-        dpstats = "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    return dpstats
+    # pipeline-processed historical samples
+    if wildcards.sample in HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_PIPELINE_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # pipeline-processed modern samples
+    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided historical samples
+    elif wildcards.sample in HIST_USER_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_USER_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided modern samples
+    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+
 
 def historical_quality_filtered_vcf_multiqc_inputs(wildcards):
     """Input for historical_quality_filtered_vcf_multiqc"""
@@ -237,7 +259,7 @@ rule filter_vcfs_qual_dp:
         # check minimum depth threshold
         if awk "BEGIN{{exit ! ($minDP < 3)}}"
         then
-          minDP=3
+            minDP=3
         fi
 
         bcftools filter -i "(DP4[0]+DP4[1]+DP4[2]+DP4[3])>$minDP & (DP4[0]+DP4[1]+DP4[2]+DP4[3])<$maxDP & QUAL>=30 & INDEL=0" -O b \
