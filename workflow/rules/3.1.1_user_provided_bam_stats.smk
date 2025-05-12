@@ -182,7 +182,7 @@ rule plot_userprovided_bam_dp_hist:
 rule historical_userprovided_bam_multiqc:
     """Summarize all stats and qualimap results from all historical bam files until indel realignment"""
     input:
-        dp=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.{extension}",
+        dp=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30{extension}",
             sample=hist_user_bam_sm,
             extension=[".bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
@@ -210,7 +210,7 @@ rule historical_userprovided_bam_multiqc:
 rule modern_userprovided_bam_multiqc:
     """Summarize all stats and qualimap results from all modern bam files"""
     input:
-        dp=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.{extension}",
+        dp=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30{extension}",
             sample=mod_user_bam_sm,
             extension=[".bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
