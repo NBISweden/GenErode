@@ -182,12 +182,14 @@ rule plot_userprovided_bam_dp_hist:
 rule historical_userprovided_bam_multiqc:
     """Summarize all stats and qualimap results from all historical bam files until indel realignment"""
     input:
-        dp=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided{extension}",
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided{extension}",
             sample=hist_user_bam_sm,
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
-                ".bam.qualimap/qualimapReport.html",
-                "_fastqc.html",
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided{extension}",
+            sample=hist_user_bam_sm,
+            extension=["_fastqc.html",
                 "_fastqc.zip",],),
     output:
         stats=report(
@@ -210,12 +212,14 @@ rule historical_userprovided_bam_multiqc:
 rule modern_userprovided_bam_multiqc:
     """Summarize all stats and qualimap results from all modern bam files"""
     input:
-        dp=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided{extension}",
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided{extension}",
             sample=mod_user_bam_sm,
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
-                ".bam.qualimap/qualimapReport.html",
-                "_fastqc.html",
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided{extension}",
+            sample=mod_user_bam_sm,
+            extension=["_fastqc.html",
                 "_fastqc.zip",],),
     output:
         stats=report(

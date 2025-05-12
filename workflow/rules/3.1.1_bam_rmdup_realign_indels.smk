@@ -699,8 +699,10 @@ rule historical_realigned_bam_multiqc:
             sample=hist_pipeline_bam_sm,
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
-                ".bam.qualimap/qualimapReport.html",
-                "_fastqc.html",
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=hist_pipeline_bam_sm,
+            extension=["_fastqc.html",
                 "_fastqc.zip",],),
     output:
         stats=report(
@@ -727,8 +729,10 @@ rule modern_realigned_bam_multiqc:
             sample=mod_pipeline_bam_sm,
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
-                ".bam.qualimap/qualimapReport.html",
-                "_fastqc.html",
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=mod_pipeline_bam_sm,
+            extension=["_fastqc.html",
                 "_fastqc.zip",],),
     output:
         stats=report(

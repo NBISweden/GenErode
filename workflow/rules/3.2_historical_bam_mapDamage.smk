@@ -39,17 +39,21 @@ def rescaled_bam_multiqc_inputs(wildcards):
         sample=HIST_PIPELINE_RESCALED_SAMPLES,
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
-        ".bam.qualimap/genome_results.txt",
-        "_fastqc.html",
+        ".bam.qualimap/genome_results.txt",],)
+    pipeline_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled{extension}",
+        sample=HIST_PIPELINE_RESCALED_SAMPLES,
+        extension=["_fastqc.html",
         "_fastqc.zip",],)
     userprocessed_bams_rescaled = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.userprovided.rescaled{extension}",
         sample=HIST_USER_RESCALED_SAMPLES,
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
-        ".bam.qualimap/genome_results.txt",
-        "_fastqc.html",
+        ".bam.qualimap/genome_results.txt",],)
+    userprocessed_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.userprovided.rescaled{extension}",
+        sample=HIST_USER_RESCALED_SAMPLES,
+        extension=["_fastqc.html",
         "_fastqc.zip",],)
-    return pipeline_bams_rescaled + userprocessed_bams_rescaled
+    return pipeline_bams_rescaled + pipeline_bams_rescaled_fastqc + userprocessed_bams_rescaled + userprocessed_bams_rescaled_fastqc
 
 
 # snakemake rules
