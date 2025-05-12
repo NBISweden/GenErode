@@ -56,7 +56,7 @@ rule rescale_historical:
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/",
     log:
-        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescale_historical.log",
+        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescale_historical.log",
     singularity:
         "docker://biocontainers/mapdamage:v2.0.9dfsg-1-deb_cv1"
     shell:
@@ -68,11 +68,11 @@ rule rescale_historical:
 
 rule index_rescaled_bams:
     input:
-        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam",
+        bam="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam",
     output:
-        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
+        index="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     log:
-        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{dataset}/{sample}_index_rescaled_bams.log",
+        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/historical/{sample}.{processed}_index_rescaled_bams.log",
     group:
         "rescaled_bam_group"
     singularity:
@@ -95,7 +95,7 @@ rule rescaled_bam_stats:
     params:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/",
     log:
-        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_stats.log",
+        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_stats.log",
     singularity:
         "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
@@ -116,7 +116,7 @@ rule rescaled_bam_fastqc:
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc",
     log:
-        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_fastqc.log",
+        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_fastqc.log",
     threads: 2
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
@@ -141,7 +141,7 @@ rule rescaled_bam_qualimap:
     params:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap",
     log:
-        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_qualimap.log",
+        "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_qualimap.log",
     singularity:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
