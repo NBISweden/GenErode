@@ -20,28 +20,28 @@ def historical_subsampled_bam_multiqc_inputs(wildcards):
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     rescaled_subsampled_pipeline_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}{extension}",
         sample=HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     not_rescaled_subsampled_user_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}{extension}",
         sample=HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     rescaled_subsampled_user_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.rescaled.mapped_q30.subs_dp{DP}{extension}",
         sample=HIST_USER_RESCALED_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     return not_rescaled_subsampled_pipeline_bams + rescaled_subsampled_pipeline_bams + not_rescaled_subsampled_user_bams + rescaled_subsampled_user_bams
 
 def modern_subsampled_bam_multiqc_inputs(wildcards):
@@ -52,14 +52,14 @@ def modern_subsampled_bam_multiqc_inputs(wildcards):
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     subsampled_user_bams=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}{extension}",
         sample=MODERN_USER_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
-            ".bam.dpstats.txt"],)
+            ".repma.Q30.bam.dpstats.txt"],)
     return subsampled_pipeline_bams + subsampled_user_bams
 
 

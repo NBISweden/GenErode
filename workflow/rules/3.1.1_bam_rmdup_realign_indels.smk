@@ -695,9 +695,9 @@ rule plot_dp_hist:
 rule historical_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all historical bam files until indel realignment"""
     input:
-        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30{extension}",
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn{extension}",
             sample=hist_pipeline_bam_sm,
-            extension=[".bam.dp.hist.pdf", 
+            extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
                 ".bam.qualimap/qualimapReport.html",
                 "_fastqc.html",
@@ -723,9 +723,9 @@ rule historical_realigned_bam_multiqc:
 rule modern_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all modern bam files"""
     input:
-        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn{extension}",
             sample=mod_pipeline_bam_sm,
-            extension=[".bam.dp.hist.pdf", 
+            extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
                 ".bam.qualimap/qualimapReport.html",
                 "_fastqc.html",
