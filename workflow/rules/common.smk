@@ -68,11 +68,11 @@ def check_metadata_file(dataframe):
         # concatenate the sample name, library id and lane number with "_" to create a unique identifier for each fastq file
         dataframe["samplename_index_lane"] = dataframe["samplename"] + "_" + dataframe["library_id"] + "_" + dataframe["lane"]
         # set entries to NA if "samplename_index_lane" ends with "_" (schema validation checks for "_" in original columns)
-        dataframe.loc[dataframe["samplename_index_lane"].str.endswith("_"), "samplename_index_lane"] = pd.NA
+        dataframe.loc[dataframe["samplename_index_lane"].fillna("").str.endswith("_"), "samplename_index_lane"] = pd.NA
         # concatenate the sample name and library id with "_" to create a unique identifier for merging of bam files
         dataframe["samplename_index"] = dataframe["samplename"] + "_" + dataframe["library_id"]
         # set entries to NA if "samplename_index" ends with "_" (schema validation checks for "_" in original columns)
-        dataframe.loc[dataframe["samplename_index"].str.endswith("_"), "samplename_index"] = pd.NA
+        dataframe.loc[dataframe["samplename_index"].fillna("").str.endswith("_"), "samplename_index"] = pd.NA
     return dataframe
 
 # Create sample lists
