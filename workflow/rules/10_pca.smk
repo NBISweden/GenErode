@@ -49,7 +49,7 @@ rule vcf2plink_pca:
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_pca.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
+        plink_container
     shell:
         """
         plink --vcf {input.vcf} --make-bed --allow-extra-chr --out {params.bfile} 2> {log}
@@ -72,16 +72,16 @@ rule plink_eigenvec:
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plink_eigenvec.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
+        plink_container
     shell:
         """
         samples=`cat {input.fam} | wc -l`
         if [ "$samples" -gt 1 ]
         then
-          plink --bfile {params.bfile} --threads {threads} --allow-extra-chr --pca --out {params.bfile} 2> {log}
+            plink --bfile {params.bfile} --threads {threads} --allow-extra-chr --pca --out {params.bfile} 2> {log}
         else
-          touch {output.eigenvec} && touch {output.eigenval} 2> {log}
-          echo "Not enough samples to calculate a PCA." >> {log}
+            touch {output.eigenvec} && touch {output.eigenval} 2> {log}
+            echo "Not enough samples to calculate a PCA." >> {log}
         fi
         """
 

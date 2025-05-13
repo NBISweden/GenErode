@@ -310,7 +310,7 @@ rule outgroup_fastqc:
         "results/logs/13_GERP/fastq/{gerpref}_outgroup_fastqc.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
@@ -332,7 +332,7 @@ rule outgroup_fastqc_multiqc:
     log:
         "results/logs/13_GERP/fastq/outgroup_fastqc_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -361,7 +361,7 @@ rule align2target:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
@@ -379,7 +379,7 @@ rule index_gerp_bams:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_index_gerp_bams.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -396,7 +396,7 @@ rule gerp_bam_stats:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_gerp_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -416,7 +416,7 @@ rule gerp_bam_multiqc:
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/gerp_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -441,32 +441,32 @@ rule bam2fasta:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
     singularity:
-        "oras://community.wave.seqera.io/library/samtools_python:2e56d0f345426c81"
+        samtools_python_container
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then
-          mkdir -p {output.fasta_dir}
+            mkdir -p {output.fasta_dir}
         else
-          touch -m {output.fasta_dir}
+            touch -m {output.fasta_dir}
         fi
 
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2>> {log} &&
-          python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log}
+            samtools mpileup -aa -r $contig --no-output-ends {input.bam} | python3 workflow/scripts/filter_mpile.py > {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile 2>> {log} &&
+            python3 workflow/scripts/sequence_to_fastafile.py {output.fasta_dir}/{params.gerpref}_${{contig}}.mpile $contig {params.gerpref} 2>> {log}
         done
 
         # Check if the fasta files have been created
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # check each contig
         do
-          if [ -s {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
+            if [ -s {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta ]; then
             echo "BAM file converted to fasta for" $contig >> {log}
-          else
+            else
             echo "BAM file conversion to fasta failed for" $contig >> {log} &&
             rm -r {output.fasta_dir} && # Remove the output directory so that Snakemake knows the rule failed
             echo "Removed {output.fasta_dir}" >> {log} &&
             exit 1 # Break the loop so that the Snakemake rule fails 
-          fi
+            fi
         done
         """
 
@@ -489,19 +489,19 @@ rule split_ref_contigs:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
     singularity:
-        "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
+        seqtk_container
     shell:
         """
         if [ ! -d {output.fasta_dir} ]; then
-          mkdir -p {output.fasta_dir};
+            mkdir -p {output.fasta_dir};
         fi
 
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          echo $contig > {output.fasta_dir}/${{contig}}.lst &&
-          seqtk subseq {input.ref} {output.fasta_dir}/${{contig}}.lst | sed "s/$contig/{params.gerpref}/g" | \
-          seqtk seq > {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta 2> {log} &&
-          echo $contig "extracted from reference" >> {log}
+            echo $contig > {output.fasta_dir}/${{contig}}.lst &&
+            seqtk subseq {input.ref} {output.fasta_dir}/${{contig}}.lst | sed "s/$contig/{params.gerpref}/g" | \
+            seqtk seq > {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta 2> {log} &&
+            echo $contig "extracted from reference" >> {log}
         done
         """
 
@@ -569,7 +569,7 @@ rule compute_gerp:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
     singularity:
-        "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
+        gerp_container
     shell:
         """
         if [ ! -d {output.gerp_dir} ]; then 
@@ -577,9 +577,9 @@ rule compute_gerp:
         fi
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-          gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2> {log} &&
-          mv {input.concatenated_fasta_dir}/${{contig}}.fasta.rates {output.gerp_dir} 2>> {log} &&
-          echo "Computed GERP++ scores for" $contig >> {log} 
+            gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2> {log} &&
+            mv {input.concatenated_fasta_dir}/${{contig}}.fasta.rates {output.gerp_dir} 2>> {log} &&
+            echo "Computed GERP++ scores for" $contig >> {log} 
         done
         """
 
@@ -740,7 +740,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{processed}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
@@ -756,7 +756,7 @@ rule split_chunk_bed_files:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools makewindows -b {input.chunk_bed} -w 10000000 > {output.chunk_win_bed} 2> {log}

@@ -28,7 +28,7 @@ rule bwa_index_reference:
     group:
         "reference_prep_group"
     singularity:
-        "docker://biocontainers/bwa:v0.7.17-3-deb_cv1"
+        bwa_container
     shell:
         """
         bwa index -a bwtsw {input.ref} 2> {log}
@@ -48,7 +48,7 @@ rule samtools_fasta_index:
     group:
         "reference_prep_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools faidx {input.ref} 2> {log}
@@ -68,7 +68,7 @@ rule picard_fasta_dict:
     group:
         "reference_prep_group"
     singularity:
-        "docker://quay.io/biocontainers/picard:2.26.6--hdfd78af_0"
+        picard_container
     shell:
         """
         picard CreateSequenceDictionary -Xmx{params.mem} R={input.ref} O={output.fdict} 2> {log}

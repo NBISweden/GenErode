@@ -88,7 +88,7 @@ rule sorted_bcf2vcf_CpG_removal:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_removal.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -107,7 +107,7 @@ rule remove_CpG_vcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
@@ -124,7 +124,7 @@ rule CpG_vcf2bcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_vcf2bcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
@@ -142,7 +142,7 @@ rule index_CpG_bcf:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_index_CpG_bcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -161,7 +161,7 @@ rule CpG_filtered_vcf_stats:
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -180,7 +180,7 @@ rule historical_CpG_filtered_vcf_multiqc:
     log:
         "results/logs/8.1_vcf_CpG_filtering/historical/" + REF_NAME + "/historical_CpG_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -199,7 +199,7 @@ rule modern_CpG_filtered_vcf_multiqc:
     log:
         "results/logs/8.1_vcf_CpG_filtering/modern/" + REF_NAME + "/modern_CpG_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
