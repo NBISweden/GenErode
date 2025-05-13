@@ -14,7 +14,30 @@ configfile: "config/config.yaml"
 
 report: "../report/workflow.rst"
 
-# reference assembly variables
+## Variables for software containers for easier version updating
+bwa_container = "docker://biocontainers/bwa:v0.7.17-3-deb_cv1"
+bwa_samtools_container = "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+picard_container = "docker://quay.io/biocontainers/picard:2.26.6--hdfd78af_0"
+repeatmodeler_container = "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+bedtools_htslib_container = "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+fastqc_container = "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+multiqc_container = "oras://community.wave.seqera.io/library/multiqc:1.28--d466e41d58d6d704"
+fastp_container = "docker://quay.io/biocontainers/fastp:0.24.0--h125f33a_0"
+qualimap_container = "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+samtools_python_container = "oras://community.wave.seqera.io/library/samtools_python:2e56d0f345426c81"
+gatk3_container = "docker://broadinstitute/gatk3:3.7-0"
+mapdamage_container = "docker://biocontainers/mapdamage:v2.0.9dfsg-1-deb_cv1"
+bcftools_container = "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+mlrho_container = "docker://nbisweden/generode-mlrho"
+plink_container = "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
+vcftools_container = "docker://biocontainers/vcftools:v0.1.16-1-deb_cv1"
+snpeff_container = "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
+seqtk_container = "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
+gerp_container = "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
+# shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:3da9b5da9b1e30c6"
+
+
+## Reference assembly variables
 REF_DIR = os.path.dirname(config["ref_path"])
 REF_FASTA = os.path.basename(config["ref_path"])
 REF_NAME, REF_EXT = os.path.splitext(REF_FASTA)

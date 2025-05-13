@@ -136,7 +136,7 @@ rule remove_snps_near_indels:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_snps_near_indels.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools filter -g 5 -O b --threads {threads} -o {output.snps} {input.bcf} 2> {log}
@@ -156,7 +156,7 @@ rule filter_vcfs_qual_dp:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_qual_dp.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
@@ -184,7 +184,7 @@ rule filter_vcfs_allelic_balance:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_allelic_balance.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools view -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
@@ -203,7 +203,7 @@ rule index_filtered_vcfs:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_filtered_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -222,7 +222,7 @@ rule filtered_vcf_stats:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -241,7 +241,7 @@ rule historical_quality_filtered_vcf_multiqc:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/historical/" + REF_NAME + "/historical_quality_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -260,7 +260,7 @@ rule modern_quality_filtered_vcf_multiqc:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/modern/" + REF_NAME + "/modern_quality_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -276,7 +276,7 @@ rule filtered_bcf2vcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_bcf2vcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -295,7 +295,7 @@ rule remove_repeats_vcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_repeats_vcf.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
@@ -312,7 +312,7 @@ rule filtered_vcf2bcf:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf2bcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
@@ -330,7 +330,7 @@ rule index_repmasked_vcfs:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_repmasked_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -349,7 +349,7 @@ rule repmasked_vcf_stats:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -368,7 +368,7 @@ rule historical_repmasked_vcf_multiqc:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/historical/" + REF_NAME + "/historical_repmasked_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -387,7 +387,7 @@ rule modern_repmasked_vcf_multiqc:
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/modern/" + REF_NAME + "/modern_repmasked_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

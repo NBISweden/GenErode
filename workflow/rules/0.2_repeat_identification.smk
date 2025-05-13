@@ -37,7 +37,7 @@ rule repeatmodeler:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
     singularity:
-        "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+        repeatmodeler_container
     shell:
         """
         cd {params.dir}
@@ -55,7 +55,7 @@ rule repeatmodeler:
         # remove temporary file
         if [ -f {params.abs_tmp} ]
         then
-          rm {params.abs_tmp} 2>> {log}
+            rm {params.abs_tmp} 2>> {log}
         fi
         """
 
@@ -79,7 +79,7 @@ rule repeatmasker:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
     singularity:
-        "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+        repeatmodeler_container
     shell:
         """
         cd {params.dir} &&
@@ -88,7 +88,7 @@ rule repeatmasker:
         # Check if *.cat file is compressed or uncompressed
         if [ ! -f {output.rep_cat} ]
         then
-          gzip {params.rep_cat_unzip}
+            gzip {params.rep_cat_unzip}
         fi
         """
 
@@ -123,7 +123,7 @@ rule sort_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
@@ -141,7 +141,7 @@ rule make_no_repeats_bed:
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log}

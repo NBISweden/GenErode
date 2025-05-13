@@ -56,7 +56,7 @@ rule merge_historical_bams_per_index:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_merge_historical_bams_per_index.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -82,7 +82,7 @@ rule merge_modern_bams_per_index:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_merge_modern_bams_per_index.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -106,7 +106,7 @@ rule index_merged_index_bams:
     group:
         "merged_index_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -125,7 +125,7 @@ rule merged_index_bam_stats:
     group:
         "merged_index_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -149,7 +149,7 @@ rule merged_index_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -173,7 +173,7 @@ rule historical_merged_index_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_merged_index_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -195,7 +195,7 @@ rule modern_merged_index_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_merged_index_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -214,7 +214,7 @@ rule rmdup_historical_bams:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_rmdup_historical_bams.log",
     singularity:
-        "oras://community.wave.seqera.io/library/samtools_python:2e56d0f345426c81"
+        samtools_python_container
     shell:
         """
         samtools view -@ {threads} -h {input.merged} | python3 workflow/scripts/samremovedup.py | \
@@ -236,7 +236,7 @@ rule rmdup_modern_bams:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_rmdup_modern_bams.log",
     singularity:
-        "docker://quay.io/biocontainers/picard:2.26.6--hdfd78af_0"
+        picard_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -254,7 +254,7 @@ rule index_rmdup_bams:
     group:
         "rmdup_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -273,7 +273,7 @@ rule rmdup_bam_stats:
     group:
         "rmdup_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -297,7 +297,7 @@ rule rmdup_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -321,7 +321,7 @@ rule historical_rmdup_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_rmdup_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -343,7 +343,7 @@ rule modern_rmdup_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_rmdup_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -362,7 +362,7 @@ rule merge_historical_bams_per_sample:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_merge_historical_bams_per_sample.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -388,7 +388,7 @@ rule merge_modern_bams_per_sample:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_merge_modern_bams_per_sample.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
@@ -412,7 +412,7 @@ rule index_merged_sample_bams:
     group:
         "merged_sample_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -431,7 +431,7 @@ rule merged_sample_bam_stats:
     group:
         "merged_sample_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -455,7 +455,7 @@ rule merged_sample_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -479,7 +479,7 @@ rule historical_merged_sample_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_merged_sample_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -501,7 +501,7 @@ rule modern_merged_sample_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_merged_sample_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -524,7 +524,7 @@ rule indel_realigner_targets:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner_targets.log",
     singularity:
-        "docker://broadinstitute/gatk3:3.7-0"
+        gatk3_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -549,7 +549,7 @@ rule indel_realigner:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner.log",
     singularity:
-        "docker://broadinstitute/gatk3:3.7-0"
+        gatk3_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -567,7 +567,7 @@ rule index_realigned_bams:
     group:
         "realigned_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -586,7 +586,7 @@ rule realigned_bam_stats:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -607,7 +607,7 @@ rule realigned_bam_fastqc:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
@@ -631,7 +631,7 @@ rule realigned_bam_qualimap:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -660,7 +660,7 @@ rule realigned_bam_depth:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_depth.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         if [ {params.cov} = "True" ] # include sites with missing data / zero coverage
@@ -715,7 +715,7 @@ rule historical_realigned_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_realigned_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -745,7 +745,7 @@ rule modern_realigned_bam_multiqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_realigned_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

@@ -76,7 +76,7 @@ rule variant_calling:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_variant_calling.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | bcftools call -c -M -O b --threads {threads} -o {output.bcf} 2> {log}
@@ -95,7 +95,7 @@ rule sort_vcfs:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sort_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools sort -O b -o {output.sort} {input.bcf} 2> {log}
@@ -113,7 +113,7 @@ rule index_sorted_vcfs:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_index_sorted_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools index -o {output.index} {input.sort} 2> {log}
@@ -132,7 +132,7 @@ rule sorted_vcf_stats:
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sorted_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.sort} > {output.stats} 2> {log}
@@ -152,7 +152,7 @@ rule historical_sorted_vcf_multiqc:
     log:
         "results/logs/4_genotyping/historical/" + REF_NAME + "/historical_sorted_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -172,7 +172,7 @@ rule modern_sorted_vcf_multiqc:
     log:
         "results/logs/4_genotyping/modern/" + REF_NAME + "/modern_sorted_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

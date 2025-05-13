@@ -315,16 +315,16 @@ rule merge_all_vcfs:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         files=`echo {input.bcf} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the bcf file.
         then
-          bcftools merge -m snps -O b -o {output.merged} {input.bcf} 2> {log}
+            bcftools merge -m snps -O b -o {output.merged} {input.bcf} 2> {log}
         else
-          cp {input.bcf} {output.merged} && touch {output.merged} 2> {log}
-          echo "Only one file present for merging. Copying the input bcf file." >> {log}
+            cp {input.bcf} {output.merged} && touch {output.merged} 2> {log}
+            echo "Only one file present for merging. Copying the input bcf file." >> {log}
         fi
         """
 
@@ -340,7 +340,7 @@ rule index_merged_vcf:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_index_merged_vcfs.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools index -o {output.index} {input.bcf} 2> {log}
@@ -359,7 +359,7 @@ rule merged_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_merged_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.merged} > {output.stats} 2> {log}
@@ -380,7 +380,7 @@ rule merged_vcf_multiqc:
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/merged_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -400,7 +400,7 @@ rule filter_vcf_biallelic:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_filter_vcf_biallelic.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools view -m2 -M2 -v snps -Ob -o {output.bcf} {input.bcf} 2> {log} &&
@@ -420,7 +420,7 @@ rule biallelic_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_biallelic_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.bcf} > {output.stats} 2> {log}
@@ -441,7 +441,7 @@ rule biallelic_filtered_vcf_multiqc:
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/biallelic_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -462,21 +462,21 @@ rule filter_vcf_missing:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}_filter_vcf_missing.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         # only include sites with zero missing data
         if [[ `echo 0.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
         then
-          bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include all sites
         elif [[ `echo 1.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
         then
-          bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include sites with less than the fraction f_missing of missing data
         elif [[ `echo 0.0 {params.fmiss} 1.0 | awk '{{print ($1 < $2 && $2 < $3)}}'` == 1 ]]
         then 
-          bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         fi
         
         bcftools index -f {output.vcf} 2>> {log}
@@ -496,7 +496,7 @@ rule remove_chromosomes:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.autos_remove_chromosomes.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools view {input.bcf} \
@@ -517,7 +517,7 @@ rule filtered_vcf2bed:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.{chr}_filtered_vcf2bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         gzip -cd {input.vcf} | grep -v "^#" | awk -F'\t' '{{print $1, $2-1, $2}}' OFS='\t' > {output.bed} 2> {log}
@@ -535,7 +535,7 @@ rule extract_historical_samples:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}.{chr}_extract_historical_samples.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     params:
         samples=hist_sm,
         all_samples=ALL_SAMPLES,
@@ -547,12 +547,12 @@ rule extract_historical_samples:
 
         if [ $samples_len != $all_samples_len ]
         then
-          bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
-          bcftools index -f {output.vcf} 2>> {log}
+            bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
+            bcftools index -f {output.vcf} 2>> {log}
         else
-          cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
-          bcftools index -f {output.vcf} 2>> {log}
-          echo "Only historical samples present. Copying the input vcf file." >> {log}
+            cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
+            bcftools index -f {output.vcf} 2>> {log}
+            echo "Only historical samples present. Copying the input vcf file." >> {log}
         fi
         """
 
@@ -568,7 +568,7 @@ rule extract_modern_samples:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}.{chr}_extract_modern_samples.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     params:
         samples=mod_sm,
         all_samples=ALL_SAMPLES,
@@ -580,12 +580,12 @@ rule extract_modern_samples:
 
         if [ $samples_len != $all_samples_len ]
         then
-          bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
-          bcftools index -f {output.vcf} 2>> {log}
+            bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
+            bcftools index -f {output.vcf} 2>> {log}
         else
-          cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
-          bcftools index -f {output.vcf} 2>> {log}
-          echo "Only modern samples present. Copying the input vcf file." >> {log}
+            cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
+            bcftools index -f {output.vcf} 2>> {log}
+            echo "Only modern samples present. Copying the input vcf file." >> {log}
         fi
         """
 
@@ -600,7 +600,7 @@ rule missingness_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_missingness_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.merged} > {output.stats} 2> {log}
@@ -622,7 +622,7 @@ rule missingness_filtered_vcf_multiqc:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/missingness_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -642,7 +642,7 @@ rule repmasked_bcf2vcf:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_bcf2vcf.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -661,7 +661,7 @@ rule filter_biallelic_missing_vcf:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
@@ -677,7 +677,7 @@ rule biallelic_missing_filtered_vcf_stats:
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_filtered_vcf_stats.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools stats {input.filtered} > {output.stats} 2> {log}
@@ -696,7 +696,7 @@ rule historical_biallelic_missing_filtered_vcf_multiqc:
     log:
         "results/logs/9_merge_vcfs/historical/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -715,7 +715,7 @@ rule modern_biallelic_missing_filtered_vcf_multiqc:
     log:
         "results/logs/9_merge_vcfs/modern/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
