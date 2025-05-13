@@ -1,0 +1,144 @@
+# Configuration file for slurm plugin (Snakemake >8.0.0) for Dardel cluster at PDC/KTH
+# Updated for github actions test data (in .test/data)
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+printshellcmds: true
+software-deployment-method: apptainer
+use-apptainer: True
+apptainer-args: "-B /cfs/klemming"
+
+# slurm resources
+## default-resources: applied to all jobs, overruled by resources defined below for jobs
+default-resources: 
+  slurm_account: XXX-XX-XXX # update this to your slurm account
+  slurm_partition: shared # use Dardel’s shared partition
+  nodes: 1 # one node on Dardel from the shared partition
+  ntasks: 1 # number of concurrent tasks / ranks
+  threads: 10 # number of threads per task, corresponds to cpus-per-task or cores
+  runtime: 30 # default runtime in minutes
+
+## set-threads: map rule names to cpus-per-task
+set-threads:
+  repeatmodeler: 20
+  repeatmasker: 20
+  fastqc_historical_raw: 10
+  fastqc_modern_raw: 10
+  fastp_historical: 10
+  fastp_modern: 10
+  fastqc_historical_merged: 10
+  fastqc_historical_unmerged: 10
+  fastqc_modern_trimmed: 10
+  historical_mito_bams_qualimap: 10
+  historical_merged_mito_bams_qualimap: 10
+  map_historical: 20
+  sai2bam: 20
+  map_modern: 20
+  sorted_bam_qualimap: 20
+  merge_historical_bams_per_index: 10
+  merge_modern_bams_per_index: 10
+  merged_index_bam_qualimap: 20
+  rmdup_historical_bams: 20
+  rmdup_modern_bams: 10
+  rmdup_bam_qualimap: 20
+  merge_historical_bams_per_sample: 10
+  merge_modern_bams_per_sample: 10
+  merged_sample_bam_qualimap: 20
+  indel_realigner_targets: 20
+  indel_realigner: 20
+  realigned_bam_qualimap: 20
+  realigned_bam_group: 10
+  rescale_historical: 10
+  rescaled_bam_qualimap: 20
+  rescaled_bam_group: 10
+  filter_bam_mapped_mq: 10
+  subsample_bams: 10
+  subsampled_bam_qualimap: 20
+  variant_calling: 10
+  sort_vcfs: 10
+  make_noCpG_bed: 10
+  make_noCpG_repma_bed: 10
+  intersect_sexchr_repma_beds: 10
+  intersect_autos_repma_beds: 10
+  intersect_sexchr_CpG_repma_beds: 10
+  intersect_autos_CpG_repma_beds: 10
+  remove_CpG_vcf: 20
+  CpG_vcf2bcf: 10
+  remove_snps_near_indels: 10
+  filter_vcfs_qual_dp: 10
+  filter_vcfs_allelic_balance: 10
+  remove_repeats_vcf: 20
+  filtered_vcf2bcf: 10
+  merge_all_vcfs: 20
+  filter_vcf_biallelic: 10
+  filter_vcf_missing: 10
+  remove_chromosomes: 10
+  repmasked_bcf2vcf: 10
+  filter_biallelic_missing_vcf: 20
+  vcf2plink_pca: 10
+  plink_eigenvec: 10
+  filter_vcf_hwe: 10
+  vcf2plink_hwe: 10
+  build_snpEff_db: 10
+  annotate_vcf: 10
+  outgroups2fastq: 10
+  outgroup_fastqc: 10
+  align2target: 20
+  bam2fasta: 10
+  concatenate_fasta_per_contig: 10
+  compute_gerp: 10
+  gerp2coords: 10
+  get_ancestral_state: 10
+  produce_contig_out: 10
+  merge_gerp_per_chunk: 10
+  merge_gerp_gz: 10
+  gerp_derived_alleles: 10
+  merge_gerp_alleles_per_chunk: 10
+  merge_gerp_alleles_gz: 10
+  relative_mutational_load_per_sample: 10
+
+
+## set-resources: map rule names to resources in general
+set-resources:
+  - repeatmodeler:runtime=240
+  - repeatmasker:runtime=240
+  - map_historical:runtime=120
+  - sai2bam:runtime=120
+  - map_modern:runtime=120
+  - gerp_derived_alleles:runtime=120
+  - repeatmodeler:mem_mb=20000
+  - repeatmasker:mem_mb=20000
+  - fastqc_historical_raw:mem_mb=10000
+  - fastqc_modern_raw:mem_mb=10000
+  - fastp_historical:mem_mb=10000
+  - fastp_modern:mem_mb=10000
+  - fastqc_historical_merged:mem_mb=10000
+  - fastqc_historical_unmerged:mem_mb=10000
+  - fastqc_modern_trimmed:mem_mb=10000
+  - map_historical_merged_to_mito:mem_mb=10000
+  - map_historical_unmerged_to_mito:mem_mb=10000
+  - historical_mito_bams_qualimap:mem_mb=10000
+  - historical_merged_mito_bams_qualimap:mem_mb=10000
+  - map_historical:mem_mb=20000
+  - sai2bam:mem_mb=20000
+  - map_modern:mem_mb=20000
+  - sorted_bam_qualimap:mem_mb=20000
+  - merged_index_bam_qualimap:mem_mb=20000
+  - rmdup_historical_bams:mem_mb=20000
+  - rmdup_bam_qualimap:mem_mb=20000
+  - merged_sample_bam_qualimap:mem_mb=20000
+  - indel_realigner_targets:mem_mb=20000
+  - indel_realigner:mem_mb=20000
+  - realigned_bam_qualimap:mem_mb=20000
+  - realigned_bam_fastqc:mem_mb=10000
+  - rescaled_bam_qualimap:mem_mb=20000
+  - rescaled_bam_fastqc:mem_mb=10000
+  - filter_bam_mapped_mq:mem_mb=10000
+  - subsample_bams:mem_mb=10000
+  - subsampled_bam_qualimap:mem_mb=10000
+  - variant_calling:mem_mb=10000
+  - remove_snps_near_indels:mem_mb=10000
+  - filter_vcfs_qual_dp:mem_mb=10000
+  - plink_eigenvec:mem_mb=10000
+  - outgroup_fastqc:mem_mb=10000
+  - align2target:mem_mb=20000

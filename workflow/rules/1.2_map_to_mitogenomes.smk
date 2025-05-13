@@ -166,7 +166,7 @@ rule bwa_index_mito_ref:
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_bwa_index_mito_ref.log",
     singularity:
-        "docker://biocontainers/bwa:v0.7.17-3-deb_cv1"
+        bwa_container
     shell:
         """
         bwa index {input.ref} 2> {log}
@@ -185,7 +185,7 @@ rule map_historical_merged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
@@ -208,7 +208,7 @@ rule map_historical_unmerged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
@@ -228,7 +228,7 @@ rule mitogenome_bam_stats:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -253,20 +253,20 @@ rule historical_mito_bams_qualimap:
     resources:
         mem_mb=8000,
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
         mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
-          unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+            unset DISPLAY
+            qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
-          mkdir -p {params.outdir} 2> {log}
-          touch {output.report} 2>> {log}
-          touch {output.summary} 2>> {log}
-          echo "Not enough reads to run QualiMap" >> {log}
+            mkdir -p {params.outdir} 2> {log}
+            touch {output.report} 2>> {log}
+            touch {output.summary} 2>> {log}
+            echo "Not enough reads to run QualiMap" >> {log}
         fi
         """
 
@@ -320,16 +320,16 @@ rule merge_historical_mitogenome_bams_per_sample:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merge_historical_mitogenome_bams_per_sample.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          samtools merge {output.merged} {input} 2> {log}
+            samtools merge {output.merged} {input} 2> {log}
         else
-          cp {input} {output.merged} && touch {output.merged} 2> {log}
-          echo "Only one file present for merging. Copying the sorted bam file." >> {log}
+            cp {input} {output.merged} && touch {output.merged} 2> {log}
+            echo "Only one file present for merging. Copying the sorted bam file." >> {log}
         fi
         """
 
@@ -345,7 +345,7 @@ rule merged_mitogenome_bam_stats:
     group:
         "historical_merged_mito_bams_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -371,20 +371,20 @@ rule historical_merged_mito_bams_qualimap:
     resources:
         mem_mb=8000,
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         reads=`head -n1 {input.stats} | cut -d' ' -f 1`
         mem=$((({resources.mem_mb} - 2000)/1000))
         if [ "$reads" -gt 100 ] # check if bam file contains enough reads
         then
-          unset DISPLAY
-          qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
+            unset DISPLAY
+            qualimap bamqc -bam {input.bam} --java-mem-size=${{mem}}G -nt {threads} -nr 100 -outdir {params.outdir} -outformat html 2> {log}
         else
-          mkdir -p {params.outdir} 2> {log}
-          touch {output.report} 2>> {log}
-          touch {output.summary} 2>> {log}
-          echo "Not enough reads to run QualiMap" >> {log}
+            mkdir -p {params.outdir} 2> {log}
+            touch {output.report} 2>> {log}
+            touch {output.summary} 2>> {log}
+            echo "Not enough reads to run QualiMap" >> {log}
         fi
         """
 
@@ -401,7 +401,7 @@ rule historical_mito_bams_multiqc:
     log:
         "results/logs/1.2_map_to_mitogenomes/historical_mito_bams_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.6.0        #
+# Configuration settings for the GenErode pipeline 0.6.3        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -35,7 +35,6 @@ ref_path: ".test/data/references/sumatran_rhino.fasta"
 # Leave empty ("") if identity of sex chromosomes is unknown and/or 
 # if the pipeline should be run on all scaffolds/contigs of the genome.
 sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
-#################################################################
 #################################################################
 
 
@@ -231,8 +230,8 @@ genotyping: False
 
 #####
 # OPTIONAL:
-# Identify CpG sites for removal from VCF files and from 
-# downstream analyses and define samples to be CpG filtered. 
+# Identify CpG sites for removal from mlRho analyses, from VCF files 
+# and downstream analyses and define samples to be CpG filtered. 
 # Three different methods are available to identify CpG sites.
 
 # This step will generate several BED files containing genome 
@@ -293,7 +292,7 @@ CpG_samplenames: []
 
 #################################################################
 #################################################################
-# Rules for BAM file processing for mlRho, and mlRho            #
+# Rules for mlRho analyses                                      #
 #################################################################
 
 #####
@@ -491,6 +490,11 @@ gtf_path: ""
 # desired optional data filtering step (as described above) are required. 
 gerp: False
 
+# Number of genome chunks for parallelization of GERP step. 
+# In case the assembly consists of 200 contigs/scaffolds or less,
+# set this number to a smaller value than the number of contigs/scaffolds. 
+gerp_chunks: 200 # default: 200
+
 # Full path to directory containing reference genomes of outgroup species in 
 # FASTA format for GERP++ score estimation.
 # Files must be gzipped and FASTA file name extensions can be 
@@ -500,8 +504,9 @@ gerp_ref_path: ""
 # Full path to phylogenetic tree of all species included in the analysis 
 # (including the target species) in NEWICK format and including divergence 
 # time estimates.
-# Divergence time estimates must be in millions of years for correct scaling 
-# of GERP scores (see dated phylogenetic trees from www.timetree.org).
+# Divergence time estimates must be in millions of years for consistent scaling 
+# of GERP scores across GenErode runs. Dated phylogenetic trees in millions of years 
+# are e.g. available from www.timetree.org.
 # Species names in the tree must be identical to the FASTA file names 
 # without ".fa.gz", ".fasta.gz" or ".fna.gz".
 tree: ""

@@ -37,7 +37,7 @@ rule rescale_historical:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescale_historical.log",
     singularity:
-        "docker://biocontainers/mapdamage:v2.0.9dfsg-1-deb_cv1"
+        mapdamage_container
     shell:
         """
         mapDamage -i {input.bam} -r {input.ref} -d {params.dir} --merge-reference-sequences --rescale 2> {log} &&
@@ -55,7 +55,7 @@ rule index_rescaled_bams:
     group:
         "rescaled_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -76,7 +76,7 @@ rule rescaled_bam_stats:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -94,13 +94,11 @@ rule rescaled_bam_fastqc:
         dir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc"),
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc",
-    group:
-        "rescaled_bam_group"
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_fastqc.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.bam} 2> {log}
@@ -124,7 +122,7 @@ rule rescaled_bam_qualimap:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}_rescaled_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -154,7 +152,7 @@ rule rescaled_bam_multiqc:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/rescaled_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

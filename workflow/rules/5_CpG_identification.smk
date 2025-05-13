@@ -76,7 +76,7 @@ rule sorted_bcf2vcf_CpG_id:
     log:
         "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_id.log",
     singularity:
-        "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+        bcftools_container
     shell:
         """
         bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
@@ -128,17 +128,17 @@ rule merge_CpG_genotype_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-          bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-          touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
-          echo "Only one file present for merging. Copying the input bed file." >> {log}
+            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
 
@@ -154,7 +154,7 @@ rule sort_CpG_genotype_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -174,17 +174,17 @@ rule merge_all_CpG_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-          cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-          bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-          touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
-          echo "Only one file present for merging. Copying the input bed file." >> {log}
+            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
 
@@ -200,7 +200,7 @@ rule sort_all_CpG_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -217,7 +217,7 @@ rule make_noCpG_bed:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} > {output.no_CpG_bed} 2> {log}
@@ -238,7 +238,7 @@ rule merge_CpG_repeats_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
@@ -257,7 +257,7 @@ rule sort_CpG_repeats_beds:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
@@ -274,7 +274,7 @@ rule make_noCpG_repma_bed:
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+        bedtools_htslib_container
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.merged_bed} > {output.no_CpG_repma_bed} 2> {log}

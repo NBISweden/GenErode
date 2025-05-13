@@ -23,7 +23,7 @@ rule filter_bam_mapped_mq:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_bam_mapped_mq.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools view -h -b -F 4 -q 30 -@ {threads} -o {output.filtered} {input.bam} 2> {log}
@@ -43,17 +43,17 @@ rule subsample_bams:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsample_bams.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         depth=`head -n 1 {input.dp} | cut -d' ' -f 1`
         frac=`awk -v s={params.DP} -v d=$depth "BEGIN {{print s/d}}"`
         if [ `awk 'BEGIN {{print ('$frac' <= 1.0)}}'` = 1 ] # awk will return 1 if the statement is true, and 0 if it is false
         then
-          samtools view -h -b -s $frac -@ {threads} -o {output.subsam} {input.bam} 2> {log}
+            samtools view -h -b -s $frac -@ {threads} -o {output.subsam} {input.bam} 2> {log}
         else
-          echo "!!!\nWarning [genome erosion workflow]: The sample {input.bam} has a lower average depth than the target depth for subsampling. \
-          Remove the sample from the subsampling list in the config file or choose a lower target depth.\n!!!" >> {log}
+            echo "!!!\nWarning [genome erosion workflow]: The sample {input.bam} has a lower average depth than the target depth for subsampling. \
+            Remove the sample from the subsampling list in the config file or choose a lower target depth.\n!!!" >> {log}
         fi
         """
 
@@ -68,7 +68,7 @@ rule index_subsampled_bams:
     group:
         "subsampled_bam_group"
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools index {input.bam} {output.index} 2> {log}
@@ -87,7 +87,7 @@ rule subsampled_bam_stats:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_stats.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         samtools flagstat {input.bam} > {output.stats} 2> {log}
@@ -114,19 +114,19 @@ rule subsampled_bam_depth:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_depth.log",
     singularity:
-        "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+        bwa_samtools_container
     shell:
         """
         if [ {params.cov} = "True" ] # include sites with missing data / zero coverage
         then
-          samtools depth -a -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
-          awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
-          '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
+            samtools depth -a -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
+            awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
+            '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
         elif [ {params.cov} = "False" ] # exclude sites with missing data / zero coverage
         then
-          samtools depth -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
-          awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
-          '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
+            samtools depth -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
+            awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
+            '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
         fi        
         """
 
@@ -148,7 +148,7 @@ rule subsampled_bam_qualimap:
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_qualimap.log",
     singularity:
-        "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+        qualimap_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -186,7 +186,7 @@ rule historical_subsampled_bam_multiqc:
     log:
         "results/logs/3.3_bam_subsampling/historical/historical_subsampled_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -213,7 +213,7 @@ rule modern_subsampled_bam_multiqc:
     log:
         "results/logs/3.3_bam_subsampling/modern/modern_subsampled_bam_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

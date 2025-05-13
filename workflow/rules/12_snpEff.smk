@@ -209,7 +209,7 @@ rule update_snpEff_config:
     log:
         "results/logs/12_snpEff/" + REF_NAME + "_update_snpEff_config.log",
     singularity:
-        "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
+        snpeff_container
     shell:
         """
         cp {params.config} {params.abs_config} 2> {log} &&
@@ -239,7 +239,7 @@ rule build_snpEff_db:
     log:
         os.path.abspath("results/logs/12_snpEff/" + REF_NAME + "_build_snpEff_db.log"),
     singularity:
-        "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
+        snpeff_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -269,7 +269,7 @@ rule annotate_vcf:
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{processed}_fmissing{fmiss}.{chr}_annotate_vcf.log",
     singularity:
-        "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
+        snpeff_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
@@ -292,7 +292,7 @@ rule historical_snpEff_multiqc:
     log:
         "results/logs/12_snpEff/historical/" + REF_NAME + "/historical_snpEff_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -313,7 +313,7 @@ rule modern_snpEff_multiqc:
     log:
         "results/logs/12_snpEff/modern/" + REF_NAME + "/modern_snpEff_multiqc.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

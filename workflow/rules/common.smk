@@ -8,13 +8,36 @@ from snakemake.utils import validate
 import os
 import pandas as pd
 
-min_version("5.19.0")
+min_version("7.0.0")
 
 configfile: "config/config.yaml"
 
 report: "../report/workflow.rst"
 
-# reference assembly variables
+## Variables for software containers for easier version updating
+bwa_container = "docker://biocontainers/bwa:v0.7.17-3-deb_cv1"
+bwa_samtools_container = "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
+picard_container = "docker://quay.io/biocontainers/picard:2.26.6--hdfd78af_0"
+repeatmodeler_container = "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+bedtools_htslib_container = "oras://community.wave.seqera.io/library/bedtools_htslib:06ed4722f423d939"
+fastqc_container = "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+multiqc_container = "oras://community.wave.seqera.io/library/multiqc:1.28--d466e41d58d6d704"
+fastp_container = "docker://quay.io/biocontainers/fastp:0.24.0--h125f33a_0"
+qualimap_container = "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
+samtools_python_container = "oras://community.wave.seqera.io/library/samtools_python:2e56d0f345426c81"
+gatk3_container = "docker://broadinstitute/gatk3:3.7-0"
+mapdamage_container = "docker://biocontainers/mapdamage:v2.0.9dfsg-1-deb_cv1"
+bcftools_container = "https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0"
+mlrho_container = "docker://nbisweden/generode-mlrho"
+plink_container = "https://depot.galaxyproject.org/singularity/plink:1.90b6.12--heea4ae3_0"
+vcftools_container = "docker://biocontainers/vcftools:v0.1.16-1-deb_cv1"
+snpeff_container = "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
+seqtk_container = "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
+gerp_container = "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
+# shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:3da9b5da9b1e30c6"
+
+
+## Reference assembly variables
 REF_DIR = os.path.dirname(config["ref_path"])
 REF_FASTA = os.path.basename(config["ref_path"])
 REF_NAME, REF_EXT = os.path.splitext(REF_FASTA)
@@ -126,7 +149,7 @@ def sample_dict_func(dataframe):
 
 # Apply the functions to metadata tables for historical and modern samples
 if os.path.exists(config["historical_samples"]):
-    historical_df = pd.read_csv(config["historical_samples"], sep=" ")  # read in the metadata as dataframe
+    historical_df = pd.read_csv(config["historical_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(historical_df, schema="../schemas/metadata.schema.yaml")  # validate metadata file format with JSON schema
     hist_sm = samplename_list_func(historical_df)
     hist_sm_idx = samplename_index_list_func(historical_df)
@@ -148,7 +171,7 @@ else:
 
 
 if os.path.exists(config["modern_samples"]):
-    modern_df = pd.read_csv(config["modern_samples"], sep=" ")  # read in the metadata as dataframe
+    modern_df = pd.read_csv(config["modern_samples"], sep=";|,| |\t", engine='python')  # read in the metadata as dataframe
     validate(modern_df, schema="../schemas/metadata.schema.yaml") # validate metadata file format with JSON schema
     mod_sm = samplename_list_func(modern_df)
     mod_sm_idx = samplename_index_list_func(modern_df)
@@ -384,32 +407,6 @@ if config["snpEff"]:
 
 ###
 # GERP
-# Functions to run GERP analysis in parallel by splitting the genome into chunks
-def create_refbedfile(reference_fasta, bedfile):
-    from itertools import groupby
-    with open(reference_fasta, "r") as fasta_in, open(bedfile, "w") as bedfile_out:
-        for header, seq in groupby(fasta_in, lambda x: x.startswith(">")):
-            if header:
-                contig = next(seq).strip(">").strip()
-            seq_length = len("".join(seq).replace("\n", ""))
-            if seq_length > 0:
-                bedfile_out.write(contig + "\t0\t" + str(seq_length) + "\n")
-
-def split_ref_bed(refbedfile, outdir, chromosomelist):
-    bed_df = pd.read_csv(refbedfile, sep="\t", header=None)
-    bed_df = bed_df[~bed_df[0].isin(chromosomelist)] # remove any scaffolds/contigs in the list of sex-chromosomal scaffolds/contigs, if provided
-    if len(bed_df) >= 200:
-        lines = len(bed_df) // 200
-    elif len(bed_df) < 200:
-        lines = len(bed_df) // len(bed_df)
-    chunks = [bed_df[i : i + lines] for i in range(0, bed_df.shape[0], lines)]
-    c = 1
-    for chunk in chunks:
-        outfile = outdir + "chunk" + str(c) + ".bed"
-        chunk.to_csv(outfile, sep="\t", index=False, header=False)
-        c += 1
-
-# Only run this code if the GERP step is run
 if config["gerp"]:
     # GERP input fasta path
     if config["gerp_ref_path"].endswith("/"):
@@ -424,29 +421,11 @@ if config["gerp"]:
     ALL_GERP_REF_NAMES = GERP_REF_NAMES[:]
     ALL_GERP_REF_NAMES.append(REF_NAME)  # names of all genomes in the analysis, incl. the target species
 
-    # create chunk bed files and chunk list
-    ref_bed = REF_DIR + "/" + REF_NAME + ".bed"
-    if len(sexchromosomeList) > 0:
-        chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_autos/"
-    elif len(sexchromosomeList) == 0:
-        chunk_bed_outdir = REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_genome/"
-
-    # create output directory for chunk bed files, if not present yet
-    if not os.path.exists(chunk_bed_outdir):
-        os.makedirs(chunk_bed_outdir)
-        print("Created output directory for chunk bed files: ", chunk_bed_outdir)
-
-    # create bed file of the genome, if not present yet
-    if not os.path.isfile(ref_bed):
-        create_refbedfile(config["ref_path"], ref_bed)
-        print("Created reference genome bed file: ", config["ref_path"], ref_bed)
-
-    # split the reference bed file into chunks and store a list of the chunk names in a list
-    split_ref_bed(ref_bed, chunk_bed_outdir, sexchromosomeList)
-    CHUNK_BED_FILES = [file for file in os.listdir(chunk_bed_outdir) if file.endswith(".bed")]  # list of the chunk bed files present in the directory after running the splitting
-    if len(sexchromosomeList) > 0:
-        print("Split the reference genome bed file into chunks, excluding sex-chromosomal scaffolds/contigs")
-    elif len(sexchromosomeList) == 0:
-        print("Split the reference genome bed file into chunks")
-
-    CHUNKS = [bed.replace(".bed", "") for bed in CHUNK_BED_FILES]
+    # Create list of chunk names for parallelization of GERP step
+    # Adjust zero padding depending on the number of chunks set in the config file
+    if config["gerp_chunks"] < 100:
+        CHUNKS = ["chunk" + str(i).zfill(2) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+    elif config["gerp_chunks"] >= 100:
+        CHUNKS = ["chunk" + str(i).zfill(3) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+    elif config["gerp_chunks"] >= 1000:
+        CHUNKS = ["chunk" + str(i).zfill(4) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names

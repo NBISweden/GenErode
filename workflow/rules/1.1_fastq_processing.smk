@@ -44,13 +44,11 @@ rule fastqc_historical_raw:
         dir=directory("data/raw_reads_symlinks/historical/stats/{sample}_{index}_{lane}_R{nr}_fastqc"),
     params:
         dir="data/raw_reads_symlinks/historical/stats",
-    group:
-        "historical_fastq_raw_group"
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
@@ -74,7 +72,7 @@ rule multiqc_historical_raw:
     log:
         "data/logs/1.1_fastq_processing/historical/multiqc_historical_raw.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -115,7 +113,7 @@ rule fastqc_modern_raw:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_fastqc_modern_raw.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input.fastq} 2> {log}
@@ -139,7 +137,7 @@ rule multiqc_modern_raw:
     log:
         "data/logs/1.1_fastq_processing/modern/multiqc_modern_raw.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -167,7 +165,7 @@ rule fastp_historical:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastp_historical.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
+        fastp_container
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c --merge --overlap_len_require 15 --overlap_diff_limit 1 \
@@ -196,7 +194,7 @@ rule fastp_modern:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastp_modern.log",
     threads: 4
     singularity:
-        "docker://quay.io/biocontainers/fastp:0.22.0--h2e03b76_0"
+        fastp_container
     shell:
         """
         fastp -i {input.R1} -I {input.R2} -p -c -o {output.R1_trimmed} -O {output.R2_trimmed} \
@@ -216,11 +214,9 @@ rule fastqc_historical_merged:
         dir="results/historical/trimming/stats",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
-    group:
-        "historical_fastq_trimmed_group"
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
@@ -239,20 +235,18 @@ rule fastqc_historical_unmerged:
         dir="results/historical/trimming/stats",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
-    group:
-        "historical_fastq_trimmed_group"
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         if [ -s {input} ]
         then
-          fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
+            fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
         else
-          mkdir -p {output.dir} &&
-          touch {output.html} && touch {output.zip} &&
-          echo "No reads in {input} >> {log}"
+            mkdir -p {output.dir} &&
+            touch {output.html} && touch {output.zip} &&
+            echo "No reads in {input} >> {log}"
         fi
         """
 
@@ -271,7 +265,7 @@ rule fastqc_modern_trimmed:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc_modern_trimmed.log",
     threads: 2
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
+        fastqc_container
     shell:
         """
         fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
@@ -298,7 +292,7 @@ rule multiqc_historical_trimmed:
     log:
         "results/logs/1.1_fastq_processing/historical/multiqc_historical_trimmed.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}
@@ -322,7 +316,7 @@ rule multiqc_modern_trimmed:
     log:
         "results/logs/1.1_fastq_processing/modern/multiqc_modern_trimmed.log",
     singularity:
-        "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
+        multiqc_container
     shell:
         """
         multiqc -f {params.indir} -o {params.outdir} 2> {log}

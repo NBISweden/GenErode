@@ -10,15 +10,31 @@ module load PDC bioinfo-tools apptainer tmux
 but the equivalent tool `screen` is pre-installed and does 
 not need to be loaded. 
 
-> Apptainer (former singularity) will store its cache per 
-default in your home directory which will quickly run out of 
-storage space. You can tell it to use your `scratch` instead, a 
-temporary directory with unlimited space by adding this row 
-to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`. 
-The files in this temporary directory are deleted if they have 
-not been used for 30 days. Alternatively, you can set the cache 
-directory to a directory in your storage project, adding this 
-line to your `~/.bashrc` (replacing the path to an existing 
+> The Snakemake cache is stored per default in your home directory
+that can run out of storage space. There are two ways to set a 
+directory in your storage project as cache directory: 
+1) by setting the cache with the following commands (replacing 
+the path with the path to your GenErode directory on Dardel): 
+`mkdir -p /cfs/klemming/projects/supr/sllstore.../.../GenErode/.cache` 
+`export XDG_CACHE_HOME=/cfs/klemming/projects/supr/sllstore.../.../GenErode/.cache` 
+You will have to run the `export` command every time you start a new 
+tmux session. Alternatively, you can add the export command to 
+your `~/.bashrc` file. 
+2) Another option is to start the pipeline run with the following 
+command (replacing the path with the path to your GenErode 
+directory on Dardel): 
+`snakemake --profile slurm --directory /cfs/klemming/projects/supr/sllstore.../.../GenErode/`. 
+This will set the GenErode directory as the working directory 
+and will also store the cache there. 
+
+> Apptainer (former singularity) will also store its cache per 
+default in your home directory. You can tell it to use your 
+`scratch` instead, a temporary directory with unlimited spac, 
+by adding this row to your `~/.bashrc`: `export APPTAINER_CACHEDIR=$PDC_TMP`. 
+Note that the files in this temporary directory are deleted if 
+they have not been used for 30 days. Alternatively, you can set 
+the cache directory to a directory in your storage project, 
+adding this line to your `~/.bashrc` (replacing the path to an existing 
 directory in your storage project):
 `export APPTAINER_CACHEDIR=/cfs/klemming/projects/supr/sllstore.../.../apptainer-cache` 
 
@@ -59,13 +75,17 @@ project ID in line 13 of `slurm/config.yaml` (`slurm_account`).
 > If a rule or group job fails due to too little memory or run time,
 their compute resources can be updated in `slurm/config.yaml`. 
 Rule or group jobs are using `default-resources` unless more threads
-(corresponding to cpus-per-task) or longer run times are required,
-which are specified per rule or group job under `set-threads` or
-`set-resources`, respectively. Memory in MB is automatically calculated
-from the number of threads specified under `default-resources` or
-`set-threads`, respectively.  
+(corresponding to cpus-per-task), more memory, or longer run times 
+are required,which are specified per rule or group job under `set-threads`
+or `set-resources`, respectively. 
 
-5) Start GenErode the following:
+> Note that software that can be run with multi-threading (e.g. `fastp`, 
+`bwa`, `samtools`) require 2-4X more memory (specified with `mem_mb` 
+under `set-resources`) than the number of threads. Java tools like 
+`Picard` can be optimized by providing a very small number of 
+threads and a large amount of memory. 
+
+5) Once the setup (1-4) is complete, start GenErode the following:
 
 - Open a tmux session (alternatively, you can use screen)
 
