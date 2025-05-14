@@ -76,8 +76,10 @@ def modern_subsampled_bam_multiqc_inputs(wildcards):
 
 # snakemake rules
 rule filter_bam_mapped_mq:
-    """Remove unmapped reads before subsampling"""
-    """Keep only reads with mapping quality > 30"""
+    """
+    Remove unmapped reads before subsampling.
+    Keep only reads with mapping quality > 30.
+    """
     input:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.bam",
     output:
@@ -158,10 +160,12 @@ rule subsampled_bam_stats:
 
 
 rule subsampled_bam_depth:
-    """Get average genome-wide depth per bam file, excluding repeats and filtering for high quality"""
-    """Will be used to filter out sites outside the estimated depth thresholds"""
-    """samtools depth to get depth per site, piped into awk to get average across all sites, 
-    piped into awk to calculate 1/3*average and 2*average depth (rounded to integer)"""
+    """
+    Get average genome-wide depth per bam file, excluding repeats and filtering for high quality.
+    Will be used to filter out sites outside the estimated depth thresholds with
+    samtools depth to get depth per site, piped into awk to get average across all sites, 
+    piped into awk to calculate 1/3*average and 2*average depth (rounded to integer).
+    """
     input:
         bam=rules.subsample_bams.output.subsam,
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",

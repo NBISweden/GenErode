@@ -130,10 +130,12 @@ rule userprovided_bam_qualimap:
 
 
 rule userprovided_bam_depth:
-    """Get average genome-wide depth per bam file, excluding repeats and filtering for high quality"""
-    """Will be used to filter out sites outside the estimated depth thresholds"""
-    """samtools depth to get depth per site, piped into awk to get average across all sites, 
-    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer)"""
+    """
+    Get average genome-wide depth per bam file, excluding repeats and filtering for high quality.
+    Will be used to filter out sites outside the estimated depth thresholds with
+    samtools depth to get depth per site, piped into awk to get average across all sites, 
+    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer).
+    """
     input:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",

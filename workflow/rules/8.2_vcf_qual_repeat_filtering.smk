@@ -108,9 +108,11 @@ rule remove_snps_near_indels:
 
 
 rule filter_vcfs_qual_dp:
-    """Remove indels, genotypes of genotype quality < 30 and keep only sites within depth thresholds 
-    that were determined from bam files earlier in the pipeline"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
+    """
+    Remove indels, genotypes of genotype quality < 30 and keep only sites within depth thresholds 
+    that were determined from bam files earlier in the pipeline.
+    Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling.
+    """
     input:
         bcf=rules.remove_snps_near_indels.output,
         dp=depth_file,
@@ -138,8 +140,10 @@ rule filter_vcfs_qual_dp:
 
 
 rule filter_vcfs_allelic_balance:
-    """Removes heterozygote sites with allelic imbalance from the vcf files that could be due to contamination, sequencing or mapping errors"""
-    """For example, sites where 9 reads support the reference allele and one read the alternative allele"""
+    """
+    Removes heterozygote sites with allelic imbalance from the vcf files that could be due to contamination, sequencing or mapping errors.
+    For example, sites where 9 reads support the reference allele and one read the alternative allele.
+    """
     input:
         bcf=rules.filter_vcfs_qual_dp.output.filtered,
     output:

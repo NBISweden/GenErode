@@ -145,10 +145,11 @@ rule multiqc_modern_raw:
 
 
 rule fastp_historical:
-    """Remove adapters, quality trim (phred 15) and merge overlapping paired-end reads in historical samples"""
-    """fastp automatically detects adapter sequences for removal"""
-    """NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed"""
-    """Minimum read length specified in config file"""
+    """Remove adapters, quality trim (phred 15) and merge overlapping paired-end reads in historical samples.
+    fastp automatically detects adapter sequences for removal.
+    NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed.
+    Minimum read length specified in config file.
+    """
     input:
         R1=rules.fastq_historical_symbolic_links.output.fastq_r1,
         R2=rules.fastq_historical_symbolic_links.output.fastq_r2,
@@ -175,10 +176,11 @@ rule fastp_historical:
 
 
 rule fastp_modern:
-    """Remove adapters from modern samples and quality trim (phred 15)"""
-    """fastp automatically detects adapter sequences for removal"""
-    """NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed"""
-    """Minimum read length specified in config file"""
+    """Remove adapters from modern samples and quality trim (phred 15).
+    fastp automatically detects adapter sequences for removal.
+    NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed.
+    Minimum read length specified in config file.
+    """
     input:
         R1=rules.fastq_modern_symbolic_links.output.fastq_r1,
         R2=rules.fastq_modern_symbolic_links.output.fastq_r2,

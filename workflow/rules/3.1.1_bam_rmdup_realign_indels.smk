@@ -203,8 +203,10 @@ rule modern_merged_index_bam_multiqc:
 
 
 rule rmdup_historical_bams:
-    """Remove PCR duplicates from historical samples using Pontus Skoglund's custom script for duplicate removal (checks both ends of a read)"""
-    """The script was modified so that also unmapped reads are printed to the output bam file so that they are not lost"""
+    """
+    Remove PCR duplicates from historical samples using Pontus Skoglund's custom script for duplicate removal (checks both ends of a read).
+    The script was modified so that also unmapped reads are printed to the output bam file so that they are not lost.
+    """
     input:
         merged=rules.merge_historical_bams_per_index.output.merged,
         index="results/historical/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai",
@@ -641,10 +643,12 @@ rule realigned_bam_qualimap:
 
 
 rule realigned_bam_depth:
-    """Get average genome-wide depth per bam file, excluding repeats and filtering for high quality"""
-    """Will be used to filter out sites outside the estimated depth thresholds"""
-    """samtools depth to get depth per site, piped into awk to get average across all sites, 
-    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer)"""
+    """
+    Get average genome-wide depth per bam file, excluding repeats and filtering for high quality.
+    Will be used to filter out sites outside the estimated depth thresholds with
+    samtools depth to get depth per site, piped into awk to get average across all sites, 
+    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer).
+    """
     input:
         bam=rules.indel_realigner.output.realigned,
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",

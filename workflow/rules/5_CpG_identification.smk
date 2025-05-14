@@ -58,8 +58,10 @@ rule sorted_bcf2vcf_CpG_id:
 
 
 rule make_CpG_genotype_bed:
-    """Make a bed file of CpG sites for each single individual vcf file"""
-    """CpG sites are only identified in variant calls, CpG only found in the reference genome are ignored"""
+    """
+    Make a bed file of CpG sites for each single individual vcf file.
+    CpG sites are only identified in variant calls, CpG only found in the reference genome are ignored.
+    """
     input:
         vcf=rules.sorted_bcf2vcf_CpG_id.output.vcf,
     output:

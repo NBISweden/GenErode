@@ -174,8 +174,10 @@ rule bwa_index_mito_ref:
 
 
 rule map_historical_merged_to_mito:
-    """Map merged reads from historical samples to mitochondrial genomes."""
-    """BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015"""
+    """
+    Map merged reads from historical samples to mitochondrial genomes.
+    BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015.
+    """
     input:
         ref=MITO_DIR + "{mitoref}.fasta",
         index=rules.bwa_index_mito_ref.output,
@@ -194,8 +196,10 @@ rule map_historical_merged_to_mito:
 
 
 rule map_historical_unmerged_to_mito:
-    """Map unmerged reads from historical samples to mitochondrial genomes."""
-    """BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015"""
+    """
+    Map unmerged reads from historical samples to mitochondrial genomes.
+    BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015.
+    """
     input:
         ref=MITO_DIR + "{mitoref}.fasta",
         index=rules.bwa_index_mito_ref.output,

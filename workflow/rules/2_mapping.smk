@@ -90,8 +90,10 @@ rule readgroup_ID_modern:
 
 
 rule map_modern:
-    """Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads"""
-    """Shorter split hits are marked as secondary for Picard"""
+    """
+    Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads.
+    Shorter split hits are marked as secondary for Picard.
+    """
     input:
         ref=config["ref_path"],
         index=rules.bwa_index_reference.output,

@@ -122,8 +122,10 @@ localrules:
 
 
 rule bam2pro:
-    """Generate pro files from bam files"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
+    """
+    Generate pro files from bam files.
+    Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling.
+    """
     input:
         bam=processed_bam_inputs,
         dp=depth_file,
@@ -151,8 +153,10 @@ rule bam2pro:
 
 
 rule mlRho:
-    """Format the pro file and run mlRho"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
+    """
+    Format the pro file and run mlRho.
+    Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling.
+    """
     input:
         pro=rules.bam2pro.output,
         dp=depth_file,

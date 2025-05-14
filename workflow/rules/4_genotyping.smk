@@ -11,11 +11,15 @@ if os.path.exists(config["modern_samples"]):
 
 # snakemake rules
 rule variant_calling:
-    """Call variants in historical and modern samples (each sample on its own)"""
-    """Input bam files can be just realn or additionally resca"""
-    """Minimum mapping quality for a read to be considered: 30"""
-    """Minimum base quality for a base to be considered: 30"""
-    """-B: Disabled probabilistic realignment for the computation of base alignment quality (BAQ). BAQ is the Phred-scaled probability of a read base being misaligned. Applying this option greatly helps to reduce false SNPs caused by misalignments"""
+    """
+    Call variants in historical and modern samples (each sample on its own).
+    Input bam files can be just realigned or additionally rescaled.
+    Minimum mapping quality for a read to be considered: 30.
+    Minimum base quality for a base to be considered: 30.
+    -B: Disabled probabilistic realignment for the computation of base alignment quality (BAQ). 
+    BAQ is the Phred-scaled probability of a read base being misaligned. 
+    Applying this option greatly helps to reduce false SNPs caused by misalignments.
+    """
     input:
         ref=config["ref_path"],
         bam=processed_bam_inputs,
