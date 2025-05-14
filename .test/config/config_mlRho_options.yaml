@@ -34,7 +34,7 @@ ref_path: ".test/data/references/sumatran_rhino.fasta"
 # and BCF files.
 # Leave empty ("") if identity of sex chromosomes is unknown and/or 
 # if the pipeline should be run on all scaffolds/contigs of the genome.
-sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
+sexchromosomes: ".test/config/seq_to_exclude.txt" # for example, "config/chrX_candidate_scaffolds.txt"
 #################################################################
 #################################################################
 
@@ -43,8 +43,8 @@ sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
 # Example files can be found in "config/"
-historical_samples: ".test/config/historical_fastq_paths.txt" # leave empty ("") if not run for historical samples.
-modern_samples: ".test/config/modern_fastq_paths.txt" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_mixed_paths.csv" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_mixed_paths.csv" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
@@ -192,7 +192,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: ["S08"]
+historical_rescaled_samplenames: ["S08", "S09"]
 #####
 
 
@@ -219,7 +219,7 @@ subsampling_depth: 8
 # List has to be left empty ([]) if subsampling is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if subsampled BAM files should be used in downstream analyses.
-subsampling_samplenames: ["S03"]
+subsampling_samplenames: ["S03", "S04"]
 #####
 
 
@@ -291,7 +291,7 @@ CpG_from_vcf_and_reference: True
 # CpG site filtering is run.
 # Keep the list of sample names for the entire pipeline run 
 # so that the correct files are used for downstream analyses.
-CpG_samplenames: ["S03", "S08"]
+CpG_samplenames: ["S03", "S04", "S08", "S09"]
 #####
 
 

@@ -192,7 +192,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: ["S08"]
+historical_rescaled_samplenames: ["S08", "S09"]
 #####
 
 
@@ -200,7 +200,7 @@ historical_rescaled_samplenames: ["S08"]
 # OPTIONAL: 
 # Subsample BAM files to a certain average genome-wide depth of 
 # coverage to reduce biases in downstream analyses.
-bam_subsampling: True
+bam_subsampling: False
 
 # Depth to which BAM files should be subsampled.
 # Check the GenErode pipeline report to screen the dataset for an 
@@ -219,7 +219,7 @@ subsampling_depth: 8
 # List has to be left empty ([]) if subsampling is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if subsampled BAM files should be used in downstream analyses.
-subsampling_samplenames: ["S03"]
+subsampling_samplenames: ["S03", "S04"]
 #####
 
 
@@ -279,7 +279,7 @@ CpG_from_reference: False
 # Has to be kept at True for the rest of the pipeline, if chosen 
 # method for CpG identification, so that the correct files are 
 # used for downstream analyses.
-CpG_from_vcf_and_reference: False
+CpG_from_vcf_and_reference: True
 
 # Combined list of modern and historical samples in which CpG sites 
 # should be identified if CpG_from_vcf or CpG_from_vcf_and_reference 
@@ -291,7 +291,7 @@ CpG_from_vcf_and_reference: False
 # CpG site filtering is run.
 # Keep the list of sample names for the entire pipeline run 
 # so that the correct files are used for downstream analyses.
-CpG_samplenames: []
+CpG_samplenames: ["S03", "S04", "S08", "S09"]
 #####
 
 
@@ -375,7 +375,7 @@ vcf_qual_repeat_filtering: False
 # Create a BED file of sites that remain after filtering and contig/scaffold
 # removal across all samples to be used for downstream filtering of individual
 # BCF files.
-merge_vcfs_per_dataset: False
+merge_vcfs_per_dataset: True
 
 # Maximum allowed fraction of missing genotypes across all samples for a 
 # site to be kept in the BCF and BED file, to ensure that the same sites 
