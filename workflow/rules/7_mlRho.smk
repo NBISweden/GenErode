@@ -127,7 +127,7 @@ rule bam2pro:
     Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling.
     """
     input:
-        bam=processed_bam_inputs,
+        bam=processed_bam_file,
         dp=depth_file,
         bed=bed_file_mlRho,
     output:

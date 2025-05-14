@@ -22,7 +22,7 @@ rule variant_calling:
     """
     input:
         ref=config["ref_path"],
-        bam=processed_bam_inputs,
+        bam=processed_bam_file,
     output:
         bcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.bcf"),
     threads: 3

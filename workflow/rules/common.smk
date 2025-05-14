@@ -563,7 +563,7 @@ elif len(sexchromosomeList) == 0:
     CHR = "genome"
 
 ### mlRho, genotyping, and VCF quality and repeat filtering input files
-def processed_bam_inputs(wildcards):
+def processed_bam_file(wildcards):
     """Select correct bam file for each sample"""
     # pipeline-processed historical samples
     if wildcards.sample in HIST_PIPELINE_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
