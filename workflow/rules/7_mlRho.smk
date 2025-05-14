@@ -26,265 +26,92 @@ def bed_file_mlRho(wildcards):
     return bed
 
 def all_mlRho_outputs(wildcards):
-    # TODO: remove any processing besides CpG filtering and chromosome filtering from this function
     """Collect output files of this step of the pipeline"""
     outlist = []
     if os.path.exists(config["historical_samples"]):
         if len(sexchromosomeList) > 0:
             if config["mlRho_autosomes_sexchromosomes"] == True:
-                rescaled_not_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.repma.{chr}.mlRho.txt",
-                    sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+                outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.repma.{chr}.mlRho.txt",
+                    sample=HIST_NOT_CpG_SAMPLES,
                     chr=["autos", "sexchr"],)
-                not_rescaled_not_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.{chr}.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    chr=["autos", "sexchr"],)
-                rescaled_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.{chr}.mlRho.txt",
-                    sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],
-                    chr=["autos", "sexchr"],)
-                not_rescaled_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.{chr}.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],
-                    chr=["autos", "sexchr"],)
-                outlist += (rescaled_not_subsampled_not_CpG_chr_mlRho + not_rescaled_not_subsampled_not_CpG_chr_mlRho + rescaled_subsampled_not_CpG_chr_mlRho + not_rescaled_subsampled_not_CpG_chr_mlRho)
                 if config["CpG_from_vcf"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.{chr}.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-                        chr=["autos", "sexchr"],)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.{chr}.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-                        chr=["autos", "sexchr"],)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.{chr}.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,
-                        chr=["autos", "sexchr"],)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
             elif config["mlRho_autosomes_sexchromosomes"] == False:
-                rescaled_not_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.repma.autos.mlRho.txt",
-                    sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-                not_rescaled_not_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.autos.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-                rescaled_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.autos.mlRho.txt",
-                    sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                not_rescaled_subsampled_not_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.autos.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_not_CpG_chr_mlRho + not_rescaled_not_subsampled_not_CpG_chr_mlRho + rescaled_subsampled_not_CpG_chr_mlRho + not_rescaled_subsampled_not_CpG_chr_mlRho)
+                outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.repma.autos.mlRho.txt",
+                    sample=HIST_NOT_CpG_SAMPLES,)
                 if config["CpG_from_vcf"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.autos.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,)
                 elif config["CpG_from_reference"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.autos.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,)
                 elif config["CpG_from_vcf_and_reference"] == True:
-                    rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    not_rescaled_not_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    not_rescaled_subsampled_CpG_chr_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (rescaled_not_subsampled_CpG_chr_mlRho + not_rescaled_not_subsampled_CpG_chr_mlRho + rescaled_subsampled_CpG_chr_mlRho + not_rescaled_subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.autos.mlRho.txt",
+                        sample=HIST_CpG_SAMPLES,)
         elif len(sexchromosomeList) == 0:
-            rescaled_not_subsampled_not_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.repma.genome.mlRho.txt",
-                sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-            not_rescaled_not_subsampled_not_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.genome.mlRho.txt",
-                sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-            rescaled_subsampled_not_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.genome.mlRho.txt",
-                sample=HIST_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                DP=config["subsampling_depth"],)
-            not_rescaled_subsampled_not_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.genome.mlRho.txt",
-                sample=HIST_NOT_RESCALED_SUBSAMPLED_NOT_CpG_SAMPLES,
-                DP=config["subsampling_depth"],)
-            outlist += (rescaled_not_subsampled_not_CpG_mlRho + not_rescaled_not_subsampled_not_CpG_mlRho + rescaled_subsampled_not_CpG_mlRho + not_rescaled_subsampled_not_CpG_mlRho)
+            outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.repma.genome.mlRho.txt",
+                sample=HIST_NOT_CpG_SAMPLES,)
             if config["CpG_from_vcf"] == True:
-                rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                not_rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
+                outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.genome.mlRho.txt",
+                    sample=HIST_CpG_SAMPLES,)
             elif config["CpG_from_reference"] == True:
-                rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                not_rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
+                outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.genome.mlRho.txt",
+                    sample=HIST_CpG_SAMPLES,)
             elif config["CpG_from_vcf_and_reference"] == True:
-                rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                not_rescaled_not_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                not_rescaled_subsampled_CpG_mlRho = expand("results/historical/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (rescaled_not_subsampled_CpG_mlRho + not_rescaled_not_subsampled_CpG_mlRho + rescaled_subsampled_CpG_mlRho + not_rescaled_subsampled_CpG_mlRho)
+                outlist += expand("results/historical/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.genome.mlRho.txt",
+                    sample=HIST_CpG_SAMPLES,)
     if os.path.exists(config["modern_samples"]):
         if len(sexchromosomeList) > 0:
             if config["mlRho_autosomes_sexchromosomes"] == True:
-                not_subsampled_not_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.{chr}.mlRho.txt",
-                    sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+                outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.{chr}.mlRho.txt",
+                    sample=MODERN_NOT_CpG_SAMPLES,
                     chr=["autos", "sexchr"],)
-                subsampled_not_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.{chr}.mlRho.txt",
-                    sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],
-                    chr=["autos", "sexchr"],)
-                outlist += (not_subsampled_not_CpG_chr_mlRho + subsampled_not_CpG_chr_mlRho)
                 if config["CpG_from_vcf"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.{chr}.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_reference"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.{chr}.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
                 elif config["CpG_from_vcf_and_reference"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.{chr}.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],
-                        chr=["autos", "sexchr"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
             elif config["mlRho_autosomes_sexchromosomes"] == False:
-                not_subsampled_not_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.autos.mlRho.txt",
-                    sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-                subsampled_not_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.autos.mlRho.txt",
-                    sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_not_CpG_chr_mlRho + subsampled_not_CpG_chr_mlRho)
+                outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.autos.mlRho.txt",
+                    sample=MODERN_NOT_CpG_SAMPLES,)
                 if config["CpG_from_vcf"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.autos.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,)
                 elif config["CpG_from_reference"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.autos.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,)
                 elif config["CpG_from_vcf_and_reference"] == True:
-                    not_subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                    subsampled_CpG_chr_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                        DP=config["subsampling_depth"],)
-                    outlist += (not_subsampled_CpG_chr_mlRho + subsampled_CpG_chr_mlRho)
+                    outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.autos.mlRho.txt",
+                        sample=MODERN_CpG_SAMPLES,)
         elif len(sexchromosomeList) == 0:
-            not_subsampled_not_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.repma.genome.mlRho.txt",
-                sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,)
-            subsampled_not_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.genome.mlRho.txt",
-                sample=MODERN_SUBSAMPLED_NOT_CpG_SAMPLES,
-                DP=config["subsampling_depth"],)
-            outlist += (not_subsampled_not_CpG_mlRho + subsampled_not_CpG_mlRho)
+            outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.genome.mlRho.txt",
+                sample=MODERN_NOT_CpG_SAMPLES,)
             if config["CpG_from_vcf"] == True:
-                not_subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
+                outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.genome.mlRho.txt",
+                    sample=MODERN_CpG_SAMPLES,)
             elif config["CpG_from_reference"] == True:
-                not_subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
+                outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.genome.mlRho.txt",
+                    sample=MODERN_CpG_SAMPLES,)
             elif config["CpG_from_vcf_and_reference"] == True:
-                not_subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-                subsampled_CpG_mlRho = expand("results/modern/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-                    DP=config["subsampling_depth"],)
-                outlist += (not_subsampled_CpG_mlRho + subsampled_CpG_mlRho)
+                outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.genome.mlRho.txt",
+                    sample=MODERN_CpG_SAMPLES,)
     return outlist
 
 
