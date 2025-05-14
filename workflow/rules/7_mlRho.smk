@@ -29,57 +29,16 @@ def bam_file_mlRho(wildcards):
         bam = "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(sample=wildcards.sample, DP=config["subsampling_depth"])
     return [bam]
 
-def depth_file_mlRho(wildcards):
-    """Select correct depth stats file for each sample"""
-    if wildcards.sample in HIST_NOT_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample)
-    elif wildcards.sample in HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in HIST_RESCALED_SUBSAMPLED_SAMPLES:
-        dpstats = "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in MODERN_NOT_SUBSAMPLED_SAMPLES:
-        dpstats = "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample)
-    elif wildcards.sample in MODERN_SUBSAMPLED_SAMPLES:
-        dpstats = "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    return dpstats
-
-def bed_file_autos_mlRho(wildcards):
+def bed_file_mlRho(wildcards):
     """Select correct bed file for filtering during mlRho analysis"""
-    if len(sexchromosomeList) > 0:
-        if config["CpG_from_vcf"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcf.repma.autos.bed"
-        elif config["CpG_from_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_ref.repma.autos.bed"
-        elif config["CpG_from_vcf_and_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.autos.bed"
-        else:
-            bed = "results/" + REF_NAME + ".repma.autos.bed"
-    return bed
-
-def bed_file_sexchr_mlRho(wildcards):
-    """Select correct bed file for filtering during mlRho analysis"""
-    if len(sexchromosomeList) > 0:
-        if config["CpG_from_vcf"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcf.repma.sexchr.bed"
-        elif config["CpG_from_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_ref.repma.sexchr.bed"
-        elif config["CpG_from_vcf_and_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.sexchr.bed"
-        else:
-            bed = "results/" + REF_NAME + ".repma.sexchr.bed"
-    return bed
-
-def bed_file_genome_mlRho(wildcards):
-    """Select correct bed file for filtering during mlRho analysis"""
-    if len(sexchromosomeList) == 0:
-        if config["CpG_from_vcf"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcf.repma.bed"
-        elif config["CpG_from_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_ref.repma.bed"
-        elif config["CpG_from_vcf_and_reference"] == True:
-            bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.bed"
-        else:
-            bed = REF_DIR + "/" + REF_NAME + ".repma.bed"
+    if config["CpG_from_vcf"] == True:
+        bed = "results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed"
+    elif config["CpG_from_reference"] == True:
+        bed = "results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed"
+    elif config["CpG_from_vcf_and_reference"] == True:
+        bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed"
+    else:
+        bed = "results/" + REF_NAME + ".repma.{chr}.bed"
     return bed
 
 def all_mlRho_outputs(wildcards):
@@ -350,17 +309,17 @@ localrules:
     mlRho_theta_plot,
 
 
-rule bam2pro_autos:
+rule bam2pro:
     """Generate pro files from bam files"""
     """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
     input:
         bam=bam_file_mlRho,
-        dp=depth_file_mlRho,
-        bed=bed_file_autos_mlRho,
+        dp=depth_file,
+        bed=bed_file_mlRho,
     output:
-        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos.pro"),
+        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}.pro"),
     log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_autos.log",
+        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}.{chr}_bam2pro.log",
     singularity:
         mlrho_container
     shell:
@@ -379,152 +338,22 @@ rule bam2pro_autos:
         """
 
 
-rule mlRho_autos:
+rule mlRho:
     """Format the pro file and run mlRho"""
     """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
     input:
-        pro=rules.bam2pro_autos.output,
-        dp=depth_file_mlRho,
+        pro=rules.bam2pro.output,
+        dp=depth_file,
     output:
-        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos.mlRho.txt",
-        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos_profileDb.con"),
-        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos_profileDb.lik"),
-        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos_profileDb.pos"),
-        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos_profileDb.sum"),
+        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}.mlRho.txt",
+        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.con"),
+        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.lik"),
+        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.pos"),
+        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.sum"),
     params:
-        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.autos_profileDb",
+        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb",
     log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_autos.log",
-    singularity:
-        mlrho_container
-    shell:
-        """
-        minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
-
-        # check minimum depth threshold
-        if awk "BEGIN{{exit ! ($minDP < 3)}}"
-        then
-            minDP=3
-        fi
-
-        # Further format the pro file
-        formatPro -c $minDP -n {params.db} {input.pro} 2> {log} &&
-
-        # run mlRho
-        mlRho -M 0 -I -n {params.db} > {output.mlRho} 2>> {log}
-        """
-
-
-rule bam2pro_sexchr:
-    """Generate pro files from bam files"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
-    input:
-        bam=bam_file_mlRho,
-        dp=depth_file_mlRho,
-        bed=bed_file_sexchr_mlRho,
-    output:
-        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr.pro"),
-    log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_sexchr.log",
-    singularity:
-        mlrho_container
-    shell:
-        """
-        minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
-        maxDP=`head -n 1 {input.dp} | cut -d' ' -f 3`
-
-        # check minimum depth threshold
-        if awk "BEGIN{{exit ! ($minDP < 3)}}"
-        then
-            minDP=3
-        fi
-
-        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam[0]} | awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
-        sam2pro -c 5 > {output.pro} 2> {log}
-        """
-
-
-rule mlRho_sexchr:
-    """Format the pro file and run mlRho"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
-    input:
-        pro=rules.bam2pro_sexchr.output,
-        dp=depth_file_mlRho,
-    output:
-        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr.mlRho.txt",
-        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr_profileDb.con"),
-        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr_profileDb.lik"),
-        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr_profileDb.pos"),
-        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr_profileDb.sum"),
-    params:
-        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.sexchr_profileDb",
-    log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_sexchr.log",
-    singularity:
-        mlrho_container
-    shell:
-        """
-        minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
-
-        # check minimum depth threshold
-        if awk "BEGIN{{exit ! ($minDP < 3)}}"
-        then
-            minDP=3
-        fi
-
-        # Further format the pro file
-        formatPro -c $minDP -n {params.db} {input.pro} 2> {log} &&
-
-        # run mlRho
-        mlRho -M 0 -I -n {params.db} > {output.mlRho} 2>> {log}
-        """
-
-
-rule bam2pro_genome:
-    """Generate pro files from bam files"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
-    input:
-        bam=bam_file_mlRho,
-        dp=depth_file_mlRho,
-        bed=bed_file_genome_mlRho,
-    output:
-        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome.pro"),
-    log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_bam2pro_genome.log",
-    singularity:
-        mlrho_container
-    shell:
-        """
-        minDP=`head -n 1 {input.dp} | cut -d' ' -f 2`
-        maxDP=`head -n 1 {input.dp} | cut -d' ' -f 3`
-
-        # check minimum depth threshold
-        if awk "BEGIN{{exit ! ($minDP < 3)}}"
-        then
-            minDP=3
-        fi
-
-        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam[0]} | awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
-        sam2pro -c 5 > {output.pro} 2> {log}
-        """
-
-
-rule mlRho_genome:
-    """Format the pro file and run mlRho"""
-    """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
-    input:
-        pro=rules.bam2pro_genome.output,
-        dp=depth_file_mlRho,
-    output:
-        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome.mlRho.txt",
-        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome_profileDb.con"),
-        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome_profileDb.lik"),
-        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome_profileDb.pos"),
-        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome_profileDb.sum"),
-    params:
-        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.genome_profileDb",
-    log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_genome.log",
+        "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_{chr}.log",
     singularity:
         mlrho_container
     shell:
