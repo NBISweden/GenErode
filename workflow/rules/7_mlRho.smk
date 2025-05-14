@@ -13,22 +13,6 @@ elif os.path.exists(config["modern_samples"]):
 
 
 # Functions used by rules of this part of the pipeline
-def bam_file_mlRho(wildcards):
-    """Select correct bam file for each sample"""
-    if wildcards.sample in HIST_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        bam = ("results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(sample=wildcards.sample))
-    elif wildcards.sample in HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES:
-        bam = "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in HIST_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        bam = "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam".format(sample=wildcards.sample)
-    elif wildcards.sample in HIST_RESCALED_SUBSAMPLED_SAMPLES:
-        bam = "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.bam".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    elif wildcards.sample in MODERN_NOT_SUBSAMPLED_SAMPLES:
-        bam = "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(sample=wildcards.sample)
-    elif wildcards.sample in MODERN_SUBSAMPLED_SAMPLES:
-        bam = "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(sample=wildcards.sample, DP=config["subsampling_depth"])
-    return [bam]
-
 def bed_file_mlRho(wildcards):
     """Select correct bed file for filtering during mlRho analysis"""
     if config["CpG_from_vcf"] == True:
@@ -42,6 +26,7 @@ def bed_file_mlRho(wildcards):
     return bed
 
 def all_mlRho_outputs(wildcards):
+    # TODO: remove any processing besides CpG filtering and chromosome filtering from this function
     """Collect output files of this step of the pipeline"""
     outlist = []
     if os.path.exists(config["historical_samples"]):
@@ -313,11 +298,11 @@ rule bam2pro:
     """Generate pro files from bam files"""
     """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
     input:
-        bam=bam_file_mlRho,
+        bam=processed_bam_inputs,
         dp=depth_file,
         bed=bed_file_mlRho,
     output:
-        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}.pro"),
+        pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.pro"),
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}.{chr}_bam2pro.log",
     singularity:
@@ -345,13 +330,13 @@ rule mlRho:
         pro=rules.bam2pro.output,
         dp=depth_file,
     output:
-        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}.mlRho.txt",
-        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.con"),
-        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.lik"),
-        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.pos"),
-        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb.sum"),
+        mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.mlRho.txt",
+        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.con"),
+        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.lik"),
+        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.pos"),
+        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.sum"),
     params:
-        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.{chr}_profileDb",
+        db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb",
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_{chr}.log",
     singularity:

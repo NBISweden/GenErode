@@ -9,57 +9,6 @@ if os.path.exists(config["modern_samples"]):
     all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
 
 
-# Functions for this step of the pipeline
-# return correct bam file path depending on bam file type
-def variant_calling_bam_inputs(wildcards):
-    """Select correct bam file for each sample"""
-    # pipeline-processed historical samples
-    if wildcards.sample in HIST_PIPELINE_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_PIPELINE_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_PIPELINE_NOT_RESCALED_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    elif wildcards.sample in HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # pipeline-processed modern samples
-    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # user-provided historical samples
-    elif wildcards.sample in HIST_USER_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_USER_RESCALED_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.rescaled.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    elif wildcards.sample in HIST_USER_RESCALED_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.rescaled.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # user-provided modern samples
-    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.bam".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-
 # snakemake rules
 rule variant_calling:
     """Call variants in historical and modern samples (each sample on its own)"""
@@ -69,7 +18,7 @@ rule variant_calling:
     """-B: Disabled probabilistic realignment for the computation of base alignment quality (BAQ). BAQ is the Phred-scaled probability of a read base being misaligned. Applying this option greatly helps to reduce false SNPs caused by misalignments"""
     input:
         ref=config["ref_path"],
-        bam=variant_calling_bam_inputs,
+        bam=processed_bam_inputs,
     output:
         bcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.bcf"),
     threads: 3

@@ -562,7 +562,57 @@ if len(sexchromosomeList) > 0:
 elif len(sexchromosomeList) == 0:
     CHR = "genome"
 
-### mlRho, VCF quality and repeat filtering: depth file
+### mlRho, genotyping, and VCF quality and repeat filtering input files
+def processed_bam_inputs(wildcards):
+    """Select correct bam file for each sample"""
+    # pipeline-processed historical samples
+    if wildcards.sample in HIST_PIPELINE_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_PIPELINE_RESCALED_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_PIPELINE_NOT_RESCALED_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    elif wildcards.sample in HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # pipeline-processed modern samples
+    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided historical samples
+    elif wildcards.sample in HIST_USER_NOT_RESCALED_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_USER_RESCALED_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.rescaled.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    elif wildcards.sample in HIST_USER_RESCALED_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.rescaled.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided modern samples
+    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.bam".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+
+
 def depth_file(wildcards):
     """Select correct depth stats file for each sample"""
     # pipeline-processed historical samples
