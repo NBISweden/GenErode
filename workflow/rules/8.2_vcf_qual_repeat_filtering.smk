@@ -12,42 +12,6 @@ if os.path.exists(config["modern_samples"]):
 
 
 # Functions used by rules of this part of the pipeline
-def depth_file_vcf(wildcards):
-    """Select correct depth stats file for each sample"""
-    # pipeline-processed historical samples
-    if wildcards.sample in HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_PIPELINE_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # pipeline-processed modern samples
-    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # user-provided historical samples
-    elif wildcards.sample in HIST_USER_NOT_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in HIST_USER_SUBSAMPLED_SAMPLES:
-        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-    # user-provided modern samples
-    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
-        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
-            sample=wildcards.sample,
-            DP=config["subsampling_depth"])
-
-
 def historical_quality_filtered_vcf_multiqc_inputs(wildcards):
     """Input for historical_quality_filtered_vcf_multiqc"""
     hist_not_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
@@ -149,7 +113,7 @@ rule filter_vcfs_qual_dp:
     """Note that the depth filter is recalculated for subsampled bam files, according to the target depth for subsampling"""
     input:
         bcf=rules.remove_snps_near_indels.output,
-        dp=depth_file_vcf,
+        dp=depth_file,
     output:
         filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.bcf"),
     threads: 2

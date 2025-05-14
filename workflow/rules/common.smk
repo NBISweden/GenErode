@@ -562,6 +562,42 @@ if len(sexchromosomeList) > 0:
 elif len(sexchromosomeList) == 0:
     CHR = "genome"
 
+### mlRho, VCF quality and repeat filtering: depth file
+def depth_file(wildcards):
+    """Select correct depth stats file for each sample"""
+    # pipeline-processed historical samples
+    if wildcards.sample in HIST_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_PIPELINE_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # pipeline-processed modern samples
+    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided historical samples
+    elif wildcards.sample in HIST_USER_NOT_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in HIST_USER_SUBSAMPLED_SAMPLES:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+    # user-provided modern samples
+    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,)
+    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
+            sample=wildcards.sample,
+            DP=config["subsampling_depth"])
+
 ###
 # snpEff
 if config["snpEff"]:
