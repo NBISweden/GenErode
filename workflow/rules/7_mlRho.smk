@@ -147,7 +147,7 @@ rule bam2pro:
             minDP=3
         fi
 
-        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam[0]} | awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
+        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam} | awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
         sam2pro -c 5 > {output.pro} 2> {log}
         """
 
