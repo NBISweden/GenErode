@@ -46,7 +46,7 @@ def rel_load_table_inputs(wildcards):
     outlist = []
     if os.path.exists(config["historical_samples"]):
         outlist += expand("results/gerp/historical/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
+            sample=HIST_NOT_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,
             minGERP=config["min_gerp"],
@@ -73,29 +73,29 @@ def rel_load_table_inputs(wildcards):
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
     if os.path.exists(config["modern_samples"]):
-            outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-                sample=MODERN_NOT_CpG_SAMPLES,
-                fmiss=config["f_missing"],
-                chr=CHR,
-                minGERP=config["min_gerp"],
-                maxGERP=config["max_gerp"],)
+        outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+            sample=MODERN_NOT_CpG_SAMPLES,
+            fmiss=config["f_missing"],
+            chr=CHR,
+            minGERP=config["min_gerp"],
+            maxGERP=config["max_gerp"],)
         if config["CpG_from_vcf"] == True:
-                outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-                sample=MODERN_NOT_CpG_SAMPLES,
+            outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+                sample=MODERN_CpG_SAMPLES,
                 fmiss=config["f_missing"],
                 chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
         elif config["CpG_from_reference"] == True:
-                outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-                sample=MODERN_NOT_CpG_SAMPLES,
+            outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+                sample=MODERN_CpG_SAMPLES,
                 fmiss=config["f_missing"],
                 chr=CHR,
                 minGERP=config["min_gerp"],
                 maxGERP=config["max_gerp"],)
         elif config["CpG_from_vcf_and_reference"] == True:
-                outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-                sample=MODERN_NOT_CpG_SAMPLES,
+            outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
+                sample=MODERN_CpG_SAMPLES,
                 fmiss=config["f_missing"],
                 chr=CHR,
                 minGERP=config["min_gerp"],
