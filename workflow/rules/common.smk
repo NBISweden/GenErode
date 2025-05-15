@@ -156,7 +156,8 @@ def sampleidx_dict_func(dataframe):
 def mito_sample_dict_func(dataframe):
     mito_sample_dict = {}
     if "samplename_index_lane" in dataframe.columns:
-        for index, row in dataframe.iterrows():
+        fastq_samples = dataframe[dataframe["path_to_R1_fastq_file"].notnull()]
+        for index, row in fastq_samples.iterrows():
             if pd.notnull(row["samplename_index_lane"]):
                 if row["samplename"] in mito_sample_dict:  # if "sample" is already in the dictionary
                     if (row["samplename_index_lane"] not in mito_sample_dict[row["samplename"]]):  # if "sample_index_lane" is not in the list for "sample"
