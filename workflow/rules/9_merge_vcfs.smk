@@ -459,10 +459,10 @@ rule missingness_filtered_vcf_multiqc:
 rule repmasked_bcf2vcf:
     """Convert bcf format to vcf.gz for removal of sites"""
     input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
+        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
     output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.tmp.vcf.gz"),
+        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.tmp.vcf.gz"),
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_bcf2vcf.log",
     singularity:
@@ -480,7 +480,7 @@ rule filter_biallelic_missing_vcf:
         bed=rules.filtered_vcf2bed.output.bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
     threads: 6
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
@@ -495,9 +495,9 @@ rule filter_biallelic_missing_vcf:
 rule biallelic_missing_filtered_vcf_stats:
     """Obtain summary stats of filtered vcf file"""
     input:
-        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/{sample}.merged.rmdup.merged.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_filtered_vcf_stats.log",
     singularity:
