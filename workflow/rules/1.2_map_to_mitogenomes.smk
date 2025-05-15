@@ -75,8 +75,7 @@ def historical_mito_bams_merge_files_inputs(wildcards):
 
 def merge_hist_mito_bams_per_sample_inputs(wildcards):
     """Input for merge_historical_mitogenome_bams_per_sample"""
-    SAMPLE = "{}".format(wildcards.sample)
-    SAMPLEIDXLN_LIST = hist_mito_sample_dict[SAMPLE]
+    SAMPLEIDXLN_LIST = hist_mito_sample_dict[wildcards.sample]
     return expand("results/historical/mitogenomes_mapping/{sampleindexlane}_merged_{{mitoref}}.sorted.bam",
         sampleindexlane=SAMPLEIDXLN_LIST,)
 
@@ -97,13 +96,13 @@ def historical_mito_bams_multiqc_inputs(wildcards):
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_and_unmerged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
         merged_bam_stats = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_quali_report = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_summary = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/genome_results.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         outlist = (quali_report + summary + stats + ratios + merged_bam_stats + merged_bam_quali_report + merged_bam_summary)
     elif config["map_unmerged_reads"] == False:
@@ -121,13 +120,13 @@ def historical_mito_bams_multiqc_inputs(wildcards):
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
         merged_bam_stats = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_quali_report = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_summary = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/genome_results.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         outlist = (quali_report + summary + stats + ratios + merged_bam_stats + merged_bam_quali_report + merged_bam_summary)
     return outlist
