@@ -27,57 +27,49 @@ elif os.path.exists(config["modern_samples"]):
 def historical_snpEff_multiqc_inputs(wildcards):
     """Input for historical_snpEff_multiqc"""
     outlist = []
-    hist_not_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+    outlist += expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
         sample=HIST_NOT_CpG_SAMPLES,
         fmiss=config["f_missing"],
         chr=CHR,)
-    outlist += (hist_not_CpG)
     if config["CpG_from_vcf"] == True:
-        hist_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=HIST_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (hist_CpG)
     elif config["CpG_from_reference"] == True:
-        hist_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=HIST_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (hist_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
-        hist_CpG = expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/historical/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=HIST_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (hist_CpG)
     return outlist
 
 def modern_snpEff_multiqc_inputs(wildcards):
     """Input for modern_snpEff_multiqc"""
     outlist = []
-    mod_not_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+    outlist += expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
         sample=MODERN_NOT_SUBSAMPLED_NOT_CpG_SAMPLES,
         fmiss=config["f_missing"],
         chr=CHR,)
-    outlist += (mod_not_CpG)
     if config["CpG_from_vcf"] == True:
-        mod_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=MODERN_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (mod_CpG)
     elif config["CpG_from_reference"] == True:
-        mod_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=MODERN_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (mod_CpG)
     elif config["CpG_from_vcf_and_reference"] == True:
-        mod_CpG = expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
+        outlist += expand("results/modern/snpEff/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
             sample=MODERN_CpG_SAMPLES,
             fmiss=config["f_missing"],
             chr=CHR,)
-        outlist += (mod_CpG)
     return outlist
 
 
