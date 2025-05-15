@@ -1,2 +1,0 @@
-samplename path_to_processed_bam_file
-S03 .test/data/shortread_data/modern/S03.merged.rmdup.merged.realn.bam

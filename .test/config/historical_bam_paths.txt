@@ -1,2 +1,0 @@
-samplename path_to_processed_bam_file
-S08 .test/data/shortread_data/historical/S08.merged.rmdup.merged.realn.bam
