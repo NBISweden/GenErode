@@ -74,11 +74,11 @@ def rel_load_table_inputs(wildcards):
                 maxGERP=config["max_gerp"],)
     if os.path.exists(config["modern_samples"]):
             outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
-            sample=MODERN_NOT_CpG_SAMPLES,
-            fmiss=config["f_missing"],
-            chr=CHR,
-            minGERP=config["min_gerp"],
-            maxGERP=config["max_gerp"],)
+                sample=MODERN_NOT_CpG_SAMPLES,
+                fmiss=config["f_missing"],
+                chr=CHR,
+                minGERP=config["min_gerp"],
+                maxGERP=config["max_gerp"],)
         if config["CpG_from_vcf"] == True:
                 outlist += expand("results/gerp/modern/" + REF_NAME + "/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_table.txt",
                 sample=MODERN_NOT_CpG_SAMPLES,
