@@ -43,8 +43,8 @@ sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
 # Example files can be found in "config/"
-historical_samples: ".test/config/historical_mixed_paths.csv" # leave empty ("") if not run for historical samples.
-modern_samples: ".test/config/modern_mixed_paths.csv" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_bam_paths.csv" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_bam_paths.csv" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
