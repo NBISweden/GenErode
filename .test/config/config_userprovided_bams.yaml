@@ -260,7 +260,7 @@ CpG_identification: False
 # Has to be kept at True for the rest of the pipeline, if chosen 
 # method for CpG identification, so that the correct files are 
 # used for downstream analyses.
-CpG_from_vcf: False
+CpG_from_vcf: True
 
 # Method 2: 
 # Identify CpG sites in the reference genome.
@@ -279,7 +279,7 @@ CpG_from_reference: False
 # Has to be kept at True for the rest of the pipeline, if chosen 
 # method for CpG identification, so that the correct files are 
 # used for downstream analyses.
-CpG_from_vcf_and_reference: True
+CpG_from_vcf_and_reference: False
 
 # Combined list of modern and historical samples in which CpG sites 
 # should be identified if CpG_from_vcf or CpG_from_vcf_and_reference 
@@ -291,7 +291,7 @@ CpG_from_vcf_and_reference: True
 # CpG site filtering is run.
 # Keep the list of sample names for the entire pipeline run 
 # so that the correct files are used for downstream analyses.
-CpG_samplenames: ["S03", "S04", "S08", "S09"]
+CpG_samplenames: ["S03", "S04"]
 #####
 
 
