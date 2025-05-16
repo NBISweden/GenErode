@@ -1,5 +1,5 @@
 ##########################################################################
-### 3.1 BAM file processing: sort, merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
+### 3.1.1 BAM file processing: sort, merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
 
 # Code collecting output files from this part of the pipeline
 if os.path.exists(config["historical_samples"]):
@@ -162,9 +162,9 @@ rule historical_merged_index_bam_multiqc:
     """Summarize all stats from all historical bam files"""
     input:
         merged=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/{sampleindex}.merged.bam.stats.txt",
-            sampleindex=hist_sm_idx,),
+            sampleindex=hist_pipeline_bam_sm_idx,),
         qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/{sampleindex}.merged.bam.qualimap/qualimapReport.html",
-            sampleindex=hist_sm_idx,),
+            sampleindex=hist_pipeline_bam_sm_idx,),
     output:
         "results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html",
     params:
@@ -184,9 +184,9 @@ rule modern_merged_index_bam_multiqc:
     """Summarize all stats from all modern bam files"""
     input:
         merged=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/{sampleindex}.merged.bam.stats.txt",
-            sampleindex=mod_sm_idx,),
+            sampleindex=mod_pipeline_bam_sm_idx,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/{sampleindex}.merged.bam.qualimap/qualimapReport.html",
-            sampleindex=mod_sm_idx,),
+            sampleindex=mod_pipeline_bam_sm_idx,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html",
     params:
@@ -203,8 +203,10 @@ rule modern_merged_index_bam_multiqc:
 
 
 rule rmdup_historical_bams:
-    """Remove PCR duplicates from historical samples using Pontus Skoglund's custom script for duplicate removal (checks both ends of a read)"""
-    """The script was modified so that also unmapped reads are printed to the output bam file so that they are not lost"""
+    """
+    Remove PCR duplicates from historical samples using Pontus Skoglund's custom script for duplicate removal (checks both ends of a read).
+    The script was modified so that also unmapped reads are printed to the output bam file so that they are not lost.
+    """
     input:
         merged=rules.merge_historical_bams_per_index.output.merged,
         index="results/historical/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai",
@@ -310,9 +312,9 @@ rule historical_rmdup_bam_multiqc:
     """Summarize all stats from all historical bam files"""
     input:
         rmdup=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.stats.txt",
-            sampleindex=hist_sm_idx,),
+            sampleindex=hist_pipeline_bam_sm_idx,),
         qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.qualimap/qualimapReport.html",
-            sampleindex=hist_sm_idx,),
+            sampleindex=hist_pipeline_bam_sm_idx,),
     output:
         "results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html",
     params:
@@ -332,9 +334,9 @@ rule modern_rmdup_bam_multiqc:
     """Summarize all stats from all modern bam files"""
     input:
         rmdup=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.stats.txt",
-            sampleindex=mod_sm_idx,),
+            sampleindex=mod_pipeline_bam_sm_idx,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.qualimap/qualimapReport.html",
-            sampleindex=mod_sm_idx,),
+            sampleindex=mod_pipeline_bam_sm_idx,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html",
     params:
@@ -468,9 +470,9 @@ rule historical_merged_sample_bam_multiqc:
     """Summarize all stats from all historical bam files"""
     input:
         merged=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.stats.txt",
-            sample=hist_sm,),
+            sample=hist_pipeline_bam_sm,),
         qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,),
+            sample=hist_pipeline_bam_sm,),
     output:
         "results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html",
     params:
@@ -490,9 +492,9 @@ rule modern_merged_sample_bam_multiqc:
     """Summarize all stats from all modern bam files"""
     input:
         merged=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.stats.txt",
-            sample=mod_sm,),
+            sample=mod_pipeline_bam_sm,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap/qualimapReport.html",
-            sample=mod_sm,),
+            sample=mod_pipeline_bam_sm,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html",
     params:
@@ -641,10 +643,12 @@ rule realigned_bam_qualimap:
 
 
 rule realigned_bam_depth:
-    """Get average genome-wide depth per bam file, excluding repeats and filtering for high quality"""
-    """Will be used to filter out sites outside the estimated depth thresholds"""
-    """samtools depth to get depth per site, piped into awk to get average across all sites, 
-    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer)"""
+    """
+    Get average genome-wide depth per bam file, excluding repeats and filtering for high quality.
+    Will be used to filter out sites outside the estimated depth thresholds with
+    samtools depth to get depth per site, piped into awk to get average across all sites, 
+    piped into awk to calculate 1/3*average and 10*average depth (rounded to integer).
+    """
     input:
         bam=rules.indel_realigner.output.realigned,
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
@@ -695,18 +699,15 @@ rule plot_dp_hist:
 rule historical_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all historical bam files until indel realignment"""
     input:
-        dp=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=hist_sm,),
-        realigned=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
-            sample=hist_sm,),
-        qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,),
-        html=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.html",
-            sample=hist_sm,),
-        zip=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.zip",
-            sample=hist_sm,),
-        pdf=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=hist_sm,),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=hist_pipeline_bam_sm,
+            extension=[".repma.Q30.bam.dp.hist.pdf", 
+                ".bam.stats.txt", 
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=hist_pipeline_bam_sm,
+            extension=["_fastqc.html",
+                "_fastqc.zip",],),
     output:
         stats=report(
             "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html",
@@ -728,18 +729,15 @@ rule historical_realigned_bam_multiqc:
 rule modern_realigned_bam_multiqc:
     """Summarize all stats and qualimap results from all modern bam files"""
     input:
-        dp=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=mod_sm,),
-        realigned=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
-            sample=mod_sm,),
-        qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap/qualimapReport.html",
-            sample=mod_sm,),
-        html=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.html",
-            sample=mod_sm,),
-        zip=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.zip",
-            sample=mod_sm,),
-        pdf=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp.hist.pdf",
-            sample=mod_sm,),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=mod_pipeline_bam_sm,
+            extension=[".repma.Q30.bam.dp.hist.pdf", 
+                ".bam.stats.txt", 
+                ".bam.qualimap/qualimapReport.html",],),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn{extension}",
+            sample=mod_pipeline_bam_sm,
+            extension=["_fastqc.html",
+                "_fastqc.zip",],),
     output:
         stats=report(
             "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html",

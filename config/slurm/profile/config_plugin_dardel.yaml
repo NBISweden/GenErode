@@ -64,6 +64,10 @@ set-threads:
   realigned_bam_group: 80
   realigned_bam_fastqc: 20
   realigned_bam_depth: 80
+  userprovided_bam_group: 80
+  userprovided_bam_fastqc: 20
+  userprovided_bam_qualimap: 40
+  userprovided_bam_depth: 80
   rescale_historical: 80
   rescaled_bam_qualimap: 40
   rescaled_bam_group: 40
@@ -168,6 +172,13 @@ set-resources:
   - realigned_bam_group:runtime=2880
   - realigned_bam_fastqc:runtime=300
   - realigned_bam_fastqc:mem_mb=40000
+  - realigned_bam_depth:runtime=2880
+  - userprovided_bam_group:runtime=2880
+  - userprovided_bam_fastqc:runtime=300
+  - userprovided_bam_fastqc:mem_mb=40000
+  - userprovided_bam_qualimap:runtime=5760
+  - userprovided_bam_qualimap:mem_mb=80000
+  - userprovided_bam_depth:runtime=2880
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
   - rescaled_bam_qualimap:mem_mb=80000

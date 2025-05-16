@@ -90,8 +90,10 @@ rule readgroup_ID_modern:
 
 
 rule map_modern:
-    """Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads"""
-    """Shorter split hits are marked as secondary for Picard"""
+    """
+    Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads.
+    Shorter split hits are marked as secondary for Picard.
+    """
     input:
         ref=config["ref_path"],
         index=rules.bwa_index_reference.output,
@@ -178,9 +180,9 @@ rule historical_raw_bam_multiqc:
     """Summarize all stats results from all historical bam files after mapping"""
     input:
         stats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
         qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
     output:
         "results/historical/mapping/"+ REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html",
     params:
@@ -200,9 +202,9 @@ rule modern_raw_bam_multiqc:
     """Summarize all stats results from all modern bam files after mapping"""
     input:
         stats=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.stats.txt",
-            sampleindexlane=mod_sm_idx_ln,),
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=mod_sm_idx_ln,),
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html",
     params:

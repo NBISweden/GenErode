@@ -36,14 +36,15 @@ ref_path: ".test/data/references/sumatran_rhino.fasta"
 # if the pipeline should be run on all scaffolds/contigs of the genome.
 sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 #################################################################
+#################################################################
 
 
 #################################################################
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
 # Example files can be found in "config/"
-historical_samples: ".test/config/historical_mixed_paths.csv" # leave empty ("") if not run for historical samples.
-modern_samples: "" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_bam_paths.csv" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_bam_paths.csv" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
@@ -100,7 +101,7 @@ mod_readlength: "30"
 # This step does not produce any files required for any of the 
 # downstream steps and is therefore not included when running 
 # any of the following downstream steps.
-map_historical_to_mitogenomes: True
+map_historical_to_mitogenomes: False
 
 # Full path including file name of mitochondrial genome FASTA of 
 # the species under investigation, or that of a closely related species.
@@ -108,7 +109,7 @@ map_historical_to_mitogenomes: True
 # reused by the pipeline and can have the file name extensions 
 # *.fasta, *.fa or *.fna.
 # Variable can be left empty ("") if not run.
-species_mt_path: ".test/data/references/rhino_NC_012684.fasta" # e.g. "/path/to/speciesname_accession_number.fasta"
+species_mt_path: "" # e.g. "/path/to/speciesname_accession_number.fasta"
 
 # Per default, only merged historical reads are mapped to the 
 # different mitochondrial genomes.
@@ -191,7 +192,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: []
+historical_rescaled_samplenames: ["S08", "S09"]
 #####
 
 
@@ -209,7 +210,7 @@ bam_subsampling: False
 # Keep the variable for the entire pipeline run so that the correct 
 # files are used for downstream analyses.
 # Has to be set to False if not run.
-subsampling_depth: False
+subsampling_depth: 8
 
 # Combined list of modern and historical samples that should be 
 # subsampled to a common depth.
@@ -218,7 +219,7 @@ subsampling_depth: False
 # List has to be left empty ([]) if subsampling is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if subsampled BAM files should be used in downstream analyses.
-subsampling_samplenames: []
+subsampling_samplenames: ["S03", "S04"]
 #####
 
 
@@ -259,7 +260,7 @@ CpG_identification: False
 # Has to be kept at True for the rest of the pipeline, if chosen 
 # method for CpG identification, so that the correct files are 
 # used for downstream analyses.
-CpG_from_vcf: False
+CpG_from_vcf: True
 
 # Method 2: 
 # Identify CpG sites in the reference genome.
@@ -290,7 +291,7 @@ CpG_from_vcf_and_reference: False
 # CpG site filtering is run.
 # Keep the list of sample names for the entire pipeline run 
 # so that the correct files are used for downstream analyses.
-CpG_samplenames: []
+CpG_samplenames: ["S03", "S04"]
 #####
 
 
@@ -374,7 +375,7 @@ vcf_qual_repeat_filtering: False
 # Create a BED file of sites that remain after filtering and contig/scaffold
 # removal across all samples to be used for downstream filtering of individual
 # BCF files.
-merge_vcfs_per_dataset: False
+merge_vcfs_per_dataset: True
 
 # Maximum allowed fraction of missing genotypes across all samples for a 
 # site to be kept in the BCF and BED file, to ensure that the same sites 
@@ -418,26 +419,26 @@ ROH: False
 # See https://www.cog-genomics.org/plink/1.9/ibd#homozyg for more details.
 
 # Minimum SNP count. For example, 10, 25. Abbreviation in file name: homsnp.
-homozyg-snp: 25
+homozyg-snp: 10
 # Minimum size of ROH in kilobases. Abbreviation in file name: homkb.
-homozyg-kb: 1000 
+homozyg-kb: 1
 # Window size for ROH estimation. For example, 20, 50, 100, 1000. 
 # Abbreviation in file name: homwinsnp.
-homozyg-window-snp: 1000 
+homozyg-window-snp: 10
 # Maximum number of heterozygote sites per window. 
 # For example, 1 for a stringent analysis, 3 for a relaxed setting. 
 # Abbreviation in file name: homwinhet.
-homozyg-window-het: 1 
+homozyg-window-het: 10
 # Maximum number of missing sites per window. 
 # For example, 1 or 5 for a stringent analysis, 
 # 10 for intermediate filtering and 15 for relaxed filtering. 
 # Abbreviation in file name: homwinmis.
-homozyg-window-missing: 5 
+homozyg-window-missing: 50
 # Maximum number of heterozygote sites per ROH. 
 # For example, 1 for a stringent analysis, 
 # 3 as a relaxed setting. Disable this parameter by setting it to 999. 
 # Abbreviation in file name: homhet.
-homozyg-het: 999 
+homozyg-het: 999
 #####
 
 

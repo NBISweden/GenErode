@@ -42,6 +42,11 @@ set-threads:
   indel_realigner: 10
   realigned_bam_qualimap: 10
   realigned_bam_group: 2
+  realigned_bam_depth: 2
+  userprovided_bam_group: 2
+  userprovided_bam_fastqc: 2
+  userprovided_bam_qualimap: 10
+  userprovided_bam_depth: 2
   rescale_historical: 5
   rescaled_bam_qualimap: 10
   rescaled_bam_group: 2
@@ -115,6 +120,11 @@ set-resources:
   - indel_realigner:runtime=7200
   - realigned_bam_qualimap:runtime=5760
   - realigned_bam_group:runtime=2880
+  - realigned_bam_depth:runtime=2880
+  - userprovided_bam_group:runtime=2880
+  - userprovided_bam_fastqc:runtime=300
+  - userprovided_bam_qualimap:runtime=5760
+  - userprovided_bam_depth:runtime=2880
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
   - rescaled_bam_group:runtime=600
