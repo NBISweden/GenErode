@@ -27,7 +27,9 @@ def CpG_genotype_bed_files_to_merge(wildcards):
     if config["CpG_from_vcf"] == True:
         hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
             sample=HIST_CpG_SAMPLES,)
-    return hist_CpG
+        mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
+            sample=MOD_CpG_SAMPLES,)
+    return hist_CpG + mod_CpG
 
 def all_CpG_bed_files_to_merge(wildcards):
     """Collect bed files with CpG sites found in individual samples and in the reference genome as input for merge_all_CpG_beds"""
