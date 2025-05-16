@@ -6,6 +6,8 @@ on:
       - 'README.md'
       - 'LICENSE.md'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/2_mapping.smk'
+      - 'workflow/rules/3.1.1_bam_rmdup_realign_indels.smk'
     branches:
       - main
   pull_request:
@@ -14,6 +16,8 @@ on:
       - 'LICENSE.md'
       - 'workflow/docker'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
+      - 'workflow/rules/2_mapping.smk'
+      - 'workflow/rules/3.1.1_bam_rmdup_realign_indels.smk'
     branches:
       - main
       - dev
@@ -46,7 +50,7 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
-          tool-cache: true
+          tool-cache: false
 
           # All of these default to true, but feel free to set to "false" if necessary for your workflow
           android: true
