@@ -37,7 +37,7 @@ def all_CpG_bed_files_to_merge(wildcards):
         hist_CpG = expand("results/historical/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
             sample=HIST_CpG_SAMPLES,)
         mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
         ref = expand("results/" + REF_NAME + ".CpG_ref.bed")
     return hist_CpG + mod_CpG + ref
 

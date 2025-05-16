@@ -7,7 +7,7 @@ if os.path.exists(config["historical_samples"]):
         all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    if len(MODERN_CpG_SAMPLES) > 0:
+    if len(MOD_CpG_SAMPLES) > 0:
         all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 
@@ -28,13 +28,13 @@ def modern_CpG_filtered_multiqc_inputs(wildcards):
     """Input for modern_CpG_filtered_multiqc"""
     if config["CpG_from_vcf"] == True:
         return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
         return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
         return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
 
 
 # snakemake rules

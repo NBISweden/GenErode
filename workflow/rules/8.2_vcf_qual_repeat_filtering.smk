@@ -32,16 +32,16 @@ def modern_quality_filtered_vcf_multiqc_inputs(wildcards):
     """Input for modern_quality_filtered_vcf_multiqc"""
     outlist = []
     outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-        sample=MODERN_NOT_CpG_SAMPLES,)
+        sample=MOD_NOT_CpG_SAMPLES,)
     if config["CpG_from_vcf"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     return outlist
 
 def historical_repmasked_vcf_multiqc_inputs(wildcards):
@@ -64,16 +64,16 @@ def modern_repmasked_vcf_multiqc_inputs(wildcards):
     """Input for modern_repmasked_vcf_multiqc"""
     outlist = []
     outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-        sample=MODERN_NOT_CpG_SAMPLES,)
+        sample=MOD_NOT_CpG_SAMPLES,)
     if config["CpG_from_vcf"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcf.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_ref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
         outlist += expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.Q30.q30.sorted.noCpG_vcfref.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-            sample=MODERN_CpG_SAMPLES,)
+            sample=MOD_CpG_SAMPLES,)
     return outlist
 
 

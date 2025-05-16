@@ -7,7 +7,7 @@ if os.path.exists(config["historical_samples"]):
         all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    if len(MODERN_SUBSAMPLED_SAMPLES) > 0:
+    if len(MOD_SUBSAMPLED_SAMPLES) > 0:
         all_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
 
 
@@ -58,14 +58,14 @@ def historical_subsampled_bam_multiqc_inputs(wildcards):
 def modern_subsampled_bam_multiqc_inputs(wildcards):
     """Collect all inputs for multiqc"""
     subsampled_pipeline_bams=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}{extension}",
-        sample=MODERN_PIPELINE_SUBSAMPLED_SAMPLES,
+        sample=MOD_PIPELINE_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 
             ".bam.qualimap/genome_results.txt",
             ".repma.Q30.bam.dpstats.txt"],)
     subsampled_user_bams=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}{extension}",
-        sample=MODERN_USER_SUBSAMPLED_SAMPLES,
+        sample=MOD_USER_SUBSAMPLED_SAMPLES,
         DP=config["subsampling_depth"],
         extension=[".bam.stats.txt", 
             ".bam.qualimap/qualimapReport.html", 

@@ -403,36 +403,36 @@ HIST_NOT_CpG_SAMPLES = list(
 # Lists of modern samples
 ###
 # subsampled
-MODERN_SUBSAMPLED_SAMPLES = list(
+MOD_SUBSAMPLED_SAMPLES = list(
     set(mod_sm) & 
     set(config["subsampling_samplenames"]))
 
 # pipeline-processed BAM files
-MODERN_PIPELINE_SUBSAMPLED_SAMPLES = list(
+MOD_PIPELINE_SUBSAMPLED_SAMPLES = list(
     set(mod_pipeline_bam_sm) & 
     set(config["subsampling_samplenames"]))
 # user-provided BAM files
-MODERN_USER_SUBSAMPLED_SAMPLES = list(
+MOD_USER_SUBSAMPLED_SAMPLES = list(
     set(mod_user_bam_sm) & 
     set(config["subsampling_samplenames"]))
 
 # pipeline-processed BAM files
-MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES = list(
+MOD_PIPELINE_NOT_SUBSAMPLED_SAMPLES = list(
     set(mod_pipeline_bam_sm) - 
-    set(MODERN_PIPELINE_SUBSAMPLED_SAMPLES))
+    set(MOD_PIPELINE_SUBSAMPLED_SAMPLES))
 # user-provided BAM files
-MODERN_USER_NOT_SUBSAMPLED_SAMPLES = list(
+MOD_USER_NOT_SUBSAMPLED_SAMPLES = list(
     set(mod_user_bam_sm) - 
-    set(MODERN_USER_SUBSAMPLED_SAMPLES))
+    set(MOD_USER_SUBSAMPLED_SAMPLES))
 
 ###
 # CpG filtered
-MODERN_CpG_SAMPLES = list(
+MOD_CpG_SAMPLES = list(
     set(mod_sm) & 
     set(config["CpG_samplenames"]))
 
 # not CpG filtered
-MODERN_NOT_CpG_SAMPLES = list(
+MOD_NOT_CpG_SAMPLES = list(
     set(mod_sm) - 
     set(config["CpG_samplenames"]))
 
@@ -473,10 +473,10 @@ def processed_bam_file(wildcards):
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
     # pipeline-processed modern samples
-    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam".format(
             sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_PIPELINE_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam".format(
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
@@ -496,10 +496,10 @@ def processed_bam_file(wildcards):
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
     # user-provided modern samples
-    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_USER_NOT_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam".format(
             sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_USER_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.mapped_q30.subs_dp{DP}.bam".format(
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
@@ -516,10 +516,10 @@ def depth_file(wildcards):
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
     # pipeline-processed modern samples
-    elif wildcards.sample in MODERN_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_PIPELINE_NOT_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt".format(
             sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_PIPELINE_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_PIPELINE_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
@@ -532,10 +532,10 @@ def depth_file(wildcards):
             sample=wildcards.sample,
             DP=config["subsampling_depth"])
     # user-provided modern samples
-    elif wildcards.sample in MODERN_USER_NOT_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_USER_NOT_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt".format(
             sample=wildcards.sample,)
-    elif wildcards.sample in MODERN_USER_SUBSAMPLED_SAMPLES:
+    elif wildcards.sample in MOD_USER_SUBSAMPLED_SAMPLES:
         return "results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt".format(
             sample=wildcards.sample,
             DP=config["subsampling_depth"])

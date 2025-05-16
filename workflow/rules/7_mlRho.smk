@@ -74,44 +74,44 @@ def all_mlRho_outputs(wildcards):
         if len(sexchromosomeList) > 0:
             if config["mlRho_autosomes_sexchromosomes"] == True:
                 outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.{chr}.mlRho.txt",
-                    sample=MODERN_NOT_CpG_SAMPLES,
+                    sample=MOD_NOT_CpG_SAMPLES,
                     chr=["autos", "sexchr"],)
                 if config["CpG_from_vcf"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.{chr}.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,
+                        sample=MOD_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
                 elif config["CpG_from_reference"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,
+                        sample=MOD_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.{chr}.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,
+                        sample=MOD_CpG_SAMPLES,
                         chr=["autos", "sexchr"],)
             elif config["mlRho_autosomes_sexchromosomes"] == False:
                 outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.autos.mlRho.txt",
-                    sample=MODERN_NOT_CpG_SAMPLES,)
+                    sample=MOD_NOT_CpG_SAMPLES,)
                 if config["CpG_from_vcf"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.autos.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,)
+                        sample=MOD_CpG_SAMPLES,)
                 elif config["CpG_from_reference"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.autos.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,)
+                        sample=MOD_CpG_SAMPLES,)
                 elif config["CpG_from_vcf_and_reference"] == True:
                     outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.autos.mlRho.txt",
-                        sample=MODERN_CpG_SAMPLES,)
+                        sample=MOD_CpG_SAMPLES,)
         elif len(sexchromosomeList) == 0:
             outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.repma.genome.mlRho.txt",
-                sample=MODERN_NOT_CpG_SAMPLES,)
+                sample=MOD_NOT_CpG_SAMPLES,)
             if config["CpG_from_vcf"] == True:
                 outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcf.repma.genome.mlRho.txt",
-                    sample=MODERN_CpG_SAMPLES,)
+                    sample=MOD_CpG_SAMPLES,)
             elif config["CpG_from_reference"] == True:
                 outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_ref.repma.genome.mlRho.txt",
-                    sample=MODERN_CpG_SAMPLES,)
+                    sample=MOD_CpG_SAMPLES,)
             elif config["CpG_from_vcf_and_reference"] == True:
                 outlist += expand("results/modern/mlRho/" + REF_NAME + "/{sample}.noCpG_vcfref.repma.genome.mlRho.txt",
-                    sample=MODERN_CpG_SAMPLES,)
+                    sample=MOD_CpG_SAMPLES,)
     return outlist
 
 
