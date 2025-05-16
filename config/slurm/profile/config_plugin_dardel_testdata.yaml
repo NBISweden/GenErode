@@ -111,6 +111,7 @@ set-resources:
   - map_historical:runtime=120
   - sai2bam:runtime=120
   - map_modern:runtime=120
+  - subsample_bams:runtime=120
   - gerp_derived_alleles:runtime=120
   # memory
   - repeatmodeler:mem_mb=20000
