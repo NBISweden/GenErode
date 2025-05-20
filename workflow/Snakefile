@@ -331,6 +331,11 @@ if config["gerp"]:
     else:
         all_outputs.append(ref_prep_outputs)
         all_outputs.append(gerp_outputs)
+
+# Remove duplicates from all_outputs
+# This happens when several steps are set to True
+# in the config.yaml file at the same time
+all_outputs=list(set(all_outputs))
 ###
 
 
