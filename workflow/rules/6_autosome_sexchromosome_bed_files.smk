@@ -2,16 +2,18 @@
 ### 6 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
 
 # Code collecting output files from this part of the pipeline
+autos_sexchr_bed_outputs=[]
+
 if len(sexchromosomeList) > 0:
-    all_outputs.append(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr", "genome"],))
+    autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr", "genome"],))
     if config["CpG_from_vcf"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_reference"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_vcf_and_reference"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
 
 

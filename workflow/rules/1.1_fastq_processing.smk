@@ -2,13 +2,14 @@
 ### 1. Adapter removal and read merging
 
 # Code collecting output files from this part of the pipeline
+fastq_proc_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
-    all_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
+    fastq_proc_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
+    fastq_proc_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
-    all_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
+    fastq_proc_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
+    fastq_proc_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
 
 
 # snakemake rules

@@ -2,13 +2,15 @@
 ### 8.1 Removal of CpG-prone sites from VCF files
 
 # Code collecting output files from this part of the pipeline
+vcf_CpG_filt_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
     if len(HIST_CpG_SAMPLES) > 0:
-        all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
+        vcf_CpG_filt_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
     if len(MOD_CpG_SAMPLES) > 0:
-        all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
+        vcf_CpG_filt_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

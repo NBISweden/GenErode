@@ -2,11 +2,12 @@
 ### 2. Mapping
 
 # Code collecting output files from this part of the pipeline
+mapping_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    mapping_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 
 localrules:

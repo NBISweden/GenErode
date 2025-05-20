@@ -2,8 +2,9 @@
 ### 0.2 Repeat prediction and repeat masking of the reference genome
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
-all_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
+repeat_id_outputs=[]
+repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
+repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
 
 
 # snakemake rules

@@ -2,13 +2,15 @@
 ### 3.1.2 Statistics for user-provided BAM files
 
 # Code collecting output files from this part of the pipeline
+userprov_bam_stats_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
     if len(hist_user_bam_sm) > 0:
-        all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html")
+        userprov_bam_stats_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
     if len(mod_user_bam_sm) > 0:
-        all_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html")
+        userprov_bam_stats_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html")
 
 
 # snakemake rules

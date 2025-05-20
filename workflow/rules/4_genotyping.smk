@@ -2,11 +2,13 @@
 ### 4. Genotyping
 
 # Code collecting output files from this part of the pipeline
+genotyping_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
+    genotyping_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
+    genotyping_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
 
 
 # snakemake rules

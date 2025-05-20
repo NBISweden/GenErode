@@ -2,9 +2,11 @@
 ### 3.2 OPTIONAL Base quality rescaling in historical BAM files with ancient DNA damage patterns
 
 # Code collecting output files from this part of the pipeline
+rescaled_bam_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
     if len(HIST_RESCALED_SAMPLES) > 0:
-        all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html")
+        rescaled_bam_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html")
 
 
 # Functions for this step of the pipeline

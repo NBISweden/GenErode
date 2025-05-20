@@ -2,23 +2,25 @@
 ### 5. Identification of CpG sites in VCF files and the reference genome, merging of CpG bed file with repeats bed file for downstream filtering
 
 # Code collecting output files from this part of the pipeline
+CpG_id_outputs=[]
+
 if config["CpG_from_vcf"] == True:
-    all_outputs.append("results/" + REF_NAME + ".CpG_vcf.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_vcf.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_vcf.repma.bed")
-    all_outputs.append("results/" + REF_NAME + ".CpG_vcf.repeats.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcf.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcf.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcf.repma.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcf.repeats.bed")
 
 elif config["CpG_from_reference"] == True:
-    all_outputs.append("results/" + REF_NAME + ".CpG_ref.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_ref.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_ref.repma.bed")
-    all_outputs.append("results/" + REF_NAME + ".CpG_ref.repeats.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_ref.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_ref.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_ref.repma.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_ref.repeats.bed")
 
 elif config["CpG_from_vcf_and_reference"] == True:
-    all_outputs.append("results/" + REF_NAME + ".CpG_vcfref.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.bed")
-    all_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.repma.bed")
-    all_outputs.append("results/" + REF_NAME + ".CpG_vcfref.repeats.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcfref.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.repma.bed")
+    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcfref.repeats.bed")
 
 
 # Functions used by rules of this part of the pipeline

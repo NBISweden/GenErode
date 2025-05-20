@@ -2,10 +2,11 @@
 ### 0.1 Preparation of the reference genome for downstream analyses
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append(expand("{ref_path}.{ext}", 
+ref_prep_outputs=[]
+ref_prep_outputs.append(expand("{ref_path}.{ext}", 
     ref_path=config["ref_path"], 
     ext=["amb", "ann", "bwt", "pac", "sa", "fai"]))
-all_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
+ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
     ext=["dict", "genome", "bed"]))
 
 # snakemake rules
