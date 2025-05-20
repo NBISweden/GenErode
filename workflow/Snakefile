@@ -1,0 +1,348 @@
+##########################################################################
+# This is the Snakefile of the GenErode pipeline for historical or       #
+# ancient and modern samples to study patterns of genome erosion         #
+#                                                                        #
+#                                                                        #
+# Written by Verena Kutschera, Marcin Kierczak and Tom van der Valk      #
+# Email: generode@nbis.se                                                #
+##########################################################################
+
+##########################################################################
+######################### HOW TO RUN THE WORKFLOW ########################
+##########################################################################
+
+###
+# The full pipeline documentation can be found on the GitHub wiki page
+# (https://github.com/NBISweden/GenErode/wiki).
+###
+
+generode_version = "0.6.3"
+
+##########################################################################
+########################### STEPS TO INCLUDE #############################
+##########################################################################
+
+include: "rules/common.smk"
+
+
+all_outputs = []
+
+if config["reference_repeat_identification"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+
+
+if config["fastq_processing"]:
+    include: "rules/1.1_fastq_processing.smk"
+
+
+if config["map_historical_to_mitogenomes"]:
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/1.2_map_to_mitogenomes.smk"
+
+
+if config["mapping"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+
+
+if config["bam_rmdup_realign_indels"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+
+
+if config["historical_bam_mapDamage"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+
+
+if config["bam_subsampling"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+
+
+if config["genotyping"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+
+
+if config["CpG_identification"]:
+    if config["CpG_from_vcf"] == True:
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/0.2_repeat_identification.smk"
+        include: "rules/1.1_fastq_processing.smk"
+        include: "rules/2_mapping.smk"
+        include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+        include: "rules/3.1.2_user_provided_bam_stats.smk"
+        include: "rules/3.2_historical_bam_mapDamage.smk"
+        include: "rules/3.3_bam_subsampling.smk"
+        include: "rules/4_genotyping.smk"
+        include: "rules/5_CpG_identification.smk"
+        include: "rules/6_autosome_sexchromosome_bed_files.smk"
+
+
+    elif config["CpG_from_reference"] == True:
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/0.2_repeat_identification.smk"
+        include: "rules/1.1_fastq_processing.smk"
+        include: "rules/2_mapping.smk"
+        include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+        include: "rules/3.1.2_user_provided_bam_stats.smk"
+        include: "rules/3.2_historical_bam_mapDamage.smk"
+        include: "rules/3.3_bam_subsampling.smk"
+        include: "rules/5_CpG_identification.smk"
+        include: "rules/6_autosome_sexchromosome_bed_files.smk"
+
+
+    elif config["CpG_from_vcf_and_reference"] == True:
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/0.2_repeat_identification.smk"
+        include: "rules/1.1_fastq_processing.smk"
+        include: "rules/2_mapping.smk"
+        include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+        include: "rules/3.1.2_user_provided_bam_stats.smk"
+        include: "rules/3.2_historical_bam_mapDamage.smk"
+        include: "rules/3.3_bam_subsampling.smk"
+        include: "rules/4_genotyping.smk"
+        include: "rules/5_CpG_identification.smk"
+        include: "rules/6_autosome_sexchromosome_bed_files.smk"
+
+
+###
+if config["mlRho"]:
+    if len(config["CpG_samplenames"]) > 0:  # to avoid genotyping if not necessary
+        if config["CpG_from_vcf"] == True:
+            include: "rules/0.1_reference_genome_preps.smk"
+            include: "rules/0.2_repeat_identification.smk"
+            include: "rules/1.1_fastq_processing.smk"
+            include: "rules/2_mapping.smk"
+            include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+            include: "rules/3.1.2_user_provided_bam_stats.smk"
+            include: "rules/3.2_historical_bam_mapDamage.smk"
+            include: "rules/3.3_bam_subsampling.smk"
+            include: "rules/4_genotyping.smk"
+            include: "rules/5_CpG_identification.smk"
+            include: "rules/6_autosome_sexchromosome_bed_files.smk"
+            include: "rules/7_mlRho.smk"
+
+        elif config["CpG_from_reference"] == True:
+            include: "rules/0.1_reference_genome_preps.smk"
+            include: "rules/0.2_repeat_identification.smk"
+            include: "rules/1.1_fastq_processing.smk"
+            include: "rules/2_mapping.smk"
+            include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+            include: "rules/3.1.2_user_provided_bam_stats.smk"
+            include: "rules/3.2_historical_bam_mapDamage.smk"
+            include: "rules/3.3_bam_subsampling.smk"
+            include: "rules/5_CpG_identification.smk"
+            include: "rules/6_autosome_sexchromosome_bed_files.smk"
+            include: "rules/7_mlRho.smk"
+
+        elif config["CpG_from_vcf_and_reference"] == True:
+            include: "rules/0.1_reference_genome_preps.smk"
+            include: "rules/0.2_repeat_identification.smk"
+            include: "rules/1.1_fastq_processing.smk"
+            include: "rules/2_mapping.smk"
+            include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+            include: "rules/3.1.2_user_provided_bam_stats.smk"
+            include: "rules/3.2_historical_bam_mapDamage.smk"
+            include: "rules/3.3_bam_subsampling.smk"
+            include: "rules/4_genotyping.smk"
+            include: "rules/5_CpG_identification.smk"
+            include: "rules/6_autosome_sexchromosome_bed_files.smk"
+            include: "rules/7_mlRho.smk"
+
+    elif len(config["CpG_samplenames"]) == 0:
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/0.2_repeat_identification.smk"
+        include: "rules/1.1_fastq_processing.smk"
+        include: "rules/2_mapping.smk"
+        include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+        include: "rules/3.1.2_user_provided_bam_stats.smk"
+        include: "rules/3.2_historical_bam_mapDamage.smk"
+        include: "rules/3.3_bam_subsampling.smk"
+        include: "rules/6_autosome_sexchromosome_bed_files.smk"
+        include: "rules/7_mlRho.smk"
+
+
+###
+if config["vcf_CpG_filtering"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+
+
+if config["vcf_qual_repeat_filtering"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+    include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+
+
+if config["merge_vcfs_per_dataset"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+    include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+    include: "rules/9_merge_vcfs.smk"
+
+
+if config["pca"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+    include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+    include: "rules/9_merge_vcfs.smk"
+    include: "rules/10_pca.smk"
+
+
+if config["ROH"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+    include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+    include: "rules/9_merge_vcfs.smk"
+    include: "rules/11_ROH.smk"
+
+
+if config["snpEff"]:
+    include: "rules/0.1_reference_genome_preps.smk"
+    include: "rules/0.2_repeat_identification.smk"
+    include: "rules/1.1_fastq_processing.smk"
+    include: "rules/2_mapping.smk"
+    include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+    include: "rules/3.1.2_user_provided_bam_stats.smk"
+    include: "rules/3.2_historical_bam_mapDamage.smk"
+    include: "rules/3.3_bam_subsampling.smk"
+    include: "rules/4_genotyping.smk"
+    include: "rules/5_CpG_identification.smk"
+    include: "rules/6_autosome_sexchromosome_bed_files.smk"
+    include: "rules/8.1_vcf_CpG_filtering.smk"
+    include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+    include: "rules/9_merge_vcfs.smk"
+    include: "rules/12_snpEff.smk"
+
+
+###
+if config["gerp"]:
+    if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]): 
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/0.2_repeat_identification.smk"
+        include: "rules/1.1_fastq_processing.smk"
+        include: "rules/2_mapping.smk"
+        include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+        include: "rules/3.1.2_user_provided_bam_stats.smk"
+        include: "rules/3.2_historical_bam_mapDamage.smk"
+        include: "rules/3.3_bam_subsampling.smk"
+        include: "rules/4_genotyping.smk"
+        include: "rules/5_CpG_identification.smk"
+        include: "rules/6_autosome_sexchromosome_bed_files.smk"
+        include: "rules/8.1_vcf_CpG_filtering.smk"
+        include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+        include: "rules/9_merge_vcfs.smk"
+        include: "rules/13_GERP.smk"
+    else:
+        include: "rules/0.1_reference_genome_preps.smk"
+        include: "rules/13_GERP.smk"
+###
+
+
+##########################################################################
+############################# PSEUDORULES ################################
+##########################################################################
+
+
+rule all:
+    input:
+        all_outputs,
+
+
+##########################################################################
+################################ REPORT ##################################
+##########################################################################
+
+
+if (config["bam_rmdup_realign_indels"]
+    or config["merge_vcfs_per_dataset"]
+    or config["mlRho"]
+    or config["pca"]
+    or config["ROH"]
+    or config["snpEff"]
+    or config["gerp"]):
+
+    if os.path.exists(config["historical_samples"]) or os.path.exists(config["modern_samples"]):
+        onsuccess:
+            shell(
+                r"""
+                snakemake --unlock --cores 1 &&
+                snakemake --report GenErode_pipeline_report.html --cores 1
+                """)
+            all_outputs.append("GenErode_pipeline_report.html")
