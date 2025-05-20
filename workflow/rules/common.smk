@@ -271,28 +271,27 @@ else:
 ### Parameters regarding optional steps
 
 # mitochondrial genome fasta variables for mapping analysis
-if config["map_historical_to_mitogenomes"]:
-    # mitogenome fasta file variables for target species
-    MITO_IN_DIR = os.path.dirname(config["species_mt_path"])
-    MITO_IN_FASTA = os.path.basename(config["species_mt_path"])
-    MITO_NAME, MITO_EXT = os.path.splitext(MITO_IN_FASTA)
-    # 1.2 additional mitochondrial genomes to check how many reads map to them
-    HUMAN_MT = "data/mitogenomes/human_NC_012920.fasta"
-    CHICK_MT = "data/mitogenomes/chicken_NC_001323.fasta"
-    COW_MT = "data/mitogenomes/cow_NC_006853.fasta"
-    PIG_MT = "data/mitogenomes/pig_NC_000845.fasta"
-    MOUSE_MT = "data/mitogenomes/mouse_NC_005089.fasta"
-    MITO_DIR = "data/mitogenomes/"
-    HUMAN_FASTA = os.path.basename(HUMAN_MT)
-    HUMAN_NAME = os.path.splitext(HUMAN_FASTA)[0]
-    CHICK_FASTA = os.path.basename(CHICK_MT)
-    CHICK_NAME = os.path.splitext(CHICK_FASTA)[0]
-    COW_FASTA = os.path.basename(COW_MT)
-    COW_NAME = os.path.splitext(COW_FASTA)[0]
-    PIG_FASTA = os.path.basename(PIG_MT)
-    PIG_NAME = os.path.splitext(PIG_FASTA)[0]
-    MOUSE_FASTA = os.path.basename(MOUSE_MT)
-    MOUSE_NAME = os.path.splitext(MOUSE_FASTA)[0]
+# mitogenome fasta file variables for target species
+MITO_IN_DIR = os.path.dirname(config["species_mt_path"])
+MITO_IN_FASTA = os.path.basename(config["species_mt_path"])
+MITO_NAME, MITO_EXT = os.path.splitext(MITO_IN_FASTA)
+# 1.2 additional mitochondrial genomes to check how many reads map to them
+HUMAN_MT = "data/mitogenomes/human_NC_012920.fasta"
+CHICK_MT = "data/mitogenomes/chicken_NC_001323.fasta"
+COW_MT = "data/mitogenomes/cow_NC_006853.fasta"
+PIG_MT = "data/mitogenomes/pig_NC_000845.fasta"
+MOUSE_MT = "data/mitogenomes/mouse_NC_005089.fasta"
+MITO_DIR = "data/mitogenomes/"
+HUMAN_FASTA = os.path.basename(HUMAN_MT)
+HUMAN_NAME = os.path.splitext(HUMAN_FASTA)[0]
+CHICK_FASTA = os.path.basename(CHICK_MT)
+CHICK_NAME = os.path.splitext(CHICK_FASTA)[0]
+COW_FASTA = os.path.basename(COW_MT)
+COW_NAME = os.path.splitext(COW_FASTA)[0]
+PIG_FASTA = os.path.basename(PIG_MT)
+PIG_NAME = os.path.splitext(PIG_FASTA)[0]
+MOUSE_FASTA = os.path.basename(MOUSE_MT)
+MOUSE_NAME = os.path.splitext(MOUSE_FASTA)[0]
 
 
 # Base quality rescaling, subsampling to common depth and CpG site removal
@@ -542,32 +541,41 @@ def depth_file(wildcards):
 
 ###
 # snpEff
-if config["snpEff"]:
-    if os.path.exists(config["gtf_path"]):
-        GTF_DIR = os.path.dirname(config["gtf_path"])
-        GTF_FILE = os.path.basename(config["gtf_path"])
+if os.path.exists(config["gtf_path"]):
+    GTF_DIR = os.path.dirname(config["gtf_path"])
+    GTF_FILE = os.path.basename(config["gtf_path"])
+else:
+    GTF_DIR = config["gtf_path"]
+    GTF_FILE = config["gtf_path"]
 
 ###
 # GERP
-if config["gerp"]:
-    # GERP input fasta path
-    if config["gerp_ref_path"].endswith("/"):
-        GERP_REF_PATH = config["gerp_ref_path"].rstrip("/")
-    else:
-        GERP_REF_PATH = config["gerp_ref_path"]
+# GERP input fasta path
+if config["gerp_ref_path"].endswith("/"):
+    GERP_REF_PATH = config["gerp_ref_path"].rstrip("/")
+else:
+    GERP_REF_PATH = config["gerp_ref_path"]
 
-    # GERP input fasta file lists
+# GERP input fasta file lists
+if os.path.exists(GERP_REF_PATH):
     GERP_REF_FASTA_GZIP = [file for file in os.listdir(GERP_REF_PATH) if file.endswith(".gz")]
     GERP_REF_FASTA = [fasta.replace(".gz", "") for fasta in GERP_REF_FASTA_GZIP]
     GERP_REF_NAMES = [os.path.splitext(name)[0] for name in GERP_REF_FASTA]  # names of reference genomes of outgroup species
     ALL_GERP_REF_NAMES = GERP_REF_NAMES[:]
     ALL_GERP_REF_NAMES.append(REF_NAME)  # names of all genomes in the analysis, incl. the target species
+else:
+    GERP_REF_FASTA_GZIP = []
+    GERP_REF_FASTA = []
+    GERP_REF_NAMES = []  # names of reference genomes of outgroup species
+    ALL_GERP_REF_NAMES = GERP_REF_NAMES
 
-    # Create list of chunk names for parallelization of GERP step
-    # Adjust zero padding depending on the number of chunks set in the config file
-    if config["gerp_chunks"] < 100:
-        CHUNKS = ["chunk" + str(i).zfill(2) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
-    elif config["gerp_chunks"] >= 100:
-        CHUNKS = ["chunk" + str(i).zfill(3) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
-    elif config["gerp_chunks"] >= 1000:
-        CHUNKS = ["chunk" + str(i).zfill(4) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+# Create list of chunk names for parallelization of GERP step
+# Adjust zero padding depending on the number of chunks set in the config file
+if config["gerp_chunks"] < 100:
+    CHUNKS = ["chunk" + str(i).zfill(2) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+elif config["gerp_chunks"] >= 100:
+    CHUNKS = ["chunk" + str(i).zfill(3) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+elif config["gerp_chunks"] >= 1000:
+    CHUNKS = ["chunk" + str(i).zfill(4) for i in range(1,config["gerp_chunks"]+1)]  # list of chunk names
+else:
+    CHUNKS = []
