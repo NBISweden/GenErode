@@ -41,6 +41,7 @@ sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 #################################################################
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
+# The pipeline accepts FastQ files or processed BAM files as input.
 # Example files can be found in "config/"
 historical_samples: ".test/config/historical_mixed_paths.csv" # leave empty ("") if not run for historical samples.
 modern_samples: "" # leave empty ("") if not run for modern samples. 
