@@ -5,9 +5,17 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
+      - 'workflow/docker'
+      - 'workflow/utilities'
+      - 'workflow/rules/1.1_fastq_processing.smk'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/2_mapping.smk'
       - 'workflow/rules/3.1.1_bam_rmdup_realign_indels.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
     branches:
       - main
   pull_request:
@@ -15,9 +23,16 @@ on:
       - 'README.md'
       - 'LICENSE.md'
       - 'workflow/docker'
+      - 'workflow/utilities'
+      - 'workflow/rules/1.1_fastq_processing.smk'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/2_mapping.smk'
       - 'workflow/rules/3.1.1_bam_rmdup_realign_indels.smk'
+      - 'workflow/rules/7_mlRho.smk'
+      - 'workflow/rules/10_pca.smk'
+      - 'workflow/rules/11_ROH.smk'
+      - 'workflow/rules/12_snpEff.smk'
+      - 'workflow/rules/13_GERP.smk'
     branches:
       - main
       - dev
