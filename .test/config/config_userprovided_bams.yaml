@@ -210,7 +210,7 @@ bam_subsampling: False
 # Keep the variable for the entire pipeline run so that the correct 
 # files are used for downstream analyses.
 # Has to be set to False if not run.
-subsampling_depth: 8
+subsampling_depth: False
 
 # Combined list of modern and historical samples that should be 
 # subsampled to a common depth.
@@ -219,7 +219,7 @@ subsampling_depth: 8
 # List has to be left empty ([]) if subsampling is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if subsampled BAM files should be used in downstream analyses.
-subsampling_samplenames: ["S03", "S04"]
+subsampling_samplenames: []
 #####
 
 
@@ -260,7 +260,7 @@ CpG_identification: False
 # Has to be kept at True for the rest of the pipeline, if chosen 
 # method for CpG identification, so that the correct files are 
 # used for downstream analyses.
-CpG_from_vcf: True
+CpG_from_vcf: False
 
 # Method 2: 
 # Identify CpG sites in the reference genome.
@@ -291,7 +291,7 @@ CpG_from_vcf_and_reference: False
 # CpG site filtering is run.
 # Keep the list of sample names for the entire pipeline run 
 # so that the correct files are used for downstream analyses.
-CpG_samplenames: ["S03", "S04"]
+CpG_samplenames: []
 #####
 
 
