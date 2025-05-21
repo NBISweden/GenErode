@@ -335,6 +335,7 @@ if config["gerp"]:
 # Remove duplicates from all_outputs
 # This happens when several steps are set to True
 # in the config.yaml file at the same time
+all_outputs=[x for sublist in all_outputs for x in sublist] # flatten the list since it contains sublists
 all_outputs=list(set(all_outputs))
 ###
 
