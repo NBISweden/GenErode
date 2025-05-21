@@ -4,7 +4,7 @@
 # Code collecting output files from this part of the pipeline
 map_mito_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    map_mito_outputs.append("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
+    map_mito_outputs.extend("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

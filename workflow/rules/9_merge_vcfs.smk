@@ -5,12 +5,12 @@
 merge_vcf_outputs=[]
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    merge_vcf_outputs.append(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
+    merge_vcf_outputs.extend(expand("results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html",
         dataset=["all", "historical", "modern"],))
 elif os.path.exists(config["historical_samples"]):
-    merge_vcf_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+    merge_vcf_outputs.extend("results/historical/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 elif os.path.exists(config["modern_samples"]):
-    merge_vcf_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
+    merge_vcf_outputs.extend("results/modern/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

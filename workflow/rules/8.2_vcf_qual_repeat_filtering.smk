@@ -5,12 +5,12 @@
 vcf_proc_outputs=[]
 
 if os.path.exists(config["historical_samples"]):
-    vcf_proc_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc/multiqc_report.html")
-    vcf_proc_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc/multiqc_report.html")
+    vcf_proc_outputs.extend("results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc/multiqc_report.html")
+    vcf_proc_outputs.extend("results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    vcf_proc_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc/multiqc_report.html")
-    vcf_proc_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc/multiqc_report.html")
+    vcf_proc_outputs.extend("results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc/multiqc_report.html")
+    vcf_proc_outputs.extend("results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

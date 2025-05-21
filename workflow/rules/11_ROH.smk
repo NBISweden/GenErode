@@ -5,7 +5,7 @@
 ROH_outputs=[]
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    ROH_outputs.append(expand("results/all/ROH/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.extend(expand("results/all/ROH/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -16,7 +16,7 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
         homhet=config["homozyg-het"],))
 
 elif os.path.exists(config["historical_samples"]):
-    ROH_outputs.append(expand("results/historical/ROH/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.extend(expand("results/historical/ROH/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -27,7 +27,7 @@ elif os.path.exists(config["historical_samples"]):
         homhet=config["homozyg-het"],))
 
 elif os.path.exists(config["modern_samples"]):
-    ROH_outputs.append(expand("results/modern/ROH/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.extend(expand("results/modern/ROH/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -153,7 +153,7 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
         homwinmis=config["homozyg-window-missing"],
         homhet=config["homozyg-het"],
         filetype=["hom", "hom.indiv"],)
-    all_ROH_outputs.append(both_ROH_outputs)
+    all_ROH_outputs.extend(both_ROH_outputs)
 
 elif os.path.exists(config["historical_samples"]):
     historical_ROH_outputs = expand("results/historical/ROH/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.{filetype}",
@@ -166,7 +166,7 @@ elif os.path.exists(config["historical_samples"]):
         homwinmis=config["homozyg-window-missing"],
         homhet=config["homozyg-het"],
         filetype=["hom", "hom.indiv"],)
-    all_ROH_outputs.append(historical_ROH_outputs)
+    all_ROH_outputs.extend(historical_ROH_outputs)
 
 elif os.path.exists(config["modern_samples"]):
     modern_ROH_outputs = expand("results/modern/ROH/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.{filetype}",
@@ -179,7 +179,7 @@ elif os.path.exists(config["modern_samples"]):
         homwinmis=config["homozyg-window-missing"],
         homhet=config["homozyg-het"],
         filetype=["hom", "hom.indiv"],)
-    all_ROH_outputs.append(modern_ROH_outputs)
+    all_ROH_outputs.extend(modern_ROH_outputs)
 
 
 rule FROH_min_2Mb_table:

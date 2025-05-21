@@ -3,8 +3,8 @@
 
 # Code collecting output files from this part of the pipeline
 repeat_id_outputs=[]
-repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
-repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
+repeat_id_outputs.extend(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
+repeat_id_outputs.extend(REF_DIR + "/" + REF_NAME + ".repma.bed")
 
 
 # snakemake rules

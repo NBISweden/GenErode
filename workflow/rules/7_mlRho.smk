@@ -5,13 +5,13 @@
 mlRho_outputs=[]
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    mlRho_outputs.append("results/all/mlRho/" + REF_NAME + ".all.mlRho_theta_plot.pdf")
+    mlRho_outputs.extend("results/all/mlRho/" + REF_NAME + ".all.mlRho_theta_plot.pdf")
 
 elif os.path.exists(config["historical_samples"]):
-    mlRho_outputs.append("results/historical/mlRho/" + REF_NAME + ".historical.mlRho_theta_plot.pdf")
+    mlRho_outputs.extend("results/historical/mlRho/" + REF_NAME + ".historical.mlRho_theta_plot.pdf")
 
 elif os.path.exists(config["modern_samples"]):
-    mlRho_outputs.append("results/modern/mlRho/" + REF_NAME + ".modern.mlRho_theta_plot.pdf")
+    mlRho_outputs.extend("results/modern/mlRho/" + REF_NAME + ".modern.mlRho_theta_plot.pdf")
 
 
 # Functions used by rules of this part of the pipeline
