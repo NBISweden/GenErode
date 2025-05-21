@@ -8,7 +8,7 @@ from snakemake.utils import validate
 import os
 import pandas as pd
 
-min_version("7.0.0")
+min_version("9.0.0")
 
 configfile: "config/config.yaml"
 
