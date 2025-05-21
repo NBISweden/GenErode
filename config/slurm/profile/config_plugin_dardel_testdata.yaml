@@ -17,6 +17,7 @@ default-resources:
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 10 # number of threads per task, corresponds to cpus-per-task or cores
   runtime: 30 # default runtime in minutes
+  tmpdir: /cfs/klemming/scratch/u/user # change to your user's allocated temporary directory: /cfs/klemming/scratch/first-letter-of-username/username
 
 ## set-threads: map rule names to cpus-per-task
 set-threads:
