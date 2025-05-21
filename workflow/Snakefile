@@ -332,9 +332,13 @@ if config["gerp"]:
         all_outputs.append(ref_prep_outputs)
         all_outputs.append(gerp_outputs)
 
+# Flatten and remove duplicates from all_outputs
+# This happens when several steps are set to True
+# in the config.yaml file at the same time
 # Snakemake built-in function flatten() since the 
 # output lists can be nested
 all_outputs=flatten(all_outputs)
+all_outputs=list(set(all_outputs))
 ###
 
 
