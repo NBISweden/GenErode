@@ -65,7 +65,7 @@ rule sai2bam:
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     params:
-        scratch=config["scratch_dir"],
+        scratch=scratch_dir,
     threads: 8
     singularity:
         bwa_samtools_container
@@ -110,7 +110,7 @@ rule map_modern:
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     params:
-        scratch=config["scratch_dir"],
+        scratch=scratch_dir,
     threads: 8
     singularity:
         bwa_samtools_container

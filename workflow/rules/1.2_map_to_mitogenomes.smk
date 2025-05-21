@@ -188,7 +188,7 @@ rule map_historical_merged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     params:
-        scratch=config["scratch_dir"],
+        scratch=scratch_dir,
     singularity:
         bwa_samtools_container
     shell:
@@ -215,7 +215,7 @@ rule map_historical_unmerged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     params:
-        scratch=config["scratch_dir"],
+        scratch=scratch_dir,
     singularity:
         bwa_samtools_container
     shell:

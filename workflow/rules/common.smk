@@ -42,6 +42,8 @@ if os.path.exists(config["scratch_dir"]):
         scratch_dir = config["scratch_dir"]
     else:
         scratch_dir = config["scratch_dir"] + "/"
+elif config["scratch_dir"] == ".":
+    scratch_dir = config["scratch_dir"]
 else:
     raise WorkflowError('No scratch directory found. Please add path to scratch directory in config.yaml file or set to "." for current directory.')
 
