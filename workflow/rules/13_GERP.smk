@@ -246,13 +246,15 @@ rule align2target:
         extra=r"-R '@RG\tID:{gerpref}\tSM:{gerpref}\tPL:ILLUMINA\tPI:330'",
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
+    params:
+        scratch=config["scratch_dir"],
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
             samtools view -@ {threads} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
-            samtools view -@ {threads} -b - | samtools sort -@ {threads} - > {output.bam} 2> {log}
+            samtools view -@ {threads} -b - | samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
         """
 
 

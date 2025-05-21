@@ -1,5 +1,5 @@
 ##########################################################################
-### 3.1.1 BAM file processing: sort, merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
+### 3.1.1 BAM file processing: merge samples from different lanes per PCR/index, remove duplicates, merge bam files per sample, realign indels, calculate depth
 
 # Code collecting output files from this part of the pipeline
 bam_proc_outputs=[]

@@ -49,11 +49,13 @@ rule sort_vcfs:
         mem_mb=16000,
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sort_vcfs.log",
+    params:
+        scratch=config["scratch_dir"],
     singularity:
         bcftools_container
     shell:
         """
-        bcftools sort -O b -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -T {params.scratch} -O b -o {output.sort} {input.bcf} 2> {log}
         """
 
 
