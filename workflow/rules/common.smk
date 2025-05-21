@@ -89,7 +89,7 @@ def check_metadata_file(dataframe):
 # sample list for each fastq-file (["samplename_index_lane"])
 def samplename_index_lane_func(dataframe):
     if "samplename" in dataframe.columns and "library_id" in dataframe.columns and "lane" in dataframe.columns:
-        if dataframe["samplename_index_lane"].duplicated().any():
+        if dataframe["samplename_index_lane"].dropna().duplicated().any():
             raise WorkflowError("Samples found with duplicate library ID and lane number. Please check your metadata file.")
         else:
             # convert the column into a list
