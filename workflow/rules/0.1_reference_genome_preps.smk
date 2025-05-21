@@ -26,8 +26,6 @@ rule bwa_index_reference:
         dir=REF_DIR,
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_bwa_index.log",
-    group:
-        "reference_prep_group"
     singularity:
         bwa_container
     shell:
@@ -46,8 +44,6 @@ rule samtools_fasta_index:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
         + "_samtools_fasta_index.log",
-    group:
-        "reference_prep_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -66,8 +62,6 @@ rule picard_fasta_dict:
         mem="4g",
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_picard_fasta_dict.log",
-    group:
-        "reference_prep_group"
     singularity:
         picard_container
     shell:
@@ -84,8 +78,6 @@ rule genome_file:
         genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_genome_file.log",
-    group:
-        "reference_prep_group"
     shell:
         """
         awk -v OFS='\t' '{{print $1, $2}}' {input.fai} > {output.genomefile} 2> {log}

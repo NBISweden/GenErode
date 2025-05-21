@@ -105,8 +105,6 @@ rule index_merged_index_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_index_merged_index_bams.log",
-    group:
-        "merged_index_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -124,8 +122,6 @@ rule merged_index_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_stats.log",
-    group:
-        "merged_index_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -255,8 +251,6 @@ rule index_rmdup_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_index_rmdup_bams.log",
-    group:
-        "rmdup_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -274,8 +268,6 @@ rule rmdup_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_stats.log",
-    group:
-        "rmdup_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -413,8 +405,6 @@ rule index_merged_sample_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_index_merged_sample_bams.log",
-    group:
-        "merged_sample_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -432,8 +422,6 @@ rule merged_sample_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_stats.log",
-    group:
-        "merged_sample_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -568,8 +556,6 @@ rule index_realigned_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_index_realigned_bams.log",
-    group:
-        "realigned_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -585,8 +571,6 @@ rule realigned_bam_stats:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai",
     output:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
-    group:
-        "realigned_bam_group"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_stats.log",
     singularity:
@@ -657,8 +641,6 @@ rule realigned_bam_depth:
     output:
         tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dp"),
         dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt",
-    group:
-        "realigned_bam_group"
     params:
         minDP=config["minDP"],
         maxDP=config["maxDP"],

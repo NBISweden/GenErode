@@ -103,8 +103,6 @@ rule merge_CpG_genotype_beds:
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcf.bed"),
     message:
         "the input files are: {input}"
-    group:
-        "CpG_genotype_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
     singularity:
@@ -129,8 +127,6 @@ rule sort_CpG_genotype_beds:
         genomefile=rules.genome_file.output.genomefile,
     output:
         sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
-    group:
-        "CpG_genotype_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
     singularity:
@@ -149,8 +145,6 @@ rule merge_all_CpG_beds:
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcfref.bed"),
     message:
         "the input files are: {input}"
-    group:
-        "all_CpG_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
     singularity:
@@ -175,8 +169,6 @@ rule sort_all_CpG_beds:
         genomefile=rules.genome_file.output.genomefile,
     output:
         sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
-    group:
-        "all_CpG_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
     singularity:
@@ -213,8 +205,6 @@ rule merge_CpG_repeats_beds:
         merged=temp("results/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
     message:
         "the input files are: {input}"
-    group:
-        "CpG_repeats_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
     singularity:
@@ -232,8 +222,6 @@ rule sort_CpG_repeats_beds:
         genomefile=rules.genome_file.output.genomefile,
     output:
         sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
-    group:
-        "CpG_repeats_bed_formatting_group"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
     singularity:

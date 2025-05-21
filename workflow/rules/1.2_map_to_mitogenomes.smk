@@ -227,8 +227,6 @@ rule mitogenome_bam_stats:
         bam="results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam",
     output:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-    group:
-        "historical_mito_bams_group"
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
     singularity:
@@ -251,8 +249,6 @@ rule historical_mito_bams_qualimap:
         outdir="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.qualimap/",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_historical_mito_bams_qualimap.log",
-    group:
-        "historical_mito_bams_group"
     threads: 1
     resources:
         mem_mb=8000,
@@ -346,8 +342,6 @@ rule merged_mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merged_mitogenome_bam_stats.log",
-    group:
-        "historical_merged_mito_bams_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -369,8 +363,6 @@ rule historical_merged_mito_bams_qualimap:
         outdir="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_historical_merged_mito_bams_qualimap.log",
-    group:
-        "historical_merged_mito_bams_group"
     threads: 1
     resources:
         mem_mb=8000,

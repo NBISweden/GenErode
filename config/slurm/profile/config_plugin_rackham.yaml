@@ -17,7 +17,6 @@ default-resources:
 set-threads:
   repeatmodeler: 20
   repeatmasker: 20
-  historical_fastq_before_group: 2
   fastqc_historical_raw: 2
   fastqc_modern_raw: 2
   fastp_historical: 5
@@ -41,22 +40,16 @@ set-threads:
   indel_realigner_targets: 10
   indel_realigner: 10
   realigned_bam_qualimap: 10
-  realigned_bam_group: 2
   realigned_bam_depth: 2
-  userprovided_bam_group: 2
   userprovided_bam_fastqc: 2
   userprovided_bam_qualimap: 10
   userprovided_bam_depth: 2
   rescale_historical: 5
   rescaled_bam_qualimap: 10
-  rescaled_bam_group: 2
   subsample_bams: 2
   subsampled_bam_qualimap: 6
   variant_calling: 3
-  CpG_genotype_bed_formatting_group: 5
-  all_CpG_bed_formatting_group: 2
   make_noCpG_bed: 2
-  CpG_repeats_bed_formatting_group: 2
   merge_noCpG_noRepeats_beds: 2
   make_noCpG_repma_bed: 2
   intersect_sexchr_repma_beds: 2
@@ -100,7 +93,6 @@ set-threads:
 set-resources:
   - repeatmodeler:runtime=10080
   - repeatmasker:runtime=10080
-  - historical_fastq_before_group:runtime=600
   - fastp_historical:runtime=600
   - fastp_modern:runtime=600
   - map_historical:runtime=10080
@@ -119,27 +111,20 @@ set-resources:
   - indel_realigner_targets:runtime=7200
   - indel_realigner:runtime=7200
   - realigned_bam_qualimap:runtime=5760
-  - realigned_bam_group:runtime=2880
   - realigned_bam_depth:runtime=2880
-  - userprovided_bam_group:runtime=2880
   - userprovided_bam_fastqc:runtime=300
   - userprovided_bam_qualimap:runtime=5760
   - userprovided_bam_depth:runtime=2880
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
-  - rescaled_bam_group:runtime=600
   - filter_bam_mapped_mq:runtime=1440
   - subsample_bams:runtime=5760
   - subsampled_bam_qualimap:runtime=5760
-  - subsampled_bam_group:runtime=2880
   - variant_calling:runtime=2880
   - sort_vcfs:runtime=1440
   - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
-  - CpG_genotype_bed_formatting_group:runtime=1440
-  - all_CpG_bed_formatting_group:runtime=1440
   - make_noCpG_bed:runtime=300
-  - CpG_repeats_bed_formatting_group:runtime=1440
   - merge_noCpG_noRepeats_beds:runtime=300
   - make_noCpG_repma_bed:runtime=300
   - make_autosomes_bed:runtime=300

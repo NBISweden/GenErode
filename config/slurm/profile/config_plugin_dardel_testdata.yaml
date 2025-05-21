@@ -48,15 +48,12 @@ set-threads:
   indel_realigner_targets: 20
   indel_realigner: 20
   realigned_bam_qualimap: 20
-  realigned_bam_group: 10
   realigned_bam_depth: 10
-  userprovided_bam_group: 10
   userprovided_bam_fastqc: 10
   userprovided_bam_qualimap: 20
   userprovided_bam_depth: 10
   rescale_historical: 10
   rescaled_bam_qualimap: 20
-  rescaled_bam_group: 10
   filter_bam_mapped_mq: 10
   subsample_bams: 10
   subsampled_bam_qualimap: 20

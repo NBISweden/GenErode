@@ -72,8 +72,6 @@ rule userprovided_bam_stats:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai",
     output:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.bam.stats.txt",
-    group:
-        "userprovided_bam_group"
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_stats.log",
     singularity:

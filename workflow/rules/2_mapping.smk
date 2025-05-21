@@ -122,8 +122,6 @@ rule index_sorted_bams:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam.bai",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_index_sorted_bams.log",
-    group:
-        "sorted_bam_stats_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -141,8 +139,6 @@ rule sorted_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.stats.txt",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_stats.log",
-    group:
-        "sorted_bam_stats_group"
     singularity:
         bwa_samtools_container
     shell:

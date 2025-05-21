@@ -98,8 +98,6 @@ rule index_CpG_bcf:
         bcf=rules.CpG_vcf2bcf.output.bcf,
     output:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.csi",
-    group:
-        "CpG_bcf_group"
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_index_CpG_bcf.log",
     singularity:
@@ -117,8 +115,6 @@ rule CpG_filtered_vcf_stats:
         index=rules.index_CpG_bcf.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.stats.txt",
-    group:
-        "CpG_bcf_group"
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_filtered_vcf_stats.log",
     singularity:

@@ -132,8 +132,6 @@ rule index_subsampled_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai"),
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_index_subsampled_bams.log",
-    group:
-        "subsampled_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -149,8 +147,6 @@ rule subsampled_bam_stats:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai",
     output:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.stats.txt",
-    group:
-        "subsampled_bam_group"
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_stats.log",
     singularity:
@@ -174,8 +170,6 @@ rule subsampled_bam_depth:
     output:
         tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dp"),
         dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
-    group:
-        "subsampled_bam_group"
     params:
         minDP=config["minDP"],
         maxDP=config["maxDP"],

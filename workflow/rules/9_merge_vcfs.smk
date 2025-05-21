@@ -161,8 +161,6 @@ rule index_merged_vcf:
         bcf="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf",
     output:
         index="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf.csi",
-    group:
-        "merged_vcf_group"
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_index_merged_vcfs.log",
     singularity:
@@ -180,8 +178,6 @@ rule merged_vcf_stats:
         index=rules.index_merged_vcf.output,
     output:
         stats="results/all/vcf/" + REF_NAME + "/stats/vcf_merged/" + REF_NAME + ".all.merged.snps.bcf.stats.txt",
-    group:
-        "merged_vcf_group"
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_merged_vcf_stats.log",
     singularity:
@@ -201,8 +197,6 @@ rule merged_vcf_multiqc:
     params:
         indir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged/",
         outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged/multiqc",
-    group:
-        "merged_vcf_group"
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/merged_vcf_multiqc.log",
     singularity:
@@ -241,8 +235,6 @@ rule biallelic_filtered_vcf_stats:
         index=rules.filter_vcf_biallelic.output.index,
     output:
         stats="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_biallelic/" + REF_NAME + ".all.merged.biallelic.vcf.stats.txt",
-    group:
-        "biallelic_filtered_vcf_group"
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_biallelic_filtered_vcf_stats.log",
     singularity:
@@ -262,8 +254,6 @@ rule biallelic_filtered_vcf_multiqc:
     params:
         indir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_biallelic/",
         outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_biallelic/multiqc",
-    group:
-        "biallelic_filtered_vcf_group"
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/biallelic_filtered_vcf_multiqc.log",
     singularity:

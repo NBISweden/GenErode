@@ -156,8 +156,6 @@ rule index_filtered_vcfs:
         bcf=rules.filter_vcfs_allelic_balance.output.filtered,
     output:
         index=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.csi"),
-    group:
-        "qual_filtered_vcf_group"
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_filtered_vcfs.log",
     singularity:
@@ -175,8 +173,6 @@ rule filtered_vcf_stats:
         index=rules.index_filtered_vcfs.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
-    group:
-        "qual_filtered_vcf_group"
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf_stats.log",
     singularity:
@@ -283,8 +279,6 @@ rule index_repmasked_vcfs:
         bcf=rules.filtered_vcf2bcf.output.bcf,
     output:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
-    group:
-        "repmasked_vcf_group"
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_repmasked_vcfs.log",
     singularity:
@@ -302,8 +296,6 @@ rule repmasked_vcf_stats:
         index=rules.index_repmasked_vcfs.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
-    group:
-        "repmasked_vcf_group"
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_vcf_stats.log",
     singularity:

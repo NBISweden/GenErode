@@ -63,8 +63,6 @@ rule index_sorted_vcfs:
         sort=rules.sort_vcfs.output.sort,
     output:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.bcf.csi",
-    group:
-        "sorted_vcf_group"
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_index_sorted_vcfs.log",
     singularity:
@@ -82,8 +80,6 @@ rule sorted_vcf_stats:
         index=rules.index_sorted_vcfs.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_sorted/{sample}.Q30.q30.sorted.vcf.stats.txt",
-    group:
-        "sorted_vcf_group"
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sorted_vcf_stats.log",
     singularity:

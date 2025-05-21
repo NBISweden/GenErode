@@ -87,8 +87,6 @@ rule index_rescaled_bams:
         index="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/historical/{sample}.{processed}_index_rescaled_bams.log",
-    group:
-        "rescaled_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -104,8 +102,6 @@ rule rescaled_bam_stats:
         bai="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     output:
         stats="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.stats.txt",
-    group:
-        "rescaled_bam_group"
     params:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/",
     log:
