@@ -331,22 +331,6 @@ if config["gerp"]:
     else:
         all_outputs.extend(ref_prep_outputs)
         all_outputs.extend(gerp_outputs)
-
-# Remove duplicates from all_outputs
-# This happens when several steps are set to True
-# in the config.yaml file at the same time
-# Recursive function to flatten list  
-def flatten(nested_list):
-    flattened_list=[]
-    for x in nested_list:
-        if isinstance(x, list):
-            flattened_list.extend(flatten(x)) # Recursively flatten nested lists
-        else:
-            flattened_list.append(x) # Append individual elements
-    return flattened_list
-
-all_outputs=flatten(all_outputs) # Flatten the list
-all_outputs=list(set(all_outputs)) # Remove duplicates
 ###
 
 
