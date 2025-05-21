@@ -3,10 +3,10 @@
 
 # Code collecting output files from this part of the pipeline
 ref_prep_outputs=[]
-ref_prep_outputs.extend(expand("{ref_path}.{ext}", 
+ref_prep_outputs.append(expand("{ref_path}.{ext}", 
     ref_path=config["ref_path"], 
     ext=["amb", "ann", "bwt", "pac", "sa", "fai"]))
-ref_prep_outputs.extend(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
+ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
     ext=["dict", "genome", "bed"]))
 
 # snakemake rules

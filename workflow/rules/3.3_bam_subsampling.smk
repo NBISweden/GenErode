@@ -6,11 +6,11 @@ subsampled_bam_outputs=[]
 
 if os.path.exists(config["historical_samples"]):
     if len(HIST_SUBSAMPLED_SAMPLES) > 0:
-        subsampled_bam_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
+        subsampled_bam_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
     if len(MOD_SUBSAMPLED_SAMPLES) > 0:
-        subsampled_bam_outputs.extend("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
+        subsampled_bam_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
 
 
 # Functions for this step of the pipeline

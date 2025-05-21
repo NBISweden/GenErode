@@ -6,7 +6,7 @@ rescaled_bam_outputs=[]
 
 if os.path.exists(config["historical_samples"]):
     if len(HIST_RESCALED_SAMPLES) > 0:
-        rescaled_bam_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html")
+        rescaled_bam_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc/multiqc_report.html")
 
 
 # Functions for this step of the pipeline

@@ -5,16 +5,16 @@
 bam_proc_outputs=[]
 
 if os.path.exists(config["historical_samples"]):
-    bam_proc_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    bam_proc_outputs.extend("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html")
-    bam_proc_outputs.extend("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/multiqc_report.html")
+    bam_proc_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

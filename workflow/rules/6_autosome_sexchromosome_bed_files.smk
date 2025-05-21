@@ -5,15 +5,15 @@
 autos_sexchr_bed_outputs=[]
 
 if len(sexchromosomeList) > 0:
-    autos_sexchr_bed_outputs.extend(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr", "genome"],))
+    autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr", "genome"],))
     if config["CpG_from_vcf"] == True:
-        autos_sexchr_bed_outputs.extend(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_reference"] == True:
-        autos_sexchr_bed_outputs.extend(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_vcf_and_reference"] == True:
-        autos_sexchr_bed_outputs.extend(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
             chr=["autos", "sexchr", "genome"],))
 
 

@@ -5,42 +5,42 @@
 # Code collecting output files from this part of the pipeline
 gerp_outputs=[]
 
-gerp_outputs.extend(expand("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
+gerp_outputs.append(expand("results/gerp/" + REF_NAME + ".{chr}.ancestral.rates.gerp.hist.pdf",
     chr=CHR,))
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    gerp_outputs.extend(expand("results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    gerp_outputs.append(expand("results/gerp/all/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["historical_samples"]):
-    gerp_outputs.extend(expand("results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    gerp_outputs.append(expand("results/gerp/historical/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 elif os.path.exists(config["modern_samples"]):
-    gerp_outputs.extend(expand("results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
+    gerp_outputs.append(expand("results/gerp/modern/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.relative_mutational_load.gerp_{minGERP}_{maxGERP}_plot.pdf",
             fmiss=config["f_missing"],
             chr=CHR,
             minGERP=config["min_gerp"],
             maxGERP=config["max_gerp"],))
 
 # Collect output files flagged as temporary
-gerp_outputs.extend(expand("results/gerp/fastq_files/{gerpref}.fq.gz",                                   gerpref=GERP_REF_NAMES,))
-gerp_outputs.extend(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam",                      gerpref=GERP_REF_NAMES,))
-gerp_outputs.extend(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam.bai",                  gerpref=GERP_REF_NAMES,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/",        chr=CHR, gerpref=GERP_REF_NAMES, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/", chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/",     chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/",          chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/",       chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/",   chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/",       chr=CHR, chunk=CHUNKS,))
-gerp_outputs.extend(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/fastq_files/{gerpref}.fq.gz",                                   gerpref=GERP_REF_NAMES,))
+gerp_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam",                      gerpref=GERP_REF_NAMES,))
+gerp_outputs.append(expand("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam.bai",                  gerpref=GERP_REF_NAMES,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}/",        chr=CHR, gerpref=GERP_REF_NAMES, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}/", chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/",     chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_raw/",          chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_coords/",       chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_fasta_ancestral/",   chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp_merged/",       chr=CHR, chunk=CHUNKS,))
+gerp_outputs.append(expand("results/gerp/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}.fasta.parsed.rates", chr=CHR, chunk=CHUNKS,))
 
 # Functions used by rules of this part of the pipeline
 def rel_load_table_inputs(wildcards):

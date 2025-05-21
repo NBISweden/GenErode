@@ -6,23 +6,23 @@
 snpEff_outputs=[]
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    snpEff_outputs.extend(expand("results/all/snpEff/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf", 
+    snpEff_outputs.append(expand("results/all/snpEff/" + REF_NAME + ".all.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf", 
         fmiss=config["f_missing"],
         chr=CHR,))
-    snpEff_outputs.extend("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
-    snpEff_outputs.extend("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
+    snpEff_outputs.append("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
+    snpEff_outputs.append("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["historical_samples"]):
-    snpEff_outputs.extend(expand("results/historical/snpEff/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
+    snpEff_outputs.append(expand("results/historical/snpEff/" + REF_NAME + ".historical.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
-    snpEff_outputs.extend("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
+    snpEff_outputs.append("results/historical/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 elif os.path.exists(config["modern_samples"]):
-    snpEff_outputs.extend(expand("results/modern/snpEff/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
+    snpEff_outputs.append(expand("results/modern/snpEff/" + REF_NAME + ".modern.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
-    snpEff_outputs.extend("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
+    snpEff_outputs.append("results/modern/snpEff/" + REF_NAME + "/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

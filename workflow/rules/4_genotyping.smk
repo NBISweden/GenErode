@@ -5,10 +5,10 @@
 genotyping_outputs=[]
 
 if os.path.exists(config["historical_samples"]):
-    genotyping_outputs.extend("results/historical/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
+    genotyping_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    genotyping_outputs.extend("results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
+    genotyping_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/multiqc_report.html")
 
 
 # snakemake rules
