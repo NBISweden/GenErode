@@ -4,7 +4,8 @@
 # Code collecting output files from this part of the pipeline
 map_mito_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    map_mito_outputs.append("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        map_mito_outputs.append("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline

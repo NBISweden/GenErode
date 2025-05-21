@@ -4,12 +4,14 @@
 # Code collecting output files from this part of the pipeline
 fastq_proc_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    fastq_proc_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
-    fastq_proc_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        fastq_proc_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
+        fastq_proc_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    fastq_proc_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
-    fastq_proc_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
+    if len(mod_pipeline_bam_sm_idx_ln) > 0:
+        fastq_proc_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
+        fastq_proc_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
 
 
 # snakemake rules

@@ -4,10 +4,12 @@
 # Code collecting output files from this part of the pipeline
 mapping_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    mapping_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        mapping_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    if len(mod_pipeline_bam_sm_idx_ln) > 0:
+        mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 
 localrules:
