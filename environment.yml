@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12.3
-  - snakemake=9.4.1
+  - snakemake=9.4.0
   - biopython=1.83
   - matplotlib=3.8.4
   - pandas=2.2.2
