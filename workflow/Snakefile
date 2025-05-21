@@ -331,6 +331,10 @@ if config["gerp"]:
     else:
         all_outputs.append(ref_prep_outputs)
         all_outputs.append(gerp_outputs)
+
+# Snakemake built-in function flatten() since the 
+# output lists can be nested
+all_outputs=flatten(all_outputs)
 ###
 
 
