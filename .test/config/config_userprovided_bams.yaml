@@ -15,9 +15,11 @@
 
 #################################################################
 # 0) Path to scratch directory for temporary files from some of  
-# the tools implemented in the pipeline. Currently used for 
-# samtools sort and bcftools sort.
-scratch_dir: "/tmp" # Example for HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
+# the tools implemented in the pipeline. 
+# If no scratch directory is specified, the pipeline working
+# directory will be used for these temporary files.
+# Currently used for "samtools sort" and "bcftools sort".
+scratch_dir: "/tmp" # For current directory, set to "" or "./". Scratch on HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
 #################################################################
 #################################################################
 
