@@ -2,20 +2,24 @@
 ### 6 Generate BED files with sex-chromosomal and autosomal scaffolds (e.g. for mlRho or other downstream analyses)
 
 # Code collecting output files from this part of the pipeline
+autos_sexchr_bed_outputs=[]
+
 if len(sexchromosomeList) > 0:
-    all_outputs.append(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr"],))
+    autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".repma.{chr}.bed", chr=["autos", "sexchr", "genome"],))
     if config["CpG_from_vcf"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
-            chr=["autos", "sexchr"],))
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed",
+            chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_reference"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
-            chr=["autos", "sexchr"],))
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed",
+            chr=["autos", "sexchr", "genome"],))
     elif config["CpG_from_vcf_and_reference"] == True:
-        all_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
-            chr=["autos", "sexchr"],))
+        autos_sexchr_bed_outputs.append(expand("results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed",
+            chr=["autos", "sexchr", "genome"],))
 
 
 # snakemake rules
+localrules: rename_genome_bed, rename_noCpG_genome_beds
+
 rule make_sexchr_bed:
     """Generate a bed file of sex chromosome-linked contigs/scaffolds"""
     input:
@@ -122,4 +126,29 @@ rule intersect_autos_noCpG_repma_beds:
     shell:
         """
         bedtools intersect -a {input.no_CpG_repma_bed} -b {input.autosome_bed} > {output.no_CpG_repma_autos} 2> {log}
+        """
+
+
+rule rename_genome_bed:
+    input:
+        REF_DIR + "/" + REF_NAME + ".repma.bed",
+    output:
+        "results/" + REF_NAME + ".repma.genome.bed",
+    log:
+        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".rename_genome_bed.log",
+    shell:
+        """
+        cp {input} {output} 2> {log}
+        """
+
+rule rename_noCpG_genome_beds:
+    input:
+        "results/" + REF_NAME + ".no{CpG_method}.repma.bed",
+    output:
+        "results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
+    log:
+        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_rename_noCpG_genome_beds.log",
+    shell:
+        """
+        cp {input} {output} 2> {log}
         """

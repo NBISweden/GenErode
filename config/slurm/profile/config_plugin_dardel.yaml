@@ -16,6 +16,7 @@ default-resources:
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 20 # number of threads, corresponding to cpus-per-task or cores (adjust per rule under set-threads)
   runtime: 120 # default runtime in minutes (adjust per rule under set-resources)
+  tmpdir: /cfs/klemming/scratch/u/user # change to your user's allocated temporary directory: /cfs/klemming/scratch/first-letter-of-username/username
 
 ## set-threads: map rule names to threads
 set-threads:
@@ -61,22 +62,20 @@ set-threads:
   indel_realigner_targets: 40
   indel_realigner: 40
   realigned_bam_qualimap: 40
-  realigned_bam_group: 80
   realigned_bam_fastqc: 20
   realigned_bam_depth: 80
+  userprovided_bam_fastqc: 20
+  userprovided_bam_qualimap: 40
+  userprovided_bam_depth: 80
   rescale_historical: 80
   rescaled_bam_qualimap: 40
-  rescaled_bam_group: 40
   rescaled_bam_fastqc: 40
   filter_bam_mapped_mq: 40
   subsample_bams: 40
   subsampled_bam_qualimap: 40
   variant_calling: 40
   sort_vcfs: 40
-  CpG_genotype_bed_formatting_group: 40
-  all_CpG_bed_formatting_group: 40
   make_noCpG_bed: 20
-  CpG_repeats_bed_formatting_group: 40
   merge_noCpG_noRepeats_beds: 20
   make_noCpG_repma_bed: 20
   intersect_sexchr_repma_beds: 20
@@ -152,7 +151,7 @@ set-resources:
   - rmdup_historical_bams:runtime=4400
   - rmdup_historical_bams:mem_mb=80000
   - rmdup_modern_bams:runtime=4400
-  - rmdup_modern_bams:mem_mb=128000 # provide small number of threads and high amount of memory
+  - rmdup_modern_bams:mem_mb=80000 # provide small number of threads and high amount of memory
   - rmdup_bam_qualimap:runtime=5760
   - rmdup_bam_qualimap:mem_mb=80000
   - merge_historical_bams_per_sample:runtime=2880
@@ -165,13 +164,17 @@ set-resources:
   - indel_realigner:mem_mb=80000
   - realigned_bam_qualimap:runtime=5760
   - realigned_bam_qualimap:mem_mb=80000
-  - realigned_bam_group:runtime=2880
   - realigned_bam_fastqc:runtime=300
   - realigned_bam_fastqc:mem_mb=40000
+  - realigned_bam_depth:runtime=2880
+  - userprovided_bam_fastqc:runtime=300
+  - userprovided_bam_fastqc:mem_mb=40000
+  - userprovided_bam_qualimap:runtime=5760
+  - userprovided_bam_qualimap:mem_mb=80000
+  - userprovided_bam_depth:runtime=2880
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
   - rescaled_bam_qualimap:mem_mb=80000
-  - rescaled_bam_group:runtime=600
   - rescaled_bam_fastqc:runtime=300
   - rescaled_bam_fastqc:mem_mb=40000
   - filter_bam_mapped_mq:runtime=1440
@@ -180,17 +183,13 @@ set-resources:
   - subsample_bams:mem_mb=80000
   - subsampled_bam_qualimap:runtime=5760
   - subsampled_bam_qualimap:mem_mb=80000
-  - subsampled_bam_group:runtime=2880
   - variant_calling:runtime=2880
   - variant_calling:mem_mb=80000
   - sort_vcfs:runtime=1440
   - sort_vcfs:mem_mb=80000
   - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
-  - CpG_genotype_bed_formatting_group:runtime=1440
-  - all_CpG_bed_formatting_group:runtime=1440
   - make_noCpG_bed:runtime=300
-  - CpG_repeats_bed_formatting_group:runtime=1440
   - merge_noCpG_noRepeats_beds:runtime=300
   - make_noCpG_repma_bed:runtime=300
   - make_autosomes_bed:runtime=300

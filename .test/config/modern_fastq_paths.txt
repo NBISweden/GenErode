@@ -1,0 +1,2 @@
+samplename library_id lane readgroup_id readgroup_platform path_to_R1_fastq_file path_to_R2_fastq_file
+S03 14 L7 S03.BH252YCCXY.14.L7 illumina .test/data/shortread_data/modern/S03_14_L7.BH252YCCXY.R1.fastq.gz .test/data/shortread_data/modern/S03_14_L7.BH252YCCXY.R2.fastq.gz

@@ -5,6 +5,8 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
+      - 'workflow/docker'
+      - 'workflow/utilities'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/7_mlRho.smk'
       - 'workflow/rules/12_snpEff.smk'
@@ -16,6 +18,7 @@ on:
       - 'README.md'
       - 'LICENSE.md'
       - 'workflow/docker'
+      - 'workflow/utilities'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/7_mlRho.smk'
       - 'workflow/rules/12_snpEff.smk'
