@@ -126,11 +126,16 @@ mapping: False
 # remove duplicates, merge BAM files per sample, realign indels, 
 # calculate mean genome-wide depth of coverage for depth filtering
 # of BAM and VCF files.
-# If the user provides paths to BAM files of historical and/or modern samples,
-# symbolic links will be created and basic statistics will be calculated for 
-# these BAM files, including the mean genome-wide depth of coverage for depth 
-# filtering of BAM and VCF files.
 bam_rmdup_realign_indels: False
+
+# OPTIONAL:
+# If the user provides paths to BAM files of historical and/or modern samples,
+# set "userprovided_bam_stats" to True.
+# This step will create symbolic links and will calculate basic statistics for 
+# the user provided BAM files, including the mean genome-wide depth of coverage 
+# for depth filtering of BAM and VCF files.
+userprovided_bam_stats: False
+
 
 # Parameters related to depth filtering of BAM and VCF files.
 # After BAM file processing, the mean genome-wide depth is calculated 

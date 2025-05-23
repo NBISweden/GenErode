@@ -72,6 +72,11 @@ if config["bam_rmdup_realign_indels"]:
     all_outputs.append(fastq_proc_outputs)
     all_outputs.append(mapping_outputs)
     all_outputs.append(bam_proc_outputs)
+
+
+if config["userprovided_bam_stats"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
     all_outputs.append(userprov_bam_stats_outputs)
 
 
@@ -126,12 +131,6 @@ if config["CpG_identification"]:
     elif config["CpG_from_reference"] == True:
         all_outputs.append(ref_prep_outputs)
         all_outputs.append(repeat_id_outputs)
-        all_outputs.append(fastq_proc_outputs)
-        all_outputs.append(mapping_outputs)
-        all_outputs.append(bam_proc_outputs)
-        all_outputs.append(userprov_bam_stats_outputs)
-        all_outputs.append(rescaled_bam_outputs)
-        all_outputs.append(subsampled_bam_outputs)
         all_outputs.append(CpG_id_outputs)
         all_outputs.append(autos_sexchr_bed_outputs)
 
