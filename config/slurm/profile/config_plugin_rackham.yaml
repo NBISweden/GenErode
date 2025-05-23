@@ -10,7 +10,6 @@ software-deployment-method: apptainer
 default-resources: 
   slurm_account: XXX-XX-XXX # update this to your slurm account
   threads: 1 # number of threads (=cpus/cores), corresponds to 6.4 GB RAM
-  mem_mb: f"{threads*6400}" # calculate available memory in MB for specific number of threads
   runtime: 120 # default runtime in minutes
 
 ## set-threads: map rule names to threads
@@ -104,6 +103,7 @@ set-resources:
   - merged_index_bam_qualimap:runtime=5760
   - rmdup_historical_bams:runtime=4400
   - rmdup_modern_bams:runtime=4400
+  - rmdup_modern_bams:mem_mb=40000
   - rmdup_bam_qualimap:runtime=5760
   - merge_historical_bams_per_sample:runtime=2880
   - merge_modern_bams_per_sample:runtime=2880
