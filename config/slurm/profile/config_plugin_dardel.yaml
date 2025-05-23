@@ -145,7 +145,9 @@ set-resources:
   - sorted_bam_qualimap:runtime=5760
   - sorted_bam_qualimap:mem_mb=80000
   - merge_historical_bams_per_index:runtime=2880
+  - merge_historical_bams_per_index:mem_mb=80000
   - merge_modern_bams_per_index:runtime=2880
+  - merge_modern_bams_per_index:mem_mb=80000
   - merged_index_bam_qualimap:runtime=5760
   - merged_index_bam_qualimap:mem_mb=80000
   - rmdup_historical_bams:runtime=4400
@@ -155,7 +157,9 @@ set-resources:
   - rmdup_bam_qualimap:runtime=5760
   - rmdup_bam_qualimap:mem_mb=80000
   - merge_historical_bams_per_sample:runtime=2880
+  - merge_historical_bams_per_sample:mem_mb=80000
   - merge_modern_bams_per_sample:runtime=2880
+  - merge_modern_bams_per_sample:mem_mb=80000
   - merged_sample_bam_qualimap:runtime=5760
   - merged_sample_bam_qualimap:mem_mb=80000
   - indel_realigner_targets:runtime=7200
@@ -212,7 +216,7 @@ set-resources:
   - remove_repeats_vcf:mem_mb=80000
   - filtered_vcf2bcf:runtime=300
   - merge_all_vcfs:runtime=4400
-  - merge_all_vcfs:mem_mb=80000
+  - merge_all_vcfs:mem_mb=80000 # increase this if you have a lot of samples
   - filter_vcf_biallelic:runtime=1440
   - filter_vcf_biallelic:mem_mb=80000
   - filter_vcf_missing:runtime=1440
