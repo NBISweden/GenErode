@@ -366,9 +366,9 @@ rule extract_historical_samples:
             bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
         else
-            cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
+            mv {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
-            echo "Only historical samples present. Copying the input vcf file." >> {log}
+            echo "Only historical samples present. Moving the vcf file to" {output.vcf} >> {log}
         fi
         """
 
@@ -399,9 +399,9 @@ rule extract_modern_samples:
             bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
         else
-            cp {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
+            mv {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
-            echo "Only modern samples present. Copying the input vcf file." >> {log}
+            echo "Only modern samples present. Moving the vcf file to" {output.vcf} >> {log}
         fi
         """
 
