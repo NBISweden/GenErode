@@ -56,7 +56,7 @@ REF_NAME, REF_EXT = os.path.splitext(REF_FASTA)
 ### Global wildcard contraints that apply to all rules
 wildcard_constraints:
     sample="[A-Za-z0-9]+",
-    DP="^[0-9]", # avoid extension with "rm.autos" when running mlRho
+    DP=r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?", # avoid extension with "rm.autos" when running mlRho
     fmiss="[0-1].[0-9]+", # avoid extension with ".autos" when filtering the merged BCF file
     CpG_method="CpG_[vcfre]{3,6}",
     chunk="chunk[0-9]+",
