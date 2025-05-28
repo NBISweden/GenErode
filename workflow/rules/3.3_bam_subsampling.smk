@@ -2,23 +2,90 @@
 ### 3.3 OPTIONAL BAM file subsampling to same depth
 
 # Code collecting output files from this part of the pipeline
+subsampled_bam_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
     if len(HIST_SUBSAMPLED_SAMPLES) > 0:
-        all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
+        subsampled_bam_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    if len(MODERN_SUBSAMPLED_SAMPLES) > 0:
-        all_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
+    if len(MOD_SUBSAMPLED_SAMPLES) > 0:
+        subsampled_bam_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html")
+
+
+# Functions for this step of the pipeline
+def subsample_bams_depth_input(wildcards):
+    """Select correct bam file for each sample"""
+    if wildcards.sample in hist_pipeline_bam_sm:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in hist_user_bam_sm:
+        return "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in mod_pipeline_bam_sm:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt"
+    elif wildcards.sample in mod_user_bam_sm:
+        return "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.repma.Q30.bam.dpstats.txt"
+
+def historical_subsampled_bam_multiqc_inputs(wildcards):
+    """Collect all inputs for multiqc"""
+    not_rescaled_subsampled_pipeline_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}{extension}",
+        sample=HIST_PIPELINE_NOT_RESCALED_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    rescaled_subsampled_pipeline_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}{extension}",
+        sample=HIST_PIPELINE_RESCALED_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    not_rescaled_subsampled_user_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}{extension}",
+        sample=HIST_USER_NOT_RESCALED_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    rescaled_subsampled_user_bams=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.rescaled.mapped_q30.subs_dp{DP}{extension}",
+        sample=HIST_USER_RESCALED_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    return not_rescaled_subsampled_pipeline_bams + rescaled_subsampled_pipeline_bams + not_rescaled_subsampled_user_bams + rescaled_subsampled_user_bams
+
+def modern_subsampled_bam_multiqc_inputs(wildcards):
+    """Collect all inputs for multiqc"""
+    subsampled_pipeline_bams=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}{extension}",
+        sample=MOD_PIPELINE_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    subsampled_user_bams=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.userprovided.mapped_q30.subs_dp{DP}{extension}",
+        sample=MOD_USER_SUBSAMPLED_SAMPLES,
+        DP=config["subsampling_depth"],
+        extension=[".bam.stats.txt", 
+            ".bam.qualimap/qualimapReport.html", 
+            ".bam.qualimap/genome_results.txt",
+            ".repma.Q30.bam.dpstats.txt"],)
+    return subsampled_pipeline_bams + subsampled_user_bams
 
 
 # snakemake rules
 rule filter_bam_mapped_mq:
-    """Remove unmapped reads before subsampling"""
-    """Keep only reads with mapping quality > 30"""
+    """
+    Remove unmapped reads before subsampling.
+    Keep only reads with mapping quality > 30.
+    """
     input:
-        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.bam",
+        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.bam",
     output:
-        filtered=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.bam"),
+        filtered=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.bam"),
     threads: 2
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_bam_mapped_mq.log",
@@ -34,9 +101,9 @@ rule subsample_bams:
     """Subsample bam files to target depth per sample"""
     input:
         bam=rules.filter_bam_mapped_mq.output.filtered,
-        dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.repma.Q30.bam.dpstats.txt",
+        dp=subsample_bams_depth_input,
     output:
-        subsam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam",
+        subsam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam",
     threads: 2
     params:
         DP=config["subsampling_depth"],
@@ -60,13 +127,11 @@ rule subsample_bams:
 
 rule index_subsampled_bams:
     input:
-        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam",
+        bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam",
     output:
-        index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.bai"),
+        index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai"),
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_index_subsampled_bams.log",
-    group:
-        "subsampled_bam_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -79,11 +144,9 @@ rule subsampled_bam_stats:
     """Basic statistics on mapping output"""
     input:
         bam=rules.subsample_bams.output.subsam,
-        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.bai",
+        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai",
     output:
-        stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.stats.txt",
-    group:
-        "subsampled_bam_group"
+        stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.stats.txt",
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_stats.log",
     singularity:
@@ -95,18 +158,18 @@ rule subsampled_bam_stats:
 
 
 rule subsampled_bam_depth:
-    """Get average genome-wide depth per bam file, excluding repeats and filtering for high quality"""
-    """Will be used to filter out sites outside the estimated depth thresholds"""
-    """samtools depth to get depth per site, piped into awk to get average across all sites, 
-    piped into awk to calculate 1/3*average and 2*average depth (rounded to integer)"""
+    """
+    Get average genome-wide depth per bam file, excluding repeats and filtering for high quality.
+    Will be used to filter out sites outside the estimated depth thresholds with
+    samtools depth to get depth per site, piped into awk to get average across all sites, 
+    piped into awk to calculate 1/3*average and 2*average depth (rounded to integer).
+    """
     input:
         bam=rules.subsample_bams.output.subsam,
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
     output:
-        tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dp"),
-        dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
-    group:
-        "subsampled_bam_group"
+        tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dp"),
+        dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
     params:
         minDP=config["minDP"],
         maxDP=config["maxDP"],
@@ -135,16 +198,16 @@ rule subsampled_bam_qualimap:
     """More detailed stats"""
     input:
         bam=rules.subsample_bams.output.subsam,
-        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.bai",
+        index="results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai",
     output:
-        stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
-        results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/genome_results.txt",
-        outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap"),
+        stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
+        results="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap/genome_results.txt",
+        outdir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap"),
     threads: 8
     resources:
         mem_mb=64000,
     params:
-        outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap",
+        outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap",
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_qualimap.log",
     singularity:
@@ -160,24 +223,7 @@ rule subsampled_bam_qualimap:
 rule historical_subsampled_bam_multiqc:
     """Summarize all stats and qualimap results from subsampled historical bam files"""
     input:
-        not_rescaled_subsampled_stats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        rescaled_subsampled_stats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.bam.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        not_rescaled_subsampled_qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        rescaled_subsampled_qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
-            sample=HIST_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        not_rescaled_subsampled_dpstats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        rescaled_subsampled_dpstats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
+        historical_subsampled_bam_multiqc_inputs,
     output:
         stats="results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html",
     params:
@@ -196,15 +242,7 @@ rule historical_subsampled_bam_multiqc:
 rule modern_subsampled_bam_multiqc:
     """Summarize all stats and qualimap results from subsampled modern bam files"""
     input:
-        stats=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam.stats.txt",
-            sample=MODERN_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.bam.qualimap/qualimapReport.html",
-            sample=MODERN_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
-        dpstats=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
-            sample=MODERN_SUBSAMPLED_SAMPLES,
-            DP=config["subsampling_depth"],),
+        modern_subsampled_bam_multiqc_inputs,
     output:
         stats="results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc/multiqc_report.html",
     params:

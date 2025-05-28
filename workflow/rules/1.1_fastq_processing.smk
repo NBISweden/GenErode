@@ -2,13 +2,16 @@
 ### 1. Adapter removal and read merging
 
 # Code collecting output files from this part of the pipeline
+fastq_proc_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
-    all_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        fastq_proc_outputs.append("data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html")
+        fastq_proc_outputs.append("results/historical/trimming/stats/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
-    all_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
+    if len(mod_pipeline_bam_sm_idx_ln) > 0:
+        fastq_proc_outputs.append("data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html")
+        fastq_proc_outputs.append("results/modern/trimming/stats/multiqc/multiqc_report.html")
 
 
 # snakemake rules
@@ -31,7 +34,7 @@ rule fastq_historical_symbolic_links:
         shell("""
         ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
         ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_symlinks_dict[FULLSAMPLENAME]))
+        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_fastq_symlinks_dict[FULLSAMPLENAME]))
 
 
 rule fastqc_historical_raw:
@@ -59,10 +62,10 @@ rule multiqc_historical_raw:
     """Summarize all fastqc results for raw historical samples"""
     input:
         expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
         expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.zip",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
     output:
         stats="data/raw_reads_symlinks/historical/stats/multiqc/multiqc_report.html",
@@ -96,7 +99,7 @@ rule fastq_modern_symbolic_links:
         shell("""
         ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
         ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_symlinks_dict[FULLSAMPLENAME]))
+            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_fastq_symlinks_dict[FULLSAMPLENAME]))
 
 
 rule fastqc_modern_raw:
@@ -124,10 +127,10 @@ rule multiqc_modern_raw:
     """Summarize all fastqc results for all raw modern samples"""
     input:
         expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
         expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.zip",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
     output:
         stats="data/raw_reads_symlinks/modern/stats/multiqc/multiqc_report.html",
@@ -145,10 +148,11 @@ rule multiqc_modern_raw:
 
 
 rule fastp_historical:
-    """Remove adapters, quality trim (phred 15) and merge overlapping paired-end reads in historical samples"""
-    """fastp automatically detects adapter sequences for removal"""
-    """NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed"""
-    """Minimum read length specified in config file"""
+    """Remove adapters, quality trim (phred 15) and merge overlapping paired-end reads in historical samples.
+    fastp automatically detects adapter sequences for removal.
+    NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed.
+    Minimum read length specified in config file.
+    """
     input:
         R1=rules.fastq_historical_symbolic_links.output.fastq_r1,
         R2=rules.fastq_historical_symbolic_links.output.fastq_r2,
@@ -175,10 +179,11 @@ rule fastp_historical:
 
 
 rule fastp_modern:
-    """Remove adapters from modern samples and quality trim (phred 15)"""
-    """fastp automatically detects adapter sequences for removal"""
-    """NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed"""
-    """Minimum read length specified in config file"""
+    """Remove adapters from modern samples and quality trim (phred 15).
+    fastp automatically detects adapter sequences for removal.
+    NextSeq and NovaSeq samples are automatically detected and poly-G tails are removed.
+    Minimum read length specified in config file.
+    """
     input:
         R1=rules.fastq_modern_symbolic_links.output.fastq_r1,
         R2=rules.fastq_modern_symbolic_links.output.fastq_r2,
@@ -276,12 +281,12 @@ rule multiqc_historical_trimmed:
     """Summarize all fastqc results for all trimmed and merged historical samples"""
     input:
         expand("results/historical/trimming/stats/{sampleindexlane}_trimmed_merged_fastqc.{ext}",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             ext=["html", "zip"],),
         expand("results/historical/trimming/stats/{sampleindexlane}_fastp_report.html",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
         expand("results/historical/trimming/stats/{sampleindexlane}_R{nr}_unmerged_fastqc.{ext}",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],
             ext=["html", "zip"],),
     output:
@@ -303,11 +308,11 @@ rule multiqc_modern_trimmed:
     """Summarize all fastqc results for all trimmed modern samples"""
     input:
         expand("results/modern/trimming/stats/{sampleindexlane}_R{nr}_trimmed_fastqc.{ext}",
-            sampleindexlane=mod_sm_idx_ln,
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],
             ext=["html", "zip"]),
         expand("results/modern/trimming/stats/{sampleindexlane}_fastp_report.html",
-            sampleindexlane=mod_sm_idx_ln,)
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,)
     output:
         stats="results/modern/trimming/stats/multiqc/multiqc_report.html",
     params:

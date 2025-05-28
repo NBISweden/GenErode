@@ -1,0 +1,4 @@
+samplename,library_id,lane,readgroup_id,readgroup_platform,path_to_R1_fastq_file,path_to_R2_fastq_file,path_to_processed_bam_file
+S08,07,L2,S08.BHJ5YVCCXY.07.L2,illumina,.test/data/shortread_data/historical/S08_07_L2.BHJ5YVCCXY.R1.fastq.gz,.test/data/shortread_data/historical/S08_07_L2.BHJ5YVCCXY.R2.fastq.gz,
+S08,07,L6,S08.BHJ5YVCCXY.07.L6,illumina,.test/data/shortread_data/historical/S08_07_L6.BHJ5YVCCXY.R1.fastq.gz,.test/data/shortread_data/historical/S08_07_L6.BHJ5YVCCXY.R2.fastq.gz,
+S09,,,,,,,.test/data/shortread_data/historical/S09.userprovided.bam
