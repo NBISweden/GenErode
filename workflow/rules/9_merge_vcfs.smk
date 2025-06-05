@@ -147,7 +147,7 @@ rule merge_all_vcfs:
         files=`echo {input.bcf} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the bcf file.
         then
-            bcftools merge -m snps -O b -o {output.merged} {input.bcf} 2> {log}
+            bcftools merge --threads {threads} -m snps -O b -o {output.merged} {input.bcf} 2> {log}
         else
             cp {input.bcf} {output.merged} && touch {output.merged} 2> {log}
             echo "Only one file present for merging. Copying the input bcf file." >> {log}
@@ -223,7 +223,7 @@ rule filter_vcf_biallelic:
         bcftools_container
     shell:
         """
-        bcftools view -m2 -M2 -v snps -Ob -o {output.bcf} {input.bcf} 2> {log} &&
+        bcftools view --threads {threads} -m2 -M2 -v snps -Ob -o {output.bcf} {input.bcf} 2> {log} &&
         bcftools index -f {output.bcf} 2>> {log}
         """
 
@@ -284,15 +284,15 @@ rule filter_vcf_missing:
         # only include sites with zero missing data
         if [[ `echo 0.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
         then
-            bcftools view -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view --threads {threads} -i 'F_MISSING = {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include all sites
         elif [[ `echo 1.0 {params.fmiss} | awk '{{print ($1 == $2)}}'` == 1 ]]
         then
-            bcftools view -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view --threads {threads} -i 'F_MISSING <= {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         # include sites with less than the fraction f_missing of missing data
         elif [[ `echo 0.0 {params.fmiss} 1.0 | awk '{{print ($1 < $2 && $2 < $3)}}'` == 1 ]]
         then 
-            bcftools view -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
+            bcftools view --threads {threads} -i 'F_MISSING < {params.fmiss}' -Oz -o {output.vcf} {input.bcf} 2> {log}
         fi
         
         bcftools index -f {output.vcf} 2>> {log}
@@ -316,6 +316,7 @@ rule remove_chromosomes:
     shell:
         """
         bcftools view {input.bcf} \
+        --threads {threads} \
         -t ^{params.exclude} \
         -O z -o {output.vcf}
 
@@ -352,6 +353,7 @@ rule extract_historical_samples:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}.{chr}_extract_historical_samples.log",
     singularity:
         bcftools_container
+    threads: 2
     params:
         samples=hist_sm,
         all_samples=ALL_SAMPLES,
@@ -363,7 +365,7 @@ rule extract_historical_samples:
 
         if [ $samples_len != $all_samples_len ]
         then
-            bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
+            bcftools view --threads {threads} -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
         else
             mv {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
@@ -385,6 +387,7 @@ rule extract_modern_samples:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}.{chr}_extract_modern_samples.log",
     singularity:
         bcftools_container
+    threads: 2
     params:
         samples=mod_sm,
         all_samples=ALL_SAMPLES,
@@ -396,7 +399,7 @@ rule extract_modern_samples:
 
         if [ $samples_len != $all_samples_len ]
         then
-            bcftools view -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
+            bcftools view --threads {threads} -Oz -s $samples_edited -o {output.vcf} {input.vcf} 2> {log} &&
             bcftools index -f {output.vcf} 2>> {log}
         else
             mv {input.vcf} {output.vcf} && touch {output.vcf} 2> {log} &&
