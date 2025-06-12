@@ -1,0 +1,374 @@
+##########################################################################
+# This is the Snakefile of the GenErode pipeline for historical or       #
+# ancient and modern samples to study patterns of genome erosion         #
+#                                                                        #
+#                                                                        #
+# Written by Verena Kutschera, Marcin Kierczak and Tom van der Valk      #
+# Email: generode@nbis.se                                                #
+##########################################################################
+
+##########################################################################
+######################### HOW TO RUN THE WORKFLOW ########################
+##########################################################################
+
+###
+# The full pipeline documentation can be found on the GitHub wiki page
+# (https://github.com/NBISweden/GenErode/wiki).
+###
+
+generode_version = "0.7.0"
+
+##########################################################################
+########################### STEPS TO INCLUDE #############################
+##########################################################################
+
+include: "rules/common.smk"
+include: "rules/0.1_reference_genome_preps.smk"
+include: "rules/0.2_repeat_identification.smk"
+include: "rules/1.1_fastq_processing.smk"
+include: "rules/1.2_map_to_mitogenomes.smk"
+include: "rules/2_mapping.smk"
+include: "rules/3.1.1_bam_rmdup_realign_indels.smk"
+include: "rules/3.1.2_user_provided_bam_stats.smk"
+include: "rules/3.2_historical_bam_mapDamage.smk"
+include: "rules/3.3_bam_subsampling.smk"
+include: "rules/4_genotyping.smk"
+include: "rules/5_CpG_identification.smk"
+include: "rules/6_autosome_sexchromosome_bed_files.smk"
+include: "rules/7_mlRho.smk"
+include: "rules/8.1_vcf_CpG_filtering.smk"
+include: "rules/8.2_vcf_qual_repeat_filtering.smk"
+include: "rules/9_merge_vcfs.smk"
+include: "rules/10_pca.smk"
+include: "rules/11_ROH.smk"
+include: "rules/12_snpEff.smk"
+include: "rules/13_GERP.smk"
+
+all_outputs=[]
+
+if config["reference_repeat_identification"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+
+
+if config["fastq_processing"]:
+    all_outputs.append(fastq_proc_outputs)
+
+
+if config["map_historical_to_mitogenomes"]:
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(map_mito_outputs)
+
+
+if config["mapping"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+
+
+if config["bam_rmdup_realign_indels"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+
+
+if config["userprovided_bam_stats"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+
+
+if config["historical_bam_mapDamage"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+
+
+if config["bam_subsampling"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+
+
+if config["genotyping"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+
+
+if config["CpG_identification"]:
+    if config["CpG_from_vcf"] == True:
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(repeat_id_outputs)
+        all_outputs.append(fastq_proc_outputs)
+        all_outputs.append(mapping_outputs)
+        all_outputs.append(bam_proc_outputs)
+        all_outputs.append(userprov_bam_stats_outputs)
+        all_outputs.append(rescaled_bam_outputs)
+        all_outputs.append(subsampled_bam_outputs)
+        all_outputs.append(genotyping_outputs)
+        all_outputs.append(CpG_id_outputs)
+        all_outputs.append(autos_sexchr_bed_outputs)
+
+
+    elif config["CpG_from_reference"] == True:
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(repeat_id_outputs)
+        all_outputs.append(CpG_id_outputs)
+        all_outputs.append(autos_sexchr_bed_outputs)
+
+
+    elif config["CpG_from_vcf_and_reference"] == True:
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(repeat_id_outputs)
+        all_outputs.append(fastq_proc_outputs)
+        all_outputs.append(mapping_outputs)
+        all_outputs.append(bam_proc_outputs)
+        all_outputs.append(userprov_bam_stats_outputs)
+        all_outputs.append(rescaled_bam_outputs)
+        all_outputs.append(subsampled_bam_outputs)
+        all_outputs.append(genotyping_outputs)
+        all_outputs.append(CpG_id_outputs)
+        all_outputs.append(autos_sexchr_bed_outputs)
+
+
+###
+if config["mlRho"]:
+    if len(config["CpG_samplenames"]) > 0:  # to avoid genotyping if not necessary
+        if config["CpG_from_vcf"] == True:
+            all_outputs.append(ref_prep_outputs)
+            all_outputs.append(repeat_id_outputs)
+            all_outputs.append(fastq_proc_outputs)
+            all_outputs.append(mapping_outputs)
+            all_outputs.append(bam_proc_outputs)
+            all_outputs.append(userprov_bam_stats_outputs)
+            all_outputs.append(rescaled_bam_outputs)
+            all_outputs.append(subsampled_bam_outputs)
+            all_outputs.append(genotyping_outputs)
+            all_outputs.append(CpG_id_outputs)
+            all_outputs.append(autos_sexchr_bed_outputs)
+            all_outputs.append(mlRho_outputs)
+
+        elif config["CpG_from_reference"] == True:
+            all_outputs.append(ref_prep_outputs)
+            all_outputs.append(repeat_id_outputs)
+            all_outputs.append(fastq_proc_outputs)
+            all_outputs.append(mapping_outputs)
+            all_outputs.append(bam_proc_outputs)
+            all_outputs.append(userprov_bam_stats_outputs)
+            all_outputs.append(rescaled_bam_outputs)
+            all_outputs.append(subsampled_bam_outputs)
+            all_outputs.append(CpG_id_outputs)
+            all_outputs.append(autos_sexchr_bed_outputs)
+            all_outputs.append(mlRho_outputs)
+
+        elif config["CpG_from_vcf_and_reference"] == True:
+            all_outputs.append(ref_prep_outputs)
+            all_outputs.append(repeat_id_outputs)
+            all_outputs.append(fastq_proc_outputs)
+            all_outputs.append(mapping_outputs)
+            all_outputs.append(bam_proc_outputs)
+            all_outputs.append(userprov_bam_stats_outputs)
+            all_outputs.append(rescaled_bam_outputs)
+            all_outputs.append(subsampled_bam_outputs)
+            all_outputs.append(genotyping_outputs)
+            all_outputs.append(CpG_id_outputs)
+            all_outputs.append(autos_sexchr_bed_outputs)
+            all_outputs.append(mlRho_outputs)
+
+    elif len(config["CpG_samplenames"]) == 0:
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(repeat_id_outputs)
+        all_outputs.append(fastq_proc_outputs)
+        all_outputs.append(mapping_outputs)
+        all_outputs.append(bam_proc_outputs)
+        all_outputs.append(userprov_bam_stats_outputs)
+        all_outputs.append(rescaled_bam_outputs)
+        all_outputs.append(subsampled_bam_outputs)
+        all_outputs.append(autos_sexchr_bed_outputs)
+        all_outputs.append(mlRho_outputs)
+
+
+###
+if config["vcf_CpG_filtering"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+
+
+if config["vcf_qual_repeat_filtering"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+    all_outputs.append(vcf_proc_outputs)
+
+
+if config["merge_vcfs_per_dataset"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+    all_outputs.append(vcf_proc_outputs)
+    all_outputs.append(merge_vcf_outputs)
+
+
+if config["pca"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+    all_outputs.append(vcf_proc_outputs)
+    all_outputs.append(merge_vcf_outputs)
+    all_outputs.append(pca_outputs)
+
+
+if config["ROH"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+    all_outputs.append(vcf_proc_outputs)
+    all_outputs.append(merge_vcf_outputs)
+    all_outputs.append(ROH_outputs)
+
+
+if config["snpEff"]:
+    all_outputs.append(ref_prep_outputs)
+    all_outputs.append(repeat_id_outputs)
+    all_outputs.append(fastq_proc_outputs)
+    all_outputs.append(mapping_outputs)
+    all_outputs.append(bam_proc_outputs)
+    all_outputs.append(userprov_bam_stats_outputs)
+    all_outputs.append(rescaled_bam_outputs)
+    all_outputs.append(subsampled_bam_outputs)
+    all_outputs.append(genotyping_outputs)
+    all_outputs.append(CpG_id_outputs)
+    all_outputs.append(autos_sexchr_bed_outputs)
+    all_outputs.append(vcf_CpG_filt_outputs)
+    all_outputs.append(vcf_proc_outputs)
+    all_outputs.append(merge_vcf_outputs)
+    all_outputs.append(snpEff_outputs)
+
+
+###
+if config["gerp"]:
+    if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]): 
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(repeat_id_outputs)
+        all_outputs.append(fastq_proc_outputs)
+        all_outputs.append(mapping_outputs)
+        all_outputs.append(bam_proc_outputs)
+        all_outputs.append(userprov_bam_stats_outputs)
+        all_outputs.append(rescaled_bam_outputs)
+        all_outputs.append(subsampled_bam_outputs)
+        all_outputs.append(genotyping_outputs)
+        all_outputs.append(CpG_id_outputs)
+        all_outputs.append(autos_sexchr_bed_outputs)
+        all_outputs.append(vcf_CpG_filt_outputs)
+        all_outputs.append(vcf_proc_outputs)
+        all_outputs.append(merge_vcf_outputs)
+        all_outputs.append(gerp_outputs)
+    else:
+        all_outputs.append(ref_prep_outputs)
+        all_outputs.append(gerp_outputs)
+
+# Flatten and remove duplicates from all_outputs
+# This happens when several steps are set to True
+# in the config.yaml file at the same time
+# Snakemake built-in function flatten() since the 
+# output lists can be nested
+all_outputs=flatten(all_outputs)
+all_outputs=list(set(all_outputs))
+###
+
+
+##########################################################################
+############################# PSEUDORULES ################################
+##########################################################################
+
+
+rule all:
+    input:
+        all_outputs,
+
+
+##########################################################################
+################################ REPORT ##################################
+##########################################################################
+
+
+if (config["bam_rmdup_realign_indels"]
+    or config["merge_vcfs_per_dataset"]
+    or config["mlRho"]
+    or config["pca"]
+    or config["ROH"]
+    or config["snpEff"]
+    or config["gerp"]):
+
+    if os.path.exists(config["historical_samples"]) or os.path.exists(config["modern_samples"]):
+        onsuccess:
+            shell(
+                r"""
+                snakemake --unlock --cores 1 &&
+                snakemake --report GenErode_pipeline_report.html --cores 1
+                """)
+            all_outputs.append("GenErode_pipeline_report.html")

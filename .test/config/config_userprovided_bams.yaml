@@ -19,20 +19,18 @@
 # If no scratch directory is specified, the pipeline working
 # directory will be used for these temporary files.
 # Currently used for "samtools sort" and "bcftools sort".
-scratch_dir: "" # For current directory, set to "" or "./". Scratch on HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
+scratch_dir: "/tmp" # For current directory, set to "" or "./". Scratch on HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
 #################################################################
 #################################################################
 
 
-#################################################################
 #################################################################
 # 1) Full path to reference genome assembly.
 # Reference genome has to be checked for short and concise FASTA 
 # headers without special characters and has to be uncompressed. 
 # The file name will be reused by the pipeline and can have the file 
 # name extensions *.fasta, *.fa or *.fna.
-ref_path: ""
-
+ref_path: ".test/data/references/sumatran_rhino.fasta"
 
 # OPTIONAL:
 # Relative path (from the main pipeline directory) to file listing 
@@ -56,8 +54,8 @@ sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
 # files with sample information.
 # The pipeline accepts FastQ files or processed BAM files as input.
 # Example files can be found in "config/"
-historical_samples: "" # leave empty ("") if not run for historical samples.
-modern_samples: "" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_bam_paths.csv" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_bam_paths.csv" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
@@ -210,7 +208,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: []
+historical_rescaled_samplenames: ["S08", "S09"]
 #####
 
 
@@ -393,14 +391,14 @@ vcf_qual_repeat_filtering: False
 # Create a BED file of sites that remain after filtering and contig/scaffold
 # removal across all samples to be used for downstream filtering of individual
 # BCF files.
-merge_vcfs_per_dataset: False
+merge_vcfs_per_dataset: True
 
 # Maximum allowed fraction of missing genotypes across all samples for a 
 # site to be kept in the BCF and BED file, to ensure that the same sites 
 # are compared between historical and modern samples. Has to be a floating
 # point number between 0.0 (no missing data allowed) and 1.0 (sites are 
 # allowed that are completely missing).
-f_missing: 0.1 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
+f_missing: 0.9 # default: 0.1 (i.e. maximum 10% missing genotypes per site)
 #####
 
 #################################################################
@@ -437,26 +435,26 @@ ROH: False
 # See https://www.cog-genomics.org/plink/1.9/ibd#homozyg for more details.
 
 # Minimum SNP count. For example, 10, 25. Abbreviation in file name: homsnp.
-homozyg-snp: 25
+homozyg-snp: 10
 # Minimum size of ROH in kilobases. Abbreviation in file name: homkb.
-homozyg-kb: 1000 
+homozyg-kb: 1
 # Window size for ROH estimation. For example, 20, 50, 100, 1000. 
 # Abbreviation in file name: homwinsnp.
-homozyg-window-snp: 1000 
+homozyg-window-snp: 10
 # Maximum number of heterozygote sites per window. 
 # For example, 1 for a stringent analysis, 3 for a relaxed setting. 
 # Abbreviation in file name: homwinhet.
-homozyg-window-het: 1 
+homozyg-window-het: 10
 # Maximum number of missing sites per window. 
 # For example, 1 or 5 for a stringent analysis, 
 # 10 for intermediate filtering and 15 for relaxed filtering. 
 # Abbreviation in file name: homwinmis.
-homozyg-window-missing: 5 
+homozyg-window-missing: 50
 # Maximum number of heterozygote sites per ROH. 
 # For example, 1 for a stringent analysis, 
 # 3 as a relaxed setting. Disable this parameter by setting it to 999. 
 # Abbreviation in file name: homhet.
-homozyg-het: 999 
+homozyg-het: 999
 #####
 
 
@@ -481,8 +479,6 @@ snpEff: False
 # same directory as the GTF file.
 # That way, the database has to be built only once for a given GTF file.
 gtf_path: ""
-#####
-
 #################################################################
 #################################################################
 
@@ -553,5 +549,4 @@ max_gerp: 1000
 # scaffolds).
 #####
 
-#################################################################
-#################################################################
+#####
