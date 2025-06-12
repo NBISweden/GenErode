@@ -16,7 +16,7 @@
 # (https://github.com/NBISweden/GenErode/wiki).
 ###
 
-generode_version = "0.6.3"
+generode_version = "0.7.0"
 
 ##########################################################################
 ########################### STEPS TO INCLUDE #############################
