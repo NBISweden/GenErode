@@ -237,7 +237,7 @@ rule remove_repeats_vcf:
     shell:
         """
         bcftools view --threads {threads} -O b \
-        -o {output.filtered} {input.vcf} -R {input.bed} 2> {log}
+        -o {output.filtered} {input.bcf} -R {input.bed} 2> {log}
         """
 
 
