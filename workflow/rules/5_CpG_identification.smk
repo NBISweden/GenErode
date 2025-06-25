@@ -183,6 +183,7 @@ rule make_noCpG_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
+        genomefile=rules.genome_file.output.genomefile,
     output:
         no_CpG_bed="results/" + REF_NAME + ".no{CpG_method}.bed",
     threads: 2
@@ -192,7 +193,8 @@ rule make_noCpG_bed:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} > {output.no_CpG_bed} 2> {log}
+        bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2> {log}
         """
 
 
@@ -236,6 +238,7 @@ rule make_noCpG_repma_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
+        genomefile=rules.genome_file.output.genomefile,
     output:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
     threads: 2
@@ -245,5 +248,6 @@ rule make_noCpG_repma_bed:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.merged_bed} > {output.no_CpG_repma_bed} 2> {log}
+        bedtools subtract -a {input.ref_bed} -b {input.merged_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2> {log}
         """

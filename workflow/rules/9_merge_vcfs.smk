@@ -483,7 +483,8 @@ rule filter_biallelic_missing_vcf:
         bedtools_htslib_container
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
+        bedtools intersect -a {input.vcf} -b {input.bed} -header \
+        -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
         """
 
 

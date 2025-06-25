@@ -131,6 +131,7 @@ rule make_no_repeats_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
+        genomefile=rules.genome_file.output.genomefile,
     output:
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
     log:
@@ -139,5 +140,6 @@ rule make_no_repeats_bed:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} > {output.no_rep_bed} 2> {log}
+        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} \
+        -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log}
         """
