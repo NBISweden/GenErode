@@ -66,17 +66,14 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 10
   intersect_autos_CpG_repma_beds: 10
   remove_CpG_vcf: 20
-  CpG_vcf2bcf: 10
   remove_snps_near_indels: 10
   filter_vcfs_qual_dp: 10
   filter_vcfs_allelic_balance: 10
   remove_repeats_vcf: 20
-  filtered_vcf2bcf: 10
   merge_all_vcfs: 20
   filter_vcf_biallelic: 10
   filter_vcf_missing: 10
   remove_chromosomes: 10
-  repmasked_bcf2vcf: 10
   filter_biallelic_missing_vcf: 20
   vcf2plink_pca: 10
   plink_eigenvec: 10

@@ -56,17 +56,14 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 2
   intersect_autos_CpG_repma_beds: 2
   remove_CpG_vcf: 6
-  CpG_vcf2bcf: 2
   remove_snps_near_indels: 2
   filter_vcfs_qual_dp: 2
   filter_vcfs_allelic_balance: 2
   remove_repeats_vcf: 6
-  filtered_vcf2bcf: 2
   merge_all_vcfs: 6
   filter_vcf_biallelic: 2
   filter_vcf_missing: 2
   remove_chromosomes: 2
-  repmasked_bcf2vcf: 2
   filter_biallelic_missing_vcf: 6
   vcf2plink_pca: 2
   plink_eigenvec: 1
@@ -122,7 +119,6 @@ set-resources:
   - subsampled_bam_qualimap:runtime=5760
   - variant_calling:runtime=2880
   - sort_vcfs:runtime=1440
-  - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
   - make_noCpG_bed:runtime=300
   - merge_noCpG_noRepeats_beds:runtime=300
@@ -136,19 +132,16 @@ set-resources:
   - bam2pro_sexchr:runtime=1440
   - bam2pro_all:runtime=1440
   - remove_CpG_vcf:runtime=300
-  - CpG_vcf2bcf:runtime=300
   - remove_snps_near_indels:runtime=300
   - filter_vcfs_qual_dp:runtime=300
   - filter_vcfs_allelic_balance:runtime=300
   - remove_repeats_vcf:runtime=300
-  - filtered_vcf2bcf:runtime=300
   - merge_all_vcfs:runtime=4400
   - filter_vcf_biallelic:runtime=1440
   - filter_vcf_missing:runtime=1440
   - remove_chromosomes:runtime=1440
   - extract_historical_samples:runtime=300
   - extract_modern_samples:runtime=300
-  - repmasked_bcf2vcf:runtime=300
   - filter_biallelic_missing_vcf:runtime=1440
   - vcf2plink_pca:runtime=300
   - filter_vcf_hwe:runtime=300

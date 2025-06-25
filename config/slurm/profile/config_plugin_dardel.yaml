@@ -83,17 +83,14 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 20
   intersect_autos_CpG_repma_beds: 20
   remove_CpG_vcf: 40
-  CpG_vcf2bcf: 40
   remove_snps_near_indels: 40
   filter_vcfs_qual_dp: 40
   filter_vcfs_allelic_balance: 40
   remove_repeats_vcf: 40
-  filtered_vcf2bcf: 40
   merge_all_vcfs: 40
   filter_vcf_biallelic: 40
   filter_vcf_missing: 40
   remove_chromosomes: 40
-  repmasked_bcf2vcf: 40
   filter_biallelic_missing_vcf: 40
   vcf2plink_pca: 40
   plink_eigenvec: 40
@@ -191,7 +188,6 @@ set-resources:
   - variant_calling:mem_mb=80000
   - sort_vcfs:runtime=1440
   - sort_vcfs:mem_mb=80000
-  - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
   - make_noCpG_bed:runtime=300
   - merge_noCpG_noRepeats_beds:runtime=300
@@ -206,7 +202,6 @@ set-resources:
   - bam2pro_all:runtime=1440
   - remove_CpG_vcf:runtime=300
   - remove_CpG_vcf:mem_mb=80000
-  - CpG_vcf2bcf:runtime=300
   - remove_snps_near_indels:runtime=300
   - remove_snps_near_indels:mem_mb=80000
   - filter_vcfs_qual_dp:runtime=300
@@ -214,7 +209,6 @@ set-resources:
   - filter_vcfs_allelic_balance:runtime=300
   - remove_repeats_vcf:runtime=300
   - remove_repeats_vcf:mem_mb=80000
-  - filtered_vcf2bcf:runtime=300
   - merge_all_vcfs:runtime=4400
   - merge_all_vcfs:mem_mb=80000 # increase this if you have a lot of samples
   - filter_vcf_biallelic:runtime=1440
@@ -225,7 +219,6 @@ set-resources:
   - remove_chromosomes:mem_mb=80000
   - extract_historical_samples:runtime=300
   - extract_modern_samples:runtime=300
-  - repmasked_bcf2vcf:runtime=300
   - filter_biallelic_missing_vcf:runtime=1440
   - filter_biallelic_missing_vcf:mem_mb=80000
   - vcf2plink_pca:runtime=300
