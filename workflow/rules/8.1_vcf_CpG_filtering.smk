@@ -40,63 +40,30 @@ def modern_CpG_filtered_multiqc_inputs(wildcards):
 
 
 # snakemake rules
-rule sorted_bcf2vcf_CpG_removal:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf=rules.sort_vcfs.output.sort,
-    output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG_rm.vcf.gz"),
-    log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}_sorted_bcf2vcf_CpG_removal.log",
-    singularity:
-        bcftools_container
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
 rule remove_CpG_vcf:
     """Remove CpG-prone sites from vcf file"""
     input:
-        vcf=rules.sorted_bcf2vcf_CpG_removal.output.vcf,
+        bcf=rules.sort_vcfs.output.sort,
+        csi=rules.index_sorted_vcfs.output.index,
         bed=rules.make_noCpG_bed.output.no_CpG_bed,
-        genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.vcf.gz"),
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf",
     threads: 6
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header \
-        -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
-        """
-
-
-rule CpG_vcf2bcf:
-    """Convert vcf back to bcf"""
-    input:
-        filtered=rules.remove_CpG_vcf.output.filtered,
-    output:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf",
-    threads: 2
-    log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_vcf2bcf.log",
-    singularity:
         bcftools_container
     shell:
         """
-        bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
+        bcftools view --threads {params.threads} -O b \
+        -o {output.filtered} {input.vcf} -R {input.bed} 2> {log}
         """
 
 
 rule index_CpG_bcf:
     """Index the bcf file"""
     input:
-        bcf=rules.CpG_vcf2bcf.output.bcf,
+        bcf=rules.remove_CpG_vcf.output.filtered,
     output:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.csi",
     log:
@@ -112,7 +79,7 @@ rule index_CpG_bcf:
 rule CpG_filtered_vcf_stats:
     """Obtain summary stats of vcf files filtered for CpG sites"""
     input:
-        bcf=rules.CpG_vcf2bcf.output.bcf,
+        bcf=rules.remove_CpG_vcf.output.filtered,
         index=rules.index_CpG_bcf.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.stats.txt",

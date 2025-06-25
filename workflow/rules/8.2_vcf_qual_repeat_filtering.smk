@@ -145,8 +145,8 @@ rule filter_vcfs_allelic_balance:
         bcftools_container
     shell:
         """
-        bcftools view -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
-        bcftools view -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) > 0.8' -Ob > {output.filtered} 2> {log}
+        bcftools view --threads {params.threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
+        bcftools view --threads {params.threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) > 0.8' -Ob > {output.filtered} 2> {log}
         """
 
 
@@ -221,63 +221,30 @@ rule modern_quality_filtered_vcf_multiqc:
         """
 
 
-rule filtered_bcf2vcf:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf=rules.filter_vcfs_allelic_balance.output.filtered,
-    output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.vcf.gz"),
-    log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_bcf2vcf.log",
-    singularity:
-        bcftools_container
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
 rule remove_repeats_vcf:
     """Remove repeats from vcf files"""
     input:
-        vcf=rules.filtered_bcf2vcf.output.vcf,
+        bcf=rules.filter_vcfs_allelic_balance.output.filtered,
+        csi=rules.index_filtered_vcfs.output.index,
         bed=rules.make_no_repeats_bed.output.no_rep_bed,
-        genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.vcf.gz"),
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
     threads: 6
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_repeats_vcf.log",
     singularity:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header \
-        -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
-        """
-
-
-rule filtered_vcf2bcf:
-    """Convert the repeat masked vcf back to bcf"""
-    input:
-        filtered=rules.remove_repeats_vcf.output.filtered,
-    output:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-    threads: 2
-    log:
-        "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf2bcf.log",
-    singularity:
         bcftools_container
     shell:
         """
-        bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
+        bcftools view --threads {params.threads} -O b \
+        -o {output.filtered} {input.vcf} -R {input.bed} 2> {log}
         """
 
 
 rule index_repmasked_vcfs:
     """Index vcf files before any downstream processing"""
     input:
-        bcf=rules.filtered_vcf2bcf.output.bcf,
+        bcf=rules.remove_repeats_vcf.output.filtered,
     output:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
     log:
@@ -293,7 +260,7 @@ rule index_repmasked_vcfs:
 rule repmasked_vcf_stats:
     """Obtain summary stats of repeat masked vcf files"""
     input:
-        bcf=rules.filtered_vcf2bcf.output.bcf,
+        bcf=rules.remove_repeats_vcf.output.filtered,
         index=rules.index_repmasked_vcfs.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",

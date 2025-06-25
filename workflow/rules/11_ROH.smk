@@ -73,11 +73,12 @@ rule compress_roh_vcf:
         index=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz.tbi"),
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
+    threads: 2
     singularity:
         bcftools_container
     shell:
         """
-        bcftools view -Oz -o {output.compressed} {input.vcf} 2> {log} &&
+        bcftools view --threads {params.threads} -Oz -o {output.compressed} {input.vcf} 2> {log} &&
         bcftools index -f -t {output.compressed} 2>> {log}
         """
 
