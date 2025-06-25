@@ -169,11 +169,27 @@ rule build_snpEff_db:
         """
 
 
-rule annotate_vcf:
-    """Annotate the VCF files of each individual"""
+rule biallelic_missing_bcf2vcf:
+    """Convert bcf files filtered for biallelic sites and missingness to vcf format for snpEff annotation"""
     input:
         bcf=rules.filter_biallelic_missing_vcf.output.filtered,
         csi=rules.index_biallelic_missing_vcf.output.index,
+    output:
+        vcf=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz"),
+    log:
+        "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_bcf2vcf.log",
+    singularity:
+        bcftools_container
+    shell:
+        """
+        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
+        """
+
+
+rule annotate_vcf:
+    """Annotate the VCF files of each individual"""
+    input:
+        vcf=rules.biallelic_missing_bcf2vcf.output.vcf,
         db=rules.build_snpEff_db.output.db,
         config=rules.update_snpEff_config.output.config,
     output:
@@ -195,7 +211,7 @@ rule annotate_vcf:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
         java -jar -Xmx${{mem}}g /usr/local/share/snpeff-4.3.1t-3/snpEff.jar  -c {params.abs_config} -dataDir {params.abs_data_dir} -s {output.html} -csvStats {output.csv} \
-        -treatAllAsProteinCoding -v -d -lof {params.ref_name} {input.bcf} > {output.ann} 2> {log}
+        -treatAllAsProteinCoding -v -d -lof {params.ref_name} {input.vcf} > {output.ann} 2> {log}
         """
 
 
