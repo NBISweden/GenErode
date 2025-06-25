@@ -619,18 +619,20 @@ rule plot_gerp_hist:
 rule split_vcf_files:
     """Split individual VCF files into chunks for more resource-efficient merging with GERP results"""
     input:
-        vcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        bcf=rules.filter_biallelic_missing_vcf.output.filtered,
+        csi=rules.index_biallelic_missing_vcf.output.index,
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
-        genomefile=REF_DIR + "/" + REF_NAME + ".genome",
     output:
         vcf_chunk=temp("results/gerp/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}.vcf.gz"),
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{filtered}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
+    threads: 6
     singularity:
-        bedtools_htslib_container
+        bcftools_container
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.chunk_bed} -g {input.genomefile} -header | gzip - > {output.vcf_chunk} 2> {log}
+        bcftools view --threads {threads} -O b \
+        -o {output.vcf_chunk} {input.bcf} -R {input.chunk_bed} 2> {log}
         """
 
 

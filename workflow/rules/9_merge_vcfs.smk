@@ -450,48 +450,47 @@ rule missingness_filtered_vcf_multiqc:
 
 # Rules to filter individual BCF files for biallelic sites, missingness and sex-chromosomal scaffolds
 # for snpEff and GERP steps. Only triggered when snpEff or GERP is run.
-
-rule repmasked_bcf2vcf:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf",
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
-    output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.tmp.vcf.gz"),
-    log:
-        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_bcf2vcf.log",
-    singularity:
-        bcftools_container
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
 rule filter_biallelic_missing_vcf:
     """Keep only sites with certain upper fraction missingness as specified in config file and sites that are biallelic across all samples (and optionally autosomes) in individual vcf files"""
     input:
-        vcf=rules.repmasked_bcf2vcf.output.vcf,
+        bcf=rules.remove_repeats_vcf.output.filtered,
+        index=rules.index_repmasked_vcfs.output.index,
         bed=rules.filtered_vcf2bed.output.bed,
-        genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.bcf",
     threads: 6
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
     singularity:
-        bedtools_htslib_container
+        bcftools_container
     shell:
         """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header \
-        -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
+        bcftools view --threads {threads} -O b \
+        -o {output.filtered} {input.bcf} -R {input.bed} 2> {log}
+        """
+
+
+rule index_biallelic_missing_vcf:
+    """Index bcf files filtered for biallelic sites and missingness"""
+    input:
+        bcf=rules.filter_biallelic_missing_vcf.output.filtered,
+    output:
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.bcf.csi",
+    log:
+        "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_index_biallelic_missing_vcf.log",
+    singularity:
+        bcftools_container
+    shell:
+        """
+        bcftools index -o {output.index} {input.bcf} 2> {log}
         """
 
 
 rule biallelic_missing_filtered_vcf_stats:
     """Obtain summary stats of filtered vcf file"""
     input:
-        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz",
+        bcf=rules.filter_biallelic_missing_vcf.output.filtered,
+        csi=rules.index_biallelic_missing_vcf.output.index,
     output:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
     log:
