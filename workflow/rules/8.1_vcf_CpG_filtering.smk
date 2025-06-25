@@ -55,7 +55,7 @@ rule remove_CpG_vcf:
         bcftools_container
     shell:
         """
-        bcftools view --threads {params.threads} -O b \
+        bcftools view --threads {threads} -O b \
         -o {output.filtered} {input.vcf} -R {input.bed} 2> {log}
         """
 

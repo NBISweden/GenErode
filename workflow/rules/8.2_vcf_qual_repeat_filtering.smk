@@ -145,8 +145,8 @@ rule filter_vcfs_allelic_balance:
         bcftools_container
     shell:
         """
-        bcftools view --threads {params.threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
-        bcftools view --threads {params.threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) > 0.8' -Ob > {output.filtered} 2> {log}
+        bcftools view --threads {threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) < 0.2' {input.bcf} | \
+        bcftools view --threads {threads} -e 'GT="0/1" & (DP4[2]+DP4[3])/(DP4[0]+DP4[1]+DP4[2]+DP4[3]) > 0.8' -Ob > {output.filtered} 2> {log}
         """
 
 
@@ -236,7 +236,7 @@ rule remove_repeats_vcf:
         bcftools_container
     shell:
         """
-        bcftools view --threads {params.threads} -O b \
+        bcftools view --threads {threads} -O b \
         -o {output.filtered} {input.vcf} -R {input.bed} 2> {log}
         """
 

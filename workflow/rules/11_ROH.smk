@@ -78,7 +78,7 @@ rule compress_roh_vcf:
         bcftools_container
     shell:
         """
-        bcftools view --threads {params.threads} -Oz -o {output.compressed} {input.vcf} 2> {log} &&
+        bcftools view --threads {threads} -Oz -o {output.compressed} {input.vcf} 2> {log} &&
         bcftools index -f -t {output.compressed} 2>> {log}
         """
 
