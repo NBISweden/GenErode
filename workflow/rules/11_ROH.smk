@@ -2,8 +2,10 @@
 ### 11. Estimate runs of homozygosity (ROHs) in plink based on merged BCF files
 
 # Code collecting output files from this part of the pipeline
+ROH_outputs=[]
+
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/all/ROH/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.append(expand("results/all/ROH/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -14,7 +16,7 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
         homhet=config["homozyg-het"],))
 
 elif os.path.exists(config["historical_samples"]):
-    all_outputs.append(expand("results/historical/ROH/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.append(expand("results/historical/ROH/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -25,7 +27,7 @@ elif os.path.exists(config["historical_samples"]):
         homhet=config["homozyg-het"],))
 
 elif os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/modern/ROH/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
+    ROH_outputs.append(expand("results/modern/ROH/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
         fmiss=config["f_missing"],
         chr=CHR,
         homsnp=config["homozyg-snp"],
@@ -71,11 +73,12 @@ rule compress_roh_vcf:
         index=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz.tbi"),
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
+    threads: 2
     singularity:
         bcftools_container
     shell:
         """
-        bcftools view -Oz -o {output.compressed} {input.vcf} 2> {log} &&
+        bcftools view --threads {threads} -Oz -o {output.compressed} {input.vcf} 2> {log} &&
         bcftools index -f -t {output.compressed} 2>> {log}
         """
 

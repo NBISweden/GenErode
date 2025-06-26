@@ -17,6 +17,7 @@ default-resources:
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 10 # number of threads per task, corresponds to cpus-per-task or cores
   runtime: 30 # default runtime in minutes
+  tmpdir: /cfs/klemming/scratch/u/user # change to your user's allocated temporary directory: /cfs/klemming/scratch/first-letter-of-username/username
 
 ## set-threads: map rule names to cpus-per-task
 set-threads:
@@ -47,10 +48,12 @@ set-threads:
   indel_realigner_targets: 20
   indel_realigner: 20
   realigned_bam_qualimap: 20
-  realigned_bam_group: 10
+  realigned_bam_depth: 10
+  userprovided_bam_fastqc: 10
+  userprovided_bam_qualimap: 20
+  userprovided_bam_depth: 10
   rescale_historical: 10
   rescaled_bam_qualimap: 20
-  rescaled_bam_group: 10
   filter_bam_mapped_mq: 10
   subsample_bams: 10
   subsampled_bam_qualimap: 20
@@ -63,17 +66,14 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 10
   intersect_autos_CpG_repma_beds: 10
   remove_CpG_vcf: 20
-  CpG_vcf2bcf: 10
   remove_snps_near_indels: 10
   filter_vcfs_qual_dp: 10
   filter_vcfs_allelic_balance: 10
   remove_repeats_vcf: 20
-  filtered_vcf2bcf: 10
   merge_all_vcfs: 20
   filter_vcf_biallelic: 10
   filter_vcf_missing: 10
   remove_chromosomes: 10
-  repmasked_bcf2vcf: 10
   filter_biallelic_missing_vcf: 20
   vcf2plink_pca: 10
   plink_eigenvec: 10
@@ -100,12 +100,15 @@ set-threads:
 
 ## set-resources: map rule names to resources in general
 set-resources:
+  # runtime
   - repeatmodeler:runtime=240
   - repeatmasker:runtime=240
   - map_historical:runtime=120
   - sai2bam:runtime=120
   - map_modern:runtime=120
+  - subsample_bams:runtime=120
   - gerp_derived_alleles:runtime=120
+  # memory
   - repeatmodeler:mem_mb=20000
   - repeatmasker:mem_mb=20000
   - fastqc_historical_raw:mem_mb=10000
@@ -131,6 +134,8 @@ set-resources:
   - indel_realigner:mem_mb=20000
   - realigned_bam_qualimap:mem_mb=20000
   - realigned_bam_fastqc:mem_mb=10000
+  - userprovided_bam_fastqc:mem_mb=10000
+  - userprovided_bam_qualimap:mem_mb=20000
   - rescaled_bam_qualimap:mem_mb=20000
   - rescaled_bam_fastqc:mem_mb=10000
   - filter_bam_mapped_mq:mem_mb=10000

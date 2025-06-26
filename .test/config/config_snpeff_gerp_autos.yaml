@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.6.3        #
+# Configuration settings for the GenErode pipeline 0.7.0        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -14,6 +14,16 @@
 
 
 #################################################################
+# 0) Path to scratch directory for temporary files from some of  
+# the tools implemented in the pipeline. 
+# If no scratch directory is specified, the pipeline working
+# directory will be used for these temporary files.
+# Currently used for "samtools sort" and "bcftools sort".
+scratch_dir: "/tmp" # For current directory, set to "" or "./". Scratch on HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
+#################################################################
+#################################################################
+
+
 #################################################################
 # 1) Full path to reference genome assembly.
 # Reference genome has to be checked for short and concise FASTA 
@@ -42,9 +52,10 @@ sexchromosomes: ".test/config/seq_to_exclude.txt" # for example, "config/chrX_ca
 #################################################################
 # 2) Relative paths (from the main snakemake directory) to metadata 
 # files with sample information.
+# The pipeline accepts FastQ files or processed BAM files as input.
 # Example files can be found in "config/"
-historical_samples: ".test/config/historical_paths.txt" # leave empty ("") if not run for historical samples.
-modern_samples: ".test/config/modern_paths.txt" # leave empty ("") if not run for modern samples. 
+historical_samples: ".test/config/historical_mixed_paths.csv" # leave empty ("") if not run for historical samples.
+modern_samples: ".test/config/modern_mixed_paths.csv" # leave empty ("") if not run for modern samples. 
 #################################################################
 #################################################################
 
@@ -128,28 +139,37 @@ mapping: False
 #####
 # BAM file processing: merge samples from different lanes per PCR/index, 
 # remove duplicates, merge BAM files per sample, realign indels, 
-# calculate average genome-wide depth of coverage for depth filtering
+# calculate mean genome-wide depth of coverage for depth filtering
 # of BAM and VCF files.
 bam_rmdup_realign_indels: False
 
+# OPTIONAL:
+# If the user provides paths to BAM files of historical and/or modern samples,
+# set "userprovided_bam_stats" to True.
+# This step will create symbolic links and will calculate basic statistics for 
+# the user provided BAM files, including the mean genome-wide depth of coverage 
+# for depth filtering of BAM and VCF files.
+userprovided_bam_stats: False
+
+
 # Parameters related to depth filtering of BAM and VCF files.
-# After BAM file processing, the average genome-wide depth is calculated 
+# After BAM file processing, the mean genome-wide depth is calculated 
 # per sample, from which minimum and maximum depth thresholds for quality 
 # filtering are determined. 
 # Sites with mapping quality < 30 or in repeat elements are excluded 
-# by default from the calculation of the average genome-wide depth 
+# by default from the calculation of the mean genome-wide depth 
 # of coverage.
 # Sites with missing data (i.e. zero coverage) can be included or 
-# excluded in the average depth calculation.
+# excluded in the mean depth calculation.
 # Set to True if sites with missing data (zero coverage) should be 
-# included in the average depth calculation.
+# included in the mean depth calculation.
 # Set to False if sites with missing data (zero coverage) should be 
-# excluded from the average depth calculation.
+# excluded from the mean depth calculation.
 zerocoverage: False
 
 # Minimum depth threshold calculation per sample.
 # Will be applied to mlRho analysis and in VCF file filtering.
-# Factor by which the average genome-wide depth should be multiplied 
+# Factor by which the mean genome-wide depth should be multiplied 
 # to set a minimum depth threshold. For ultra low coverage samples, a 
 # minimum hard threshold of 3X is applied that overrides this parameter.
 # A minimum depth of 6X should be aimed for.
@@ -157,7 +177,7 @@ minDP: 0.33
 
 # Maximum depth threshold calculation per sample.
 # Will be applied to mlRho analysis and in VCF file filtering.
-# Factor by which the average genome-wide depth should be multiplied 
+# Factor by which the mean genome-wide depth should be multiplied 
 # to set a maximum depth threshold.
 maxDP: 10
 #####

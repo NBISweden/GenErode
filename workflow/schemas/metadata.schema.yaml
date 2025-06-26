@@ -2,16 +2,24 @@ $schema: "http://json-schema.org/draft-07/schema#"
 description: Metadata schema definition
 type: object
 properties:
-  samplename_index_lane:
+  samplename:
     type: string
-    pattern: (^[A-Za-z0-9]+_[A-Za-z0-9]+_[A-Za-z0-9]+$)
-    description: sample identifier. Must contain sample id, library index and lane number, separated by underscore.
+    pattern: (^[A-Za-z0-9]+$)
+    description: sample identifier
+  library_id:
+    type: string
+    pattern: (^[A-Za-z0-9]+$)
+    description: library identifier
+  lane:
+    type: string
+    pattern: (^[A-Za-z0-9]+$)
+    description: lane number
   readgroup_id:
     type: string
     description: readgroup ID
   readgroup_platform:
     type: string
-    description: Platform (e.g. illumina).
+    description: Platform (e.g. illumina)
   path_to_R1_fastq_file:
     type: string
     format: uri
@@ -22,10 +30,11 @@ properties:
     format: uri
     description: fastq file containing reverse reads
     pattern: .*(.fastq.gz|.fq.gz)$
+  path_to_processed_bam_file:
+    type: string
+    format: uri
+    description: path to processed bam file, one file per sample
+    pattern: .*(.bam)$
 
 required:
-  - samplename_index_lane
-  - readgroup_id
-  - readgroup_platform
-  - path_to_R1_fastq_file
-  - path_to_R2_fastq_file
+  - samplename
