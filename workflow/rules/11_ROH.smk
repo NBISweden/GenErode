@@ -72,7 +72,7 @@ rule ROHs:
     Estimate runs of homozygosity for each individual in the merged BCF file using plink1.9
     """
     input:
-        rules.vcf2plink_hwe.output,
+        rules.vcf2plink_roh.output,
     output:
         roh="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.hom",
         indiv="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.hom.indiv",
