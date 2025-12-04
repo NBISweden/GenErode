@@ -211,7 +211,7 @@ rule make_noCpG_bed:
 rule merge_CpG_repeats_beds:
     input:
         CpG_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".{CpG_method}.bed",
-        sorted_rep_bed=rules.sort_repeats_bed.output,
+        sorted_rep_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".repeats.sorted.bed",
     output:
         merged=temp("results/references/" + REF_NAME + "/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
     message:
