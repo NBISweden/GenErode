@@ -50,13 +50,12 @@ modern_samples: ".test/config/modern_fastq_paths.txt" # leave empty ("") if not 
 #################################################################
 
 #####
-# Repeat element de novo prediction and repeat masking of the 
-# reference genome.
+# Repeat element de novo prediction with RepeatModeler and repeat 
+# masking of the reference genome with RepeatMasker.
 # Generates BED files of repeats and repeat-masked regions for 
-# the reference genome.
-# Output files will be placed into the same directory as the 
-# reference genome FASTA file (as specified above).
-# That way, this step is run only once for a given reference genome.
+# the reference genome from RepeatMasker output.
+# Required for repeat filtering in downstream analyses. Will be 
+# automatically run if no repeat BED file is provided above.
 reference_repeat_identification: False
 #####
 
