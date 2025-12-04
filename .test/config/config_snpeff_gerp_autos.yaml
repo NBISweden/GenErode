@@ -34,6 +34,16 @@ ref_path: ".test/data/references/sumatran_rhino.fasta"
 # Leave empty ("") if identity of sex chromosomes is unknown and/or 
 # if the pipeline should be run on all scaffolds/contigs of the genome.
 sexchromosomes: ".test/config/seq_to_exclude.txt" # for example, "config/chrX_candidate_scaffolds.txt"
+
+
+# OPTIONAL:
+# Full path to BED file with repeat elements in the reference genome.
+# Required for repeat filtering in downstream analyses. 
+# Leave empty ("") if not available. In that case, GenErode will run 
+# RepeatModeler and RepeatMasker to identify repeat elements de novo 
+# in the reference genome (see "reference_repeat_identification" 
+# below). 
+repeat_bed_file: "" # for example, "data/reference/repeats.bed"
 #################################################################
 #################################################################
 

@@ -20,6 +20,31 @@
 # The file name will be reused by the pipeline and can have the file 
 # name extensions *.fasta, *.fa or *.fna.
 ref_path: ".test/data/references/sumatran_rhino.fasta"
+
+
+# OPTIONAL:
+# Relative path (from the main pipeline directory) to file listing 
+# scaffolds/contigs linked to sex chromosomes (one scaffold/contig 
+# name per line).
+# Is used to create BED files to run mlRho separately for autosomes 
+# and sex chromosomes or exclusively for autosomes, and/or to create 
+# autosome-only BCF files for PCA, ROH, snpEff and GERP analyses.
+# Can also be used to specify any other contigs/scaffolds, e.g.  
+# unplaced or short scaffolds, for removal from mlRho analysis 
+# and BCF files.
+# Leave empty ("") if identity of sex chromosomes is unknown and/or 
+# if the pipeline should be run on all scaffolds/contigs of the genome.
+sexchromosomes: "" # for example, "config/chrX_candidate_scaffolds.txt"
+
+
+# OPTIONAL:
+# Full path to BED file with repeat elements in the reference genome.
+# Required for repeat filtering in downstream analyses. 
+# Leave empty ("") if not available. In that case, GenErode will run 
+# RepeatModeler and RepeatMasker to identify repeat elements de novo 
+# in the reference genome (see "reference_repeat_identification" 
+# below). 
+repeat_bed_file: "" # for example, "data/reference/repeats.bed"
 #################################################################
 
 
