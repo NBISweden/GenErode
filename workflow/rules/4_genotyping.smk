@@ -30,11 +30,14 @@ rule variant_calling:
     threads: 3
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_variant_calling.log",
+    shadow:
+        "minimal"
     singularity:
         bcftools_container
     shell:
         """
-        bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | bcftools call -c -M -O b --threads {threads} -o {output.bcf} 2> {log}
+        bcftools mpileup -Ou -Q 30 -q 30 -B -f {input.ref} {input.bam} | \
+        bcftools call -c -M -O b --threads {threads} -o {output.bcf} 2> {log}
         """
 
 
@@ -49,13 +52,13 @@ rule sort_vcfs:
         mem_mb=16000,
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sort_vcfs.log",
-    params:
-        scratch=scratch_dir,
+    shadow:
+        "minimal"
     singularity:
         bcftools_container
     shell:
         """
-        bcftools sort -T {params.scratch} -O b -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -O b -o {output.sort} {input.bcf} 2> {log}
         """
 
 

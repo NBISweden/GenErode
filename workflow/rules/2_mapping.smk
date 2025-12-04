@@ -64,15 +64,15 @@ rule sai2bam:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
-    params:
-        scratch=scratch_dir,
+    shadow:
+        "minimal"
     threads: 8
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -109,15 +109,15 @@ rule map_modern:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
-    params:
-        scratch=scratch_dir,
+    shadow:
+        "minimal"
     threads: 8
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 

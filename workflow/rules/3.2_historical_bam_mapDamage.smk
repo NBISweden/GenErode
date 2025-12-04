@@ -26,19 +26,15 @@ def rescaled_bam_multiqc_inputs(wildcards):
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
         ".bam.qualimap/genome_results.txt",],)
-    pipeline_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled{extension}",
-        sample=HIST_PIPELINE_RESCALED_SAMPLES,
-        extension=["_fastqc.html",
-        "_fastqc.zip",],)
+    pipeline_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.merged.rmdup.merged.realn.rescaled_fastqc.zip",
+        sample=HIST_PIPELINE_RESCALED_SAMPLES,)
     userprocessed_bams_rescaled = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.userprovided.rescaled{extension}",
         sample=HIST_USER_RESCALED_SAMPLES,
         extension=[".bam.stats.txt", 
         ".bam.qualimap/qualimapReport.html", 
         ".bam.qualimap/genome_results.txt",],)
-    userprocessed_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.userprovided.rescaled{extension}",
-        sample=HIST_USER_RESCALED_SAMPLES,
-        extension=["_fastqc.html",
-        "_fastqc.zip",],)
+    userprocessed_bams_rescaled_fastqc = expand("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.userprovided.rescaled_fastqc.zip",
+        sample=HIST_USER_RESCALED_SAMPLES,)
     return pipeline_bams_rescaled + pipeline_bams_rescaled_fastqc + userprocessed_bams_rescaled + userprocessed_bams_rescaled_fastqc
 
 
@@ -64,19 +60,19 @@ rule rescale_historical:
         CtoT_freq="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/5pCtoT_freq.txt",
         lgdist="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/lgdistribution.txt",
         log="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/Runtime_log.txt",
-        tmp=temp("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/{sample}.{processed}.rescaled.bam"),
         rescaled="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam",
     threads: 4
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescale_historical.log",
+    shadow:
+        "minimal"
     singularity:
         mapdamage_container
     shell:
         """
-        mapDamage -i {input.bam} -r {input.ref} -d {params.dir} --merge-reference-sequences --rescale 2> {log} &&
-        cp {output.tmp} {output.rescaled} 2>> {log}
+        mapDamage -i {input.bam} -r {input.ref} -d {params.dir} --merge-reference-sequences --rescale 2> {log}
         """
 
 
@@ -120,14 +116,14 @@ rule rescaled_bam_fastqc:
         bam=rules.rescale_historical.output.rescaled,
         bai="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     output:
-        html="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc.html",
         zip="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc.zip",
-        dir=directory("results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc/{sample}.{processed}.rescaled_fastqc"),
     params:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/fastqc",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_fastqc.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:

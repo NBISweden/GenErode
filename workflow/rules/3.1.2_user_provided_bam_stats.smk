@@ -87,14 +87,14 @@ rule userprovided_bam_fastqc:
     input:
         bam="results/{dataset}/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
     output:
-        html="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided_fastqc.html",
         zip="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided_fastqc.zip",
-        dir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided_fastqc"),
     params:
-        dir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc",
+        dir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/",
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_fastqc.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
@@ -189,10 +189,8 @@ rule historical_userprovided_bam_multiqc:
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
                 ".bam.qualimap/qualimapReport.html",],),
-        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided{extension}",
-            sample=hist_user_bam_sm,
-            extension=["_fastqc.html",
-                "_fastqc.zip",],),
+        expand("results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided_fastqc.zip",
+            sample=hist_user_bam_sm,),
     output:
         stats=report(
             "results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html",
@@ -219,10 +217,8 @@ rule modern_userprovided_bam_multiqc:
             extension=[".repma.Q30.bam.dp.hist.pdf", 
                 ".bam.stats.txt", 
                 ".bam.qualimap/qualimapReport.html",],),
-        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided{extension}",
-            sample=mod_user_bam_sm,
-            extension=["_fastqc.html",
-                "_fastqc.zip",],),
+        expand("results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/fastqc/{sample}.userprovided_fastqc.zip",
+            sample=mod_user_bam_sm,),
     output:
         stats=report(
             "results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc/multiqc_report.html",

@@ -29,35 +29,24 @@ rule repeatmodeler:
     output:
         repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
         stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
+    log:
+        "logs/ref/repeatmodeler/repeatmodeler/{ref}.log",
     params:
-        dir=REF_DIR + "/repeatmodeler/" + REF_NAME + "/",
         name=REF_NAME,
-        ref_upper="../../" + REF_NAME + ".upper.fasta",
-        abs_tmp=os.path.abspath("tmpConsensi.fa"),
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
+    shadow:
+        "minimal"
     singularity:
         repeatmodeler_container
     shell:
         """
-        cd {params.dir}
-
         # Build repeat database
-        BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
+        BuildDatabase -engine ncbi -name {params.name} {input.ref_upper} 2> {log} &&
 
         # Run RepeatModeler
-        RepeatModeler -engine ncbi -threads {threads} -database {params.name} -quick 2>> {log} &&
-
-        # copy the output files to a new directory
-        cp RM_*.*/consensi.fa.classified RM_raw.out/ 2>> {log} &&
-        cp RM_*.*/families-classified.stk RM_raw.out/ 2>> {log}
-
-        # remove temporary file
-        if [ -f {params.abs_tmp} ]
-        then
-            rm {params.abs_tmp} 2>> {log}
-        fi
+        RepeatModeler -engine ncbi -threads {threads} -database {params.name} -quick 2>> {log}
         """
 
 
@@ -67,30 +56,18 @@ rule repeatmasker:
         ref_upper=rules.ref_upper.output,
         repmo=rules.repeatmodeler.output.repmo,
     output:
-        rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
         rep_tbl=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.tbl",
         rep_out=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.out",
-        rep_cat=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.cat.gz",
-    params:
-        dir=REF_DIR + "/repeatmasker/" + REF_NAME + "/",
-        repmo="../../repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
-        ref_upper="../../" + REF_NAME + ".upper.fasta",
-        rep_cat_unzip=REF_NAME + ".upper.fasta.cat",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
+    shadow:
+        "minimal"
     singularity:
         repeatmodeler_container
     shell:
         """
-        cd {params.dir} &&
-        RepeatMasker -pa {threads} -xsmall -gccalc -dir ./ -lib {params.repmo} {params.ref_upper} 2> {log} &&
-
-        # Check if *.cat file is compressed or uncompressed
-        if [ ! -f {output.rep_cat} ]
-        then
-            gzip {params.rep_cat_unzip}
-        fi
+        RepeatMasker -pa {threads} -xsmall -gccalc -dir ./ -lib {input.repmo} {input.ref_upper} 2> {log}
         """
 
 

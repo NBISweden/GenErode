@@ -187,14 +187,14 @@ rule outgroup_fastqc:
     input:
         fastq=rules.outgroups2fastq.output,
     output:
-        html="results/gerp/fastq_files/stats/{gerpref}_fastqc.html",
         zip="results/gerp/fastq_files/stats/{gerpref}_fastqc.zip",
-        dir=directory("results/gerp/fastq_files/stats/{gerpref}_fastqc/"),
     params:
         dir="results/gerp/fastq_files/stats/",
     log:
         "results/logs/13_GERP/fastq/{gerpref}_outgroup_fastqc.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -206,8 +206,6 @@ rule outgroup_fastqc:
 rule outgroup_fastqc_multiqc:
     """Summarize all fastqc results for re-formatted outgroup reference genomes."""
     input:
-        expand("results/gerp/fastq_files/stats/{gerpref}_fastqc.html",
-            gerpref=GERP_REF_NAMES,),
         expand("results/gerp/fastq_files/stats/{gerpref}_fastqc.zip",
             gerpref=GERP_REF_NAMES,),
     output:
@@ -244,16 +242,17 @@ rule align2target:
     threads: 8
     params:
         extra=r"-R '@RG\tID:{gerpref}\tSM:{gerpref}\tPL:ILLUMINA\tPI:330'",
-        scratch=scratch_dir,
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
             samtools view -@ {threads} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
-            samtools view -@ {threads} -b - | samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+            samtools view -@ {threads} -b - | samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 

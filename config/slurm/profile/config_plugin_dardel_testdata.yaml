@@ -7,6 +7,7 @@ printshellcmds: true
 software-deployment-method: apptainer
 use-apptainer: True
 apptainer-args: "-B /cfs/klemming"
+shadow-prefix: /cfs/klemming/scratch/u/user # Location of shadow directory where some rules are executed. Change to your user's allocated temporary directory: /cfs/klemming/scratch/first-letter-of-username/username
 
 # slurm resources
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs

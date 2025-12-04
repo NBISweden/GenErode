@@ -59,6 +59,8 @@ rule merge_historical_bams_per_index:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_merge_historical_bams_per_index.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
@@ -85,6 +87,8 @@ rule merge_modern_bams_per_index:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_merge_modern_bams_per_index.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
@@ -215,6 +219,8 @@ rule rmdup_historical_bams:
     threads: 6
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_rmdup_historical_bams.log",
+    shadow:
+        "minimal"
     singularity:
         samtools_python_container
     shell:
@@ -231,18 +237,20 @@ rule rmdup_modern_bams:
         index="results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai",
     output:
         rmdup=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam"),
-        metrix=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup_metrics.txt"),
+        metrics="results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup_metrics.txt",
     threads: 2
     resources:
         mem_mb=16000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_rmdup_modern_bams.log",
+    shadow:
+        "minimal"
     singularity:
         picard_container
     shell:
         """
         mem=$((({resources.mem_mb} - 2000)/1000))
-        picard MarkDuplicates -Xmx${{mem}}g INPUT={input.merged} OUTPUT={output.rmdup} METRICS_FILE={output.metrix} 2> {log}
+        picard MarkDuplicates -Xmx${{mem}}g INPUT={input.merged} OUTPUT={output.rmdup} METRICS_FILE={output.metrics} 2> {log}
         """
 
 
@@ -329,6 +337,8 @@ rule historical_rmdup_bam_multiqc:
 rule modern_rmdup_bam_multiqc:
     """Summarize all stats from all modern bam files"""
     input:
+        metrics=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup_metrics.txt",
+            sampleindex=mod_pipeline_bam_sm_idx,),
         rmdup=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.stats.txt",
             sampleindex=mod_pipeline_bam_sm_idx,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.qualimap/qualimapReport.html",
@@ -359,6 +369,8 @@ rule merge_historical_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_merge_historical_bams_per_sample.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
@@ -385,6 +397,8 @@ rule merge_modern_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_merge_modern_bams_per_sample.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
@@ -588,14 +602,14 @@ rule realigned_bam_fastqc:
     input:
         bam=rules.indel_realigner.output.realigned,
     output:
-        html="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.html",
         zip="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc.zip",
-        dir=directory("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc/{sample}.merged.rmdup.merged.realn_fastqc"),
     params:
         dir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/fastqc",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:

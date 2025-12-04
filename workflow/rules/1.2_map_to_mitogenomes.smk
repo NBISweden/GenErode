@@ -187,14 +187,14 @@ rule map_historical_merged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
-    params:
-        scratch=scratch_dir,
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
-        bwa samse {input.ref} - {input.merged} | samtools sort -T {params.scratch} - > {output.bam} 2> {log}
+        bwa samse {input.ref} - {input.merged} | samtools sort - > {output.bam} 2> {log}
         """
 
 
@@ -209,20 +209,21 @@ rule map_historical_unmerged_to_mito:
         R1_un="results/historical/trimming/{sample}_{index}_{lane}_R1_unmerged.fastq.gz",
         R2_un="results/historical/trimming/{sample}_{index}_{lane}_R2_unmerged.fastq.gz",
     output:
-        R1_sai=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_R1_{mitoref}.sai"),
-        R2_sai=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_R2_{mitoref}.sai"),
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_unmerged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     params:
-        scratch=scratch_dir,
+        R1_sai="{sample}_{index}_{lane}_R1_{mitoref}.sai",
+        R2_sai="{sample}_{index}_{lane}_R2_{mitoref}.sai",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
         """
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
-        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
-        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort -T {params.scratch} - > {output.bam} 2>> {log}
+        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {params.R1_sai} 2> {log} &&
+        bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {params.R2_sai} 2>> {log} &&
+        bwa samse {input.ref} {params.R1_sai} {params.R2_sai} {input.R1_un} {input.R2_un} | samtools sort - > {output.bam} 2>> {log}
         """
 
 

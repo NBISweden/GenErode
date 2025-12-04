@@ -136,6 +136,8 @@ rule bam2pro:
         pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.pro"),
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}.{chr}_bam2pro.log",
+    shadow:
+        "minimal"
     singularity:
         mlrho_container
     shell:
@@ -149,7 +151,8 @@ rule bam2pro:
             minDP=3
         fi
 
-        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam} | awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
+        samtools mpileup -q 30 -Q 30 -B -l {input.bed} {input.bam} | \
+        awk -v minDP="$minDP" -v maxDP="$maxDP" '$4 >=minDP && $4 <=maxDP' | \
         sam2pro -c 5 > {output.pro} 2> {log}
         """
 
@@ -164,14 +167,12 @@ rule mlRho:
         dp=depth_file,
     output:
         mlRho="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.mlRho.txt",
-        con=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.con"),
-        lik=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.lik"),
-        pos=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.pos"),
-        sum=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb.sum"),
     params:
         db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb",
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_{chr}.log",
+    shadow:
+        "minimal"
     singularity:
         mlrho_container
     shell:

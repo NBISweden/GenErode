@@ -36,16 +36,6 @@ seqtk_container = "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec89
 gerp_container = "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
 # shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:3da9b5da9b1e30c6"
 
-## Fix path to scratch directory
-if os.path.exists(config["scratch_dir"]):
-    if config["scratch_dir"].endswith("/"):
-        scratch_dir = config["scratch_dir"]
-    else:
-        scratch_dir = config["scratch_dir"] + "/"
-else:
-    scratch_dir = "./"
-    print("Warning: scratch directory not found. Using pipeline working directory as scratch directory.")
-
 
 ## Reference assembly variables
 REF_DIR = os.path.dirname(config["ref_path"])

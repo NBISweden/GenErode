@@ -140,6 +140,8 @@ rule merge_all_vcfs:
     threads: 6
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
+    shadow:
+        "minimal"
     singularity:
         bcftools_container
     shell:

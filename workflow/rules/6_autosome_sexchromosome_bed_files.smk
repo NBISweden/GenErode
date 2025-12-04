@@ -32,7 +32,8 @@ rule make_sexchr_bed:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_sexchr_bed.log",
     shell:
         """
-        for i in {params.sexchr}; do grep -w $i {input.fai} | awk 'BEGIN {{FS="\t"}}; {{print $1 FS "0" FS $2}}' >> {output.sexchr_bed} 2>> {log}; done
+        for i in {params.sexchr}; do grep -w $i {input.fai} | \
+        awk 'BEGIN {{FS="\t"}}; {{print $1 FS "0" FS $2}}' >> {output.sexchr_bed} 2>> {log}; done
         """
 
 

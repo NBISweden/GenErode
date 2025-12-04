@@ -109,6 +109,8 @@ rule subsample_bams:
         DP=config["subsampling_depth"],
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsample_bams.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
@@ -168,27 +170,29 @@ rule subsampled_bam_depth:
         bam=rules.subsample_bams.output.subsam,
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
     output:
-        tmp=temp("results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dp"),
         dp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dpstats.txt",
     params:
+        tmp="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.repma.Q30.bam.dp",
         minDP=config["minDP"],
         maxDP=config["maxDP"],
         cov=config["zerocoverage"],
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_depth.log",
+    shadow:
+        "minimal"
     singularity:
         bwa_samtools_container
     shell:
         """
         if [ {params.cov} = "True" ] # include sites with missing data / zero coverage
         then
-            samtools depth -a -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
-            awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
+            samtools depth -a -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {params.tmp} 2> {log} &&
+            awk '{{sum+=$3}} END {{ print sum/NR }}' {params.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
             '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
         elif [ {params.cov} = "False" ] # exclude sites with missing data / zero coverage
         then
-            samtools depth -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {output.tmp} 2> {log} &&
-            awk '{{sum+=$3}} END {{ print sum/NR }}' {output.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
+            samtools depth -Q 30 -q 30 -b {input.no_rep_bed} {input.bam} > {params.tmp} 2> {log} &&
+            awk '{{sum+=$3}} END {{ print sum/NR }}' {params.tmp} | awk -v min={params.minDP} -v max={params.maxDP} \
             '{{ printf "%.0f %.0f %.0f", $1, $1*min, $1*max }}' > {output.dp} 2>> {log}
         fi        
         """

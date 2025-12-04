@@ -99,12 +99,15 @@ rule merge_CpG_genotype_beds:
     input:
         CpG_genotype_bed_files_to_merge,
     output:
-        tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcf.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcf.bed"),
     message:
         "the input files are: {input}"
+    params:
+        tmp=REF_NAME + ".concatenated.CpG_vcf.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:
@@ -112,10 +115,10 @@ rule merge_CpG_genotype_beds:
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {params.tmp} 2> {log} &&
+            bedtools merge -i {params.tmp} > {output.merged} 2>> {log}
         else
-            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            touch {params.tmp} && cp {input} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
@@ -129,6 +132,8 @@ rule sort_CpG_genotype_beds:
         sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:
@@ -141,12 +146,15 @@ rule merge_all_CpG_beds:
     input:
         all_CpG_bed_files_to_merge,
     output:
-        tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcfref.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcfref.bed"),
     message:
         "the input files are: {input}"
+    params:
+        tmp=REF_NAME + ".concatenated.CpG_vcfref.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:
@@ -154,10 +162,10 @@ rule merge_all_CpG_beds:
         files=`echo {input} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-            bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+            cat {input} | sort -k1,1 -k2,2n > {params.tmp} 2> {log} &&
+            bedtools merge -i {params.tmp} > {output.merged} 2>> {log}
         else
-            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            touch {params.tmp} && cp {input} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
         """
@@ -171,6 +179,8 @@ rule sort_all_CpG_beds:
         sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:
@@ -203,18 +213,21 @@ rule merge_CpG_repeats_beds:
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
         sorted_rep_bed=rules.sort_repeats_bed.output,
     output:
-        tmp=temp("results/" + REF_NAME + ".concatenated.{CpG_method}.repeats.bed"),
         merged=temp("results/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
     message:
         "the input files are: {input}"
+    params:
+        tmp=REF_NAME + ".concatenated.{CpG_method}.repeats.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:
         """
-        cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-        bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+        cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {params.tmp} 2> {log} &&
+        bedtools merge -i {params.tmp} > {output.merged} 2>> {log}
         """
 
 
@@ -226,6 +239,8 @@ rule sort_CpG_repeats_beds:
         sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
+    shadow:
+        "minimal"
     singularity:
         bedtools_htslib_container
     shell:

@@ -42,14 +42,14 @@ rule fastqc_historical_raw:
     input:
         fastq="data/raw_reads_symlinks/historical/{sample}_{index}_{lane}_R{nr}.fastq.gz",
     output:
-        html="data/raw_reads_symlinks/historical/stats/{sample}_{index}_{lane}_R{nr}_fastqc.html",
         zip="data/raw_reads_symlinks/historical/stats/{sample}_{index}_{lane}_R{nr}_fastqc.zip",
-        dir=directory("data/raw_reads_symlinks/historical/stats/{sample}_{index}_{lane}_R{nr}_fastqc"),
     params:
-        dir="data/raw_reads_symlinks/historical/stats",
+        dir="data/raw_reads_symlinks/historical/stats/",
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -61,9 +61,6 @@ rule fastqc_historical_raw:
 rule multiqc_historical_raw:
     """Summarize all fastqc results for raw historical samples"""
     input:
-        expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
-            nr=[1, 2],),
         expand("data/raw_reads_symlinks/historical/stats/{sampleindexlane}_R{nr}_fastqc.zip",
             sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
@@ -107,14 +104,14 @@ rule fastqc_modern_raw:
     input:
         fastq="data/raw_reads_symlinks/modern/{sample}_{index}_{lane}_R{nr}.fastq.gz",
     output:
-        html="data/raw_reads_symlinks/modern/stats/{sample}_{index}_{lane}_R{nr}_fastqc.html",
         zip="data/raw_reads_symlinks/modern/stats/{sample}_{index}_{lane}_R{nr}_fastqc.zip",
-        dir=directory("data/raw_reads_symlinks/modern/stats/{sample}_{index}_{lane}_R{nr}_fastqc"),
     params:
-        dir="data/raw_reads_symlinks/modern/stats",
+        dir="data/raw_reads_symlinks/modern/stats/",
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_fastqc_modern_raw.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -126,9 +123,6 @@ rule fastqc_modern_raw:
 rule multiqc_modern_raw:
     """Summarize all fastqc results for all raw modern samples"""
     input:
-        expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.html",
-            sampleindexlane=mod_pipeline_bam_sm_idx_ln,
-            nr=[1, 2],),
         expand("data/raw_reads_symlinks/modern/stats/{sampleindexlane}_R{nr}_fastqc.zip",
             sampleindexlane=mod_pipeline_bam_sm_idx_ln,
             nr=[1, 2],),
@@ -212,14 +206,14 @@ rule fastqc_historical_merged:
     input:
         rules.fastp_historical.output.merged,
     output:
-        html="results/historical/trimming/stats/{sample}_{index}_{lane}_trimmed_merged_fastqc.html",
         zip="results/historical/trimming/stats/{sample}_{index}_{lane}_trimmed_merged_fastqc.zip",
-        dir=directory("results/historical/trimming/stats/{sample}_{index}_{lane}_trimmed_merged_fastqc"),
     params:
-        dir="results/historical/trimming/stats",
+        dir="results/historical/trimming/stats/",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -233,14 +227,14 @@ rule fastqc_historical_unmerged:
     input:
         "results/historical/trimming/{sample}_{index}_{lane}_R{nr}_unmerged.fastq.gz",
     output:
-        html="results/historical/trimming/stats/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc.html",
         zip="results/historical/trimming/stats/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc.zip",
-        dir=directory("results/historical/trimming/stats/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc"),
     params:
         dir="results/historical/trimming/stats",
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -249,8 +243,7 @@ rule fastqc_historical_unmerged:
         then
             fastqc -o {params.dir} -t {threads} --extract {input} 2> {log}
         else
-            mkdir -p {output.dir} &&
-            touch {output.html} && touch {output.zip} &&
+            touch {output.zip} &&
             echo "No reads in {input} >> {log}"
         fi
         """
@@ -261,14 +254,14 @@ rule fastqc_modern_trimmed:
     input:
         "results/modern/trimming/{sample}_{index}_{lane}_R{nr}_trimmed.fastq.gz",
     output:
-        html="results/modern/trimming/stats/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc.html",
         zip="results/modern/trimming/stats/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc.zip",
-        dir=directory("results/modern/trimming/stats/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc"),
     params:
         dir="results/modern/trimming/stats/",
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc_modern_trimmed.log",
     threads: 2
+    shadow:
+        "minimal"
     singularity:
         fastqc_container
     shell:
@@ -280,15 +273,13 @@ rule fastqc_modern_trimmed:
 rule multiqc_historical_trimmed:
     """Summarize all fastqc results for all trimmed and merged historical samples"""
     input:
-        expand("results/historical/trimming/stats/{sampleindexlane}_trimmed_merged_fastqc.{ext}",
-            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
-            ext=["html", "zip"],),
-        expand("results/historical/trimming/stats/{sampleindexlane}_fastp_report.html",
+        expand("results/historical/trimming/stats/{sampleindexlane}_trimmed_merged_fastqc.zip",
             sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
-        expand("results/historical/trimming/stats/{sampleindexlane}_R{nr}_unmerged_fastqc.{ext}",
+        expand("results/historical/trimming/stats/{sampleindexlane}_fastp_report.json",
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
+        expand("results/historical/trimming/stats/{sampleindexlane}_R{nr}_unmerged_fastqc.zip",
             sampleindexlane=hist_pipeline_bam_sm_idx_ln,
-            nr=[1, 2],
-            ext=["html", "zip"],),
+            nr=[1, 2],),
     output:
         stats="results/historical/trimming/stats/multiqc/multiqc_report.html",
     params:
@@ -307,11 +298,10 @@ rule multiqc_historical_trimmed:
 rule multiqc_modern_trimmed:
     """Summarize all fastqc results for all trimmed modern samples"""
     input:
-        expand("results/modern/trimming/stats/{sampleindexlane}_R{nr}_trimmed_fastqc.{ext}",
+        expand("results/modern/trimming/stats/{sampleindexlane}_R{nr}_trimmed_fastqc.zip",
             sampleindexlane=mod_pipeline_bam_sm_idx_ln,
-            nr=[1, 2],
-            ext=["html", "zip"]),
-        expand("results/modern/trimming/stats/{sampleindexlane}_fastp_report.html",
+            nr=[1, 2],),
+        expand("results/modern/trimming/stats/{sampleindexlane}_fastp_report.json",
             sampleindexlane=mod_pipeline_bam_sm_idx_ln,)
     output:
         stats="results/modern/trimming/stats/multiqc/multiqc_report.html",
