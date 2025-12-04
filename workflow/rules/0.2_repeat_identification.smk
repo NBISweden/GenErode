@@ -8,6 +8,20 @@ repeat_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".r
 
 
 # snakemake rules
+rule ref_upper:
+    """Reference assembly file preparation: change all lowercase bases to uppercase"""
+    input:
+        ref=config["ref_path"],
+    output:
+        ref_upper="results/references/" + REF_NAME + "/" + REF_NAME + ".upper.fasta",
+    log:
+        "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
+    shell:
+        """
+        awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
+        """
+
+
 if os.path.exists(config["repeat_bed_file"]):
     rule sort_userprovided_repeat_bed:
         """Sort userprovided repeat BED file"""
@@ -26,20 +40,6 @@ if os.path.exists(config["repeat_bed_file"]):
             """
 
 else:
-    rule ref_upper:
-        """Reference assembly file preparation for RepeatModeler and RepeatMasker: change all lowercase bases to uppercase"""
-        input:
-            ref=config["ref_path"],
-        output:
-            ref_upper="results/references/" + REF_NAME + "/" + REF_NAME + ".upper.fasta",
-        log:
-            "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
-        shell:
-            """
-            awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
-            """
-
-
     rule repeatmodeler:
         """RepeatModeler for de novo repeat prediction from a reference assembly"""
         input:
