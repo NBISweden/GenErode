@@ -29,8 +29,6 @@ rule repeatmodeler:
     output:
         repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
         stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
-    log:
-        "logs/ref/repeatmodeler/repeatmodeler/{ref}.log",
     params:
         name=REF_NAME,
     log:
