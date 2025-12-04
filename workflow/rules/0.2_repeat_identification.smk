@@ -3,8 +3,8 @@
 
 # Code collecting output files from this part of the pipeline
 repeat_id_outputs=[]
-repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed")
-repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
+repeat_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".repeats.sorted.bed")
+repeat_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".repma.bed")
 
 
 # snakemake rules
@@ -13,7 +13,7 @@ rule ref_upper:
     input:
         ref=config["ref_path"],
     output:
-        ref_upper=REF_DIR + "/" + REF_NAME + ".upper.fasta",
+        ref_upper="results/references/" + REF_NAME + "/" + REF_NAME + ".upper.fasta",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
     shell:
@@ -27,8 +27,9 @@ rule repeatmodeler:
     input:
         ref_upper=rules.ref_upper.output,
     output:
-        repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
-        stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
+        repmo="results/references/" + REF_NAME + "/repeatmodeler/consensi.fa.classified",
+        stk="results/references/" + REF_NAME + "/repeatmodeler/families-classified.stk",
+        log="results/references/" + REF_NAME + "/repeatmodeler/rmod.log",
     params:
         name=REF_NAME,
     log:
@@ -54,8 +55,8 @@ rule repeatmasker:
         ref_upper=rules.ref_upper.output,
         repmo=rules.repeatmodeler.output.repmo,
     output:
-        rep_tbl=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.tbl",
-        rep_out=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.out",
+        rep_tbl="results/references/" + REF_NAME + "/repeatmasker/" + REF_NAME + ".upper.fasta.tbl",
+        rep_out="results/references/" + REF_NAME + "/repeatmasker/" + REF_NAME + ".upper.fasta.out",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
@@ -74,7 +75,7 @@ rule make_repeats_bed:
     input:
         rep_out=rules.repeatmasker.output.rep_out,
     output:
-        rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.bed",
+        rep_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".repeats.bed",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repeats_bed.log"),
     run:
@@ -91,7 +92,7 @@ rule sort_repeats_bed:
         rep_bed=rules.make_repeats_bed.output.rep_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
+        sorted_rep_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".repeats.sorted.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     singularity:
@@ -108,7 +109,7 @@ rule make_no_repeats_bed:
         sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
+        no_rep_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".repma.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     singularity:

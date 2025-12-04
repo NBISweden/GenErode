@@ -5,22 +5,22 @@
 CpG_id_outputs=[]
 
 if config["CpG_from_vcf"] == True:
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcf.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcf.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcf.repma.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcf.repeats.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcf.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcf.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcf.repma.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcf.repeats.bed")
 
 elif config["CpG_from_reference"] == True:
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_ref.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_ref.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_ref.repma.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_ref.repeats.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_ref.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_ref.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_ref.repma.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_ref.repeats.bed")
 
 elif config["CpG_from_vcf_and_reference"] == True:
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcfref.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".noCpG_vcfref.repma.bed")
-    CpG_id_outputs.append("results/" + REF_NAME + ".CpG_vcfref.repeats.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcfref.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcfref.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcfref.repma.bed")
+    CpG_id_outputs.append("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcfref.repeats.bed")
 
 
 # Functions used by rules of this part of the pipeline
@@ -40,7 +40,7 @@ def all_CpG_bed_files_to_merge(wildcards):
             sample=HIST_CpG_SAMPLES,)
         mod_CpG = expand("results/modern/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed",
             sample=MOD_CpG_SAMPLES,)
-        ref = expand("results/" + REF_NAME + ".CpG_ref.bed")
+        ref = expand("results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_ref.bed")
     return hist_CpG + mod_CpG + ref
 
 
@@ -83,7 +83,7 @@ rule make_CpG_reference_bed:
     input:
         ref=rules.ref_upper.output,
     output:
-        bed="results/" + REF_NAME + ".CpG_ref.bed",
+        bed="results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_ref.bed",
     params:
         refdirbed=REF_DIR + "/" + REF_NAME + ".CpG_ref",
     log:
@@ -99,7 +99,7 @@ rule merge_CpG_genotype_beds:
     input:
         CpG_genotype_bed_files_to_merge,
     output:
-        merged=temp("results/" + REF_NAME + ".merged.CpG_vcf.bed"),
+        merged=temp("results/references/" + REF_NAME + "/" + REF_NAME + ".merged.CpG_vcf.bed"),
     message:
         "the input files are: {input}"
     params:
@@ -129,7 +129,7 @@ rule sort_CpG_genotype_beds:
         merged_bed=rules.merge_CpG_genotype_beds.output.merged,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
+        sorted_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcf.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
     shadow:
@@ -146,7 +146,7 @@ rule merge_all_CpG_beds:
     input:
         all_CpG_bed_files_to_merge,
     output:
-        merged=temp("results/" + REF_NAME + ".merged.CpG_vcfref.bed"),
+        merged=temp("results/references/" + REF_NAME + "/" + REF_NAME + ".merged.CpG_vcfref.bed"),
     message:
         "the input files are: {input}"
     params:
@@ -176,7 +176,7 @@ rule sort_all_CpG_beds:
         merged_bed=rules.merge_all_CpG_beds.output.merged,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
+        sorted_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".CpG_vcfref.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
     shadow:
@@ -192,10 +192,10 @@ rule sort_all_CpG_beds:
 rule make_noCpG_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
-        CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
+        CpG_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".{CpG_method}.bed",
         genomefile=rules.genome_file.output.genomefile,
     output:
-        no_CpG_bed="results/" + REF_NAME + ".no{CpG_method}.bed",
+        no_CpG_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".no{CpG_method}.bed",
     threads: 2
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
@@ -210,10 +210,10 @@ rule make_noCpG_bed:
 
 rule merge_CpG_repeats_beds:
     input:
-        CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
+        CpG_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".{CpG_method}.bed",
         sorted_rep_bed=rules.sort_repeats_bed.output,
     output:
-        merged=temp("results/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
+        merged=temp("results/references/" + REF_NAME + "/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
     message:
         "the input files are: {input}"
     params:
@@ -236,7 +236,7 @@ rule sort_CpG_repeats_beds:
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
+        sorted_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".{CpG_method}.repeats.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
     shadow:
@@ -255,7 +255,7 @@ rule make_noCpG_repma_bed:
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
         genomefile=rules.genome_file.output.genomefile,
     output:
-        no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
+        no_CpG_repma_bed="results/references/" + REF_NAME + "/" + REF_NAME + ".no{CpG_method}.repma.bed",
     threads: 2
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",

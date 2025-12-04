@@ -18,13 +18,13 @@ elif os.path.exists(config["modern_samples"]):
 def bed_file_mlRho(wildcards):
     """Select correct bed file for filtering during mlRho analysis"""
     if config["CpG_from_vcf"] == True:
-        bed = "results/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed"
+        bed = "results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcf.repma.{chr}.bed"
     elif config["CpG_from_reference"] == True:
-        bed = "results/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed"
+        bed = "results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_ref.repma.{chr}.bed"
     elif config["CpG_from_vcf_and_reference"] == True:
-        bed = "results/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed"
+        bed = "results/references/" + REF_NAME + "/" + REF_NAME + ".noCpG_vcfref.repma.{chr}.bed"
     else:
-        bed = "results/" + REF_NAME + ".repma.{chr}.bed"
+        bed = "results/references/" + REF_NAME + "/" + REF_NAME + ".repma.{chr}.bed"
     return bed
 
 def all_mlRho_outputs(wildcards):
