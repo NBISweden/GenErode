@@ -52,8 +52,6 @@ else:
             nog=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nog"),
             nsq=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nsq"),
             translation=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".translation"),
-        container:
-            repeatmodeler_container
         params:
             db="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME,
         log:
@@ -79,8 +77,6 @@ else:
             log="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-rmod.log",
         log:
             os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
-        container:
-            repeatmodmask_container
         params:
             db="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME,
         threads: 16
