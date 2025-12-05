@@ -45,9 +45,9 @@ else:
         input:
             ref_upper=rules.ref_upper.output,
         output:
-            repmo="results/references/" + REF_NAME + "/repeatmodeler/consensi.fa.classified",
-            stk="results/references/" + REF_NAME + "/repeatmodeler/families-classified.stk",
-            log="results/references/" + REF_NAME + "/repeatmodeler/rmod.log",
+            repmo="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.fa",
+            stk="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.stk",
+            log="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-rmod.log",
         params:
             name=REF_NAME,
         log:
