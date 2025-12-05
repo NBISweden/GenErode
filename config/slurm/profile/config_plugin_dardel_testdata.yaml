@@ -22,6 +22,7 @@ default-resources:
 
 ## set-threads: map rule names to cpus-per-task
 set-threads:
+  repeatmodeler_builddatabase: 10
   repeatmodeler: 20
   repeatmasker: 20
   fastqc_historical_raw: 10

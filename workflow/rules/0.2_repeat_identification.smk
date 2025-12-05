@@ -40,19 +40,24 @@ if os.path.exists(config["repeat_bed_file"]):
             """
 
 else:
-    rule repeatmodeler:
-        """RepeatModeler for de novo repeat prediction from a reference assembly"""
+    rule repeatmodeler_builddatabase:
+    """Build database for RepeatModeler"""
         input:
             ref_upper=rules.ref_upper.output,
         output:
-            repmo="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.fa",
-            stk="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.stk",
-            log="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-rmod.log",
+            nhr=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nhr"),
+            nin=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nin"),
+            nnd=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nnd"),
+            nni=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nni"),
+            nog=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nog"),
+            nsq=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".nsq"),
+            translation=temp("results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + ".translation"),
+        container:
+            repeatmodeler_container
         params:
-            name=REF_NAME,
-            dir="results/references/" + REF_NAME + "/repeatmodeler/",
+            db="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME,
         log:
-            os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
+            os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler_builddatabase.log"),
         threads: 16
         shadow:
             "minimal"
@@ -60,13 +65,32 @@ else:
             repeatmodeler_container
         shell:
             """
-            cd {params.dir} &&
-            
-            # Build repeat database
-            BuildDatabase -engine ncbi -name {params.name} {input.ref_upper} 2> {log} &&
+            BuildDatabase -engine ncbi -name {params.db} {input.ref_upper} &> {log}
+            """
 
-            # Run RepeatModeler
-            RepeatModeler -engine ncbi -threads {threads} -database {params.name} -quick 2>> {log}
+
+    rule repeatmodeler:
+        """RepeatModeler for de novo repeat prediction from a reference assembly"""
+        input:
+            database=rules.repeatmodeler_builddatabase.output,
+        output:
+            repmo="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.fa",
+            stk="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-families.stk",
+            log="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-rmod.log",
+        log:
+            os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
+        container:
+            repeatmodmask_container
+        params:
+            db="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME,
+        threads: 16
+        shadow:
+            "minimal"
+        singularity:
+            repeatmodeler_container
+        shell:
+            """
+            RepeatModeler -engine ncbi -threads {threads} -database {params.db} -quick &> {log}
             """
 
 
@@ -80,6 +104,8 @@ else:
             rep_out="results/references/" + REF_NAME + "/repeatmasker/" + REF_NAME + ".upper.fasta.out",
         log:
             os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
+        params:
+            dir="results/references/" + REF_NAME + "/repeatmasker/",
         threads: 16
         shadow:
             "minimal"
@@ -87,7 +113,7 @@ else:
             repeatmodeler_container
         shell:
             """
-            RepeatMasker -pa {threads} -xsmall -gccalc -dir ./ -lib {input.repmo} {input.ref_upper} 2> {log}
+            RepeatMasker -pa {threads} -xsmall -gccalc -dir {params.dir} -lib {input.repmo} {input.ref_upper} 2> {log}
             """
 
 

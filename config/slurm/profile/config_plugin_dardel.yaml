@@ -24,6 +24,7 @@ set-threads:
   bwa_index_reference: 40
   picard_fasta_dict: 40
   sort_userprovided_repeat_bed: 60
+  repeatmodeler_builddatabase: 40
   repeatmodeler: 60
   repeatmasker: 60
   make_repeats_bed: 60

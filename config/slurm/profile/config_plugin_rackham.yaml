@@ -14,6 +14,7 @@ default-resources:
 
 ## set-threads: map rule names to threads
 set-threads:
+  repeatmodeler_builddatabase: 2
   repeatmodeler: 20
   repeatmasker: 20
   fastqc_historical_raw: 2
