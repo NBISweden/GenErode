@@ -50,6 +50,7 @@ else:
             log="results/references/" + REF_NAME + "/repeatmodeler/" + REF_NAME + "-rmod.log",
         params:
             name=REF_NAME,
+            dir="results/references/" + REF_NAME + "/repeatmodeler/",
         log:
             os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
         threads: 16
@@ -59,6 +60,8 @@ else:
             repeatmodeler_container
         shell:
             """
+            cd {params.dir} &&
+            
             # Build repeat database
             BuildDatabase -engine ncbi -name {params.name} {input.ref_upper} 2> {log} &&
 
