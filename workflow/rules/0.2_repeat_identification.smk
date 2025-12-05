@@ -41,7 +41,7 @@ if os.path.exists(config["repeat_bed_file"]):
 
 else:
     rule repeatmodeler_builddatabase:
-    """Build database for RepeatModeler"""
+        """Build database for RepeatModeler"""
         input:
             ref_upper=rules.ref_upper.output,
         output:
