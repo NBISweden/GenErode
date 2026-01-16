@@ -182,6 +182,8 @@ rule map_historical_merged_to_mito:
         merged="results/historical/trimming/{sample}_{index}_{lane}_trimmed_merged.fastq.gz",
     output:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
+    params:
+        scratch=scratch_dir,
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     singularity:
@@ -189,7 +191,7 @@ rule map_historical_merged_to_mito:
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
-        bwa samse {input.ref} - {input.merged} | samtools sort - > {output.bam} 2> {log}
+        bwa samse {input.ref} - {input.merged} | samtools sort -T {params.scratch} - > {output.bam} 2> {log}
         """
 
 
@@ -207,13 +209,15 @@ rule map_historical_unmerged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_unmerged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
+    params:
+        scratch=scratch_dir,
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
-        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort - > {output.bam} 2>> {log}
+        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort -T {params.scratch} - > {output.bam} 2>> {log}
         """
 
 

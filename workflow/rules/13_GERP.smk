@@ -328,6 +328,7 @@ rule align2target:
     threads: 8
     params:
         extra=r"-R '@RG\tID:{input.fastq}\tSM:{input.fastq}\tPL:ILLUMINA\tPI:330'",
+        scratch=scratch_dir,
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:
@@ -336,7 +337,7 @@ rule align2target:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
             samtools view -@ {threads} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
-            samtools view -@ {threads} -b - | samtools sort -@ {threads} - > {output.bam} 2> {log}
+            samtools view -@ {threads} -b - | samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
         """
 
 
