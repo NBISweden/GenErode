@@ -62,7 +62,7 @@ rule sai2bam:
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
     params:
-        scratch=scratch_dir,
+        scratch=config["scratch_dir"],
     threads: 8
     singularity:
         "docker://nbisweden/generode-bwa:latest"
@@ -105,7 +105,7 @@ rule map_modern:
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
     params:
-        scratch=scratch_dir,
+        scratch=config["scratch_dir"],
     threads: 8
     singularity:
         "docker://nbisweden/generode-bwa:latest"

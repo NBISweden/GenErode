@@ -328,7 +328,7 @@ rule align2target:
     threads: 8
     params:
         extra=r"-R '@RG\tID:{input.fastq}\tSM:{input.fastq}\tPL:ILLUMINA\tPI:330'",
-        scratch=scratch_dir,
+        scratch=config["scratch_dir"],
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     singularity:

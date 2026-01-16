@@ -183,7 +183,7 @@ rule map_historical_merged_to_mito:
     output:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
     params:
-        scratch=scratch_dir,
+        scratch=config["scratch_dir"],
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     singularity:
@@ -210,7 +210,7 @@ rule map_historical_unmerged_to_mito:
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     params:
-        scratch=scratch_dir,
+        scratch=config["scratch_dir"],
     singularity:
         "docker://nbisweden/generode-bwa:latest"
     shell:

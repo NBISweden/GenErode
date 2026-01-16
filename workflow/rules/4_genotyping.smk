@@ -39,14 +39,14 @@ rule sort_vcfs:
     output:
         sort="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.bcf",
     params:
-        tmpdir="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted_tmp/",
+        scratch=config["scratch_dir"],
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}.{processed}_sort_vcfs.log",
     singularity:
         "docker://quay.io/biocontainers/bcftools:1.9--h68d8f2e_9"
     shell:
         """
-        bcftools sort -O b -T {params.tmpdir} -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -O b -T {params.scratch} -o {output.sort} {input.bcf} 2> {log}
         """
 
 
