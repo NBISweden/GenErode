@@ -231,7 +231,7 @@ rule rmdup_modern_bams:
         index="results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai",
     output:
         rmdup=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam"),
-        metrix=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup_metrics.txt"),
+        metrix="results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup_metrics.txt",
     threads: 2
     resources:
         mem_mb=16000,
@@ -332,6 +332,8 @@ rule modern_rmdup_bam_multiqc:
         rmdup=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.stats.txt",
             sampleindex=mod_pipeline_bam_sm_idx,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup.bam.qualimap/qualimapReport.html",
+            sampleindex=mod_pipeline_bam_sm_idx,),
+        metrics=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/{sampleindex}.merged.rmdup_metrics.txt",
             sampleindex=mod_pipeline_bam_sm_idx,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/multiqc_report.html",
