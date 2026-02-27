@@ -29,15 +29,19 @@ set-threads:
   make_no_repeats_bed: 60
   fastqc_historical_raw: 20
   fastqc_modern_raw: 20
+  multiqc_historical_raw: 40
+  multiqc_modern_raw: 40
   fastp_historical: 40
   fastp_modern: 40
   fastqc_historical_merged: 20
   fastqc_historical_unmerged: 20
   fastqc_modern_trimmed: 20
+  multiqc_historical_trimmed: 40
+  multiqc_modern_trimmed: 40
   symlink_mito_genome: 40
   bwa_index_mito_ref: 80
-  map_historical_merged_to_mito: 20 # provide 4GB memory per thread under set-resources
-  map_historical_unmerged_to_mito: 20 # provide 4GB memory per thread under set-resources  
+  map_historical_merged_to_mito: 60
+  map_historical_unmerged_to_mito: 60  
   mitogenome_bam_stats: 40
   historical_mito_bams_qualimap: 40
   historical_merged_mito_bams_qualimap: 40
@@ -46,33 +50,48 @@ set-threads:
   merge_historical_mitogenome_bams_per_sample: 40
   merged_mitogenome_bam_stats: 40
   historical_mito_bams_multiqc: 40
-  map_historical: 20 # provide 4GB memory per thread under set-resources
-  sai2bam: 20 # provide 4GB memory per thread under set-resources
-  map_modern: 20 # # provide 4GB memory per thread under set-resources
+  map_historical: 60
+  sai2bam: 60
+  map_modern: 60
   sorted_bam_qualimap: 40
+  historical_raw_bam_multiqc: 40
+  modern_raw_bam_multiqc: 40
   merge_historical_bams_per_index: 40
   merge_modern_bams_per_index: 40
   merged_index_bam_qualimap: 40
+  historical_merged_index_bam_multiqc: 40
+  modern_merged_index_bam_multiqc: 40
   rmdup_historical_bams: 40
   rmdup_modern_bams: 10 # provide small number of threads and high amount of memory under set-resources
   rmdup_bam_qualimap: 40
+  historical_rmdup_bam_multiqc: 40
+  modern_rmdup_bam_multiqc: 40
   merge_historical_bams_per_sample: 40
   merge_modern_bams_per_sample: 40
   merged_sample_bam_qualimap: 40
+  historical_merged_sample_bam_multiqc: 40
+  modern_merged_sample_bam_multiqc: 40
   indel_realigner_targets: 40
   indel_realigner: 40
   realigned_bam_qualimap: 40
   realigned_bam_fastqc: 20
   realigned_bam_depth: 80
+  historical_realigned_bam_multiqc: 40
+  modern_realigned_bam_multiqc: 40
   userprovided_bam_fastqc: 20
   userprovided_bam_qualimap: 40
   userprovided_bam_depth: 80
+  historical_userprovided_bam_multiqc: 40
+  modern_userprovided_bam_multiqc: 40
   rescale_historical: 80
   rescaled_bam_qualimap: 40
   rescaled_bam_fastqc: 40
+  rescaled_bam_multiqc: 40
   filter_bam_mapped_mq: 40
   subsample_bams: 40
   subsampled_bam_qualimap: 40
+  historical_subsampled_bam_multiqc: 40
+  modern_subsampled_bam_multiqc: 40
   variant_calling: 40
   sort_vcfs: 40
   make_noCpG_bed: 20
@@ -82,22 +101,25 @@ set-threads:
   intersect_autos_repma_beds: 20
   intersect_sexchr_CpG_repma_beds: 20
   intersect_autos_CpG_repma_beds: 20
-  remove_CpG_vcf: 40
-  remove_snps_near_indels: 40
-  filter_vcfs_qual_dp: 40
-  filter_vcfs_allelic_balance: 40
-  remove_repeats_vcf: 40
-  merge_all_vcfs: 40
-  filter_vcf_biallelic: 40
-  filter_vcf_missing: 40
-  remove_chromosomes: 40
-  filter_biallelic_missing_vcf: 40
+  remove_CpG_vcf: 60
+  remove_snps_near_indels: 60
+  filter_vcfs_qual_dp: 60
+  filter_vcfs_allelic_balance: 60
+  remove_repeats_vcf: 60
+  merge_all_vcfs: 60
+  filter_vcf_biallelic: 60
+  filter_vcf_missing: 60
+  remove_chromosomes: 60
+  filter_biallelic_missing_vcf: 60
   vcf2plink_pca: 40
-  plink_eigenvec: 40
+  plink_eigenvec: 60
   filter_vcf_hwe: 40
   vcf2plink_hwe: 40
-  build_snpEff_db: 40
-  annotate_vcf: 40
+  build_snpEff_db: 60
+  biallelic_missing_bcf2vcf: 40
+  annotate_vcf: 60
+  historical_snpEff_multiqc: 40
+  modern_snpEff_multiqc: 40
   outgroups2fastq: 40
   outgroup_fastqc: 40
   align2target: 60
@@ -122,6 +144,8 @@ set-resources:
   - repeatmasker:mem_mb=128000
   - fastqc_historical_raw:mem_mb=40000
   - fastqc_modern_raw:mem_mb=40000
+  - multiqc_historical_raw:mem_mb=40000
+  - multiqc_modern_raw:mem_mb=40000
   - fastp_historical:runtime=600
   - fastp_historical:mem_mb=80000
   - fastp_modern:runtime=600
@@ -129,36 +153,47 @@ set-resources:
   - fastqc_historical_merged:mem_mb=40000
   - fastqc_historical_unmerged:mem_mb=40000
   - fastqc_modern_trimmed:mem_mb=40000
-  - map_historical_merged_to_mito:mem_mb=80000 # provide 4GB memory per thread
-  - map_historical_unmerged_to_mito:mem_mb=80000 # provide 4GB memory per thread
+  - multiqc_historical_trimmed:mem_mb=40000
+  - multiqc_modern_trimmed:mem_mb=40000
+  - map_historical_merged_to_mito:mem_mb=80000
+  - map_historical_unmerged_to_mito:mem_mb=80000
   - historical_mito_bams_qualimap:mem_mb=80000
   - historical_merged_mito_bams_qualimap:mem_mb=80000
+  - historical_mito_bams_multiqc:mem_mb=40000
   - map_historical:runtime=10080
-  - map_historical:mem_mb=80000 # provide 4GB memory per thread
+  - map_historical:mem_mb=80000
   - sai2bam:runtime=10080
-  - sai2bam:mem_mb=80000 # provide 4GB memory per thread
+  - sai2bam:mem_mb=80000
   - map_modern:runtime=10080
-  - map_modern:mem_mb=80000 # provide 4GB memory per thread
+  - map_modern:mem_mb=80000
   - sorted_bam_qualimap:runtime=5760
   - sorted_bam_qualimap:mem_mb=80000
+  - historical_raw_bam_multiqc:mem_mb=40000
+  - modern_raw_bam_multiqc:mem_mb=40000
   - merge_historical_bams_per_index:runtime=2880
   - merge_historical_bams_per_index:mem_mb=80000
   - merge_modern_bams_per_index:runtime=2880
   - merge_modern_bams_per_index:mem_mb=80000
   - merged_index_bam_qualimap:runtime=5760
   - merged_index_bam_qualimap:mem_mb=80000
+  - historical_merged_index_bam_multiqc:mem_mb=40000
+  - modern_merged_index_bam_multiqc:mem_mb=40000
   - rmdup_historical_bams:runtime=4400
   - rmdup_historical_bams:mem_mb=80000
   - rmdup_modern_bams:runtime=4400
   - rmdup_modern_bams:mem_mb=80000 # provide small number of threads and high amount of memory
   - rmdup_bam_qualimap:runtime=5760
   - rmdup_bam_qualimap:mem_mb=80000
+  - historical_rmdup_bam_multiqc:mem_mb=40000
+  - modern_rmdup_bam_multiqc:mem_mb=40000
   - merge_historical_bams_per_sample:runtime=2880
   - merge_historical_bams_per_sample:mem_mb=80000
   - merge_modern_bams_per_sample:runtime=2880
   - merge_modern_bams_per_sample:mem_mb=80000
   - merged_sample_bam_qualimap:runtime=5760
   - merged_sample_bam_qualimap:mem_mb=80000
+  - historical_merged_sample_bam_multiqc:mem_mb=40000
+  - modern_merged_sample_bam_multiqc:mem_mb=40000
   - indel_realigner_targets:runtime=7200
   - indel_realigner_targets:mem_mb=80000
   - indel_realigner:runtime=7200
@@ -168,22 +203,29 @@ set-resources:
   - realigned_bam_fastqc:runtime=300
   - realigned_bam_fastqc:mem_mb=40000
   - realigned_bam_depth:runtime=2880
+  - historical_realigned_bam_multiqc:mem_mb=40000
+  - modern_realigned_bam_multiqc:mem_mb=40000
   - userprovided_bam_fastqc:runtime=300
   - userprovided_bam_fastqc:mem_mb=40000
   - userprovided_bam_qualimap:runtime=5760
   - userprovided_bam_qualimap:mem_mb=80000
   - userprovided_bam_depth:runtime=2880
+  - historical_userprovided_bam_multiqc:mem_mb=40000
+  - modern_userprovided_bam_multiqc:mem_mb=40000
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
   - rescaled_bam_qualimap:mem_mb=80000
   - rescaled_bam_fastqc:runtime=300
   - rescaled_bam_fastqc:mem_mb=40000
+  - rescaled_bam_multiqc:mem_mb=40000
   - filter_bam_mapped_mq:runtime=1440
   - filter_bam_mapped_mq:mem_mb=80000
   - subsample_bams:runtime=5760
   - subsample_bams:mem_mb=80000
   - subsampled_bam_qualimap:runtime=5760
   - subsampled_bam_qualimap:mem_mb=80000
+  - historical_subsampled_bam_multiqc:mem_mb=40000
+  - modern_subsampled_bam_multiqc:mem_mb=40000
   - variant_calling:runtime=2880
   - variant_calling:mem_mb=80000
   - sort_vcfs:runtime=1440
@@ -226,7 +268,12 @@ set-resources:
   - filter_vcf_hwe:runtime=300
   - vcf2plink_hwe:runtime=300
   - build_snpEff_db:runtime=300
+  - build_snpEff_db:mem_mb=80000
+  - biallelic_missing_bcf2vcf:mem_mb=80000
   - annotate_vcf:runtime=300
+  - annotate_vcf:mem_mb=80000
+  - historical_snpEff_multiqc:mem_mb=40000
+  - modern_snpEff_multiqc:mem_mb=40000
   - outgroups2fastq:runtime=300
   - outgroups2fastq:mem_mb=80000
   - outgroup_fastqc:runtime=60
