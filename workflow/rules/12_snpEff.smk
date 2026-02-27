@@ -176,13 +176,14 @@ rule biallelic_missing_bcf2vcf:
         csi=rules.index_biallelic_missing_vcf.output.index,
     output:
         vcf=temp("results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.gz"),
+    threads: 6
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_bcf2vcf.log",
     singularity:
         bcftools_container
     shell:
         """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
+        bcftools convert --threads {threads} -O z -o {output.vcf} {input.bcf} 2> {log}
         """
 
 
