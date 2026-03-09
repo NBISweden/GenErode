@@ -102,10 +102,16 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 20
   intersect_autos_CpG_repma_beds: 20
   remove_CpG_vcf: 60
+  historical_CpG_filtered_vcf_multiqc: 40
+  modern_CpG_filtered_vcf_multiqc: 40
   remove_snps_near_indels: 60
   filter_vcfs_qual_dp: 60
   filter_vcfs_allelic_balance: 60
+  historical_quality_filtered_vcf_multiqc: 40
+  modern_quality_filtered_vcf_multiqc: 40
   remove_repeats_vcf: 60
+  historical_repmasked_vcf_multiqc: 40
+  modern_repmasked_vcf_multiqc: 40
   merge_all_vcfs: 60
   filter_vcf_biallelic: 60
   filter_vcf_missing: 60
