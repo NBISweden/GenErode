@@ -41,7 +41,7 @@ rule make_autosomes_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         sexchr_bed=rules.make_sexchr_bed.output,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         autosome_bed=REF_DIR + "/" + REF_NAME + ".autos.bed",
     log:
@@ -59,7 +59,7 @@ rule intersect_sexchr_repma_beds:
     input:
         no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
         sexchr_bed=rules.make_sexchr_bed.output,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         repma_sex_chr="results/" + REF_NAME + ".repma.sexchr.bed",
     threads: 2
@@ -80,7 +80,7 @@ rule intersect_autos_repma_beds:
     input:
         no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
         autosome_bed=rules.make_autosomes_bed.output,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         repma_autos="results/" + REF_NAME + ".repma.autos.bed",
     threads: 2
@@ -101,7 +101,7 @@ rule intersect_sexchr_noCpG_repma_beds:
     input:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
         sexchr_bed=rules.make_sexchr_bed.output,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_sexchr="results/" + REF_NAME + ".no{CpG_method}.repma.sexchr.bed",
     threads: 2
@@ -122,7 +122,7 @@ rule intersect_autos_noCpG_repma_beds:
     input:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
         autosome_bed=rules.make_autosomes_bed.output,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_autos="results/" + REF_NAME + ".no{CpG_method}.repma.autos.bed",
     threads: 2

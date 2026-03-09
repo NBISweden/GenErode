@@ -7,7 +7,7 @@ ref_prep_outputs.append(expand("{ref_path}.{ext}",
     ref_path=config["ref_path"], 
     ext=["amb", "ann", "bwt", "pac", "sa", "fai"]))
 ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
-    ext=["dict", "genome", "bed"]))
+    ext=["dict", "bed"]))
 
 # snakemake rules
 localrules: make_reference_bed
@@ -67,20 +67,6 @@ rule picard_fasta_dict:
     shell:
         """
         picard CreateSequenceDictionary -Xmx{params.mem} R={input.ref} O={output.fdict} 2> {log}
-        """
-
-
-rule genome_file:
-    """Create a genome file for filtering of VCF and BAM files"""
-    input:
-        fai=rules.samtools_fasta_index.output,
-    output:
-        genomefile=REF_DIR + "/" + REF_NAME + ".genome",
-    log:
-        "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_genome_file.log",
-    shell:
-        """
-        awk -v OFS='\t' '{{print $1, $2}}' {input.fai} > {output.genomefile} 2> {log}
         """
 
 

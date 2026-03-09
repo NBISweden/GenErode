@@ -124,7 +124,7 @@ rule merge_CpG_genotype_beds:
 rule sort_CpG_genotype_beds:
     input:
         merged_bed=rules.merge_CpG_genotype_beds.output.merged,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
     log:
@@ -166,7 +166,7 @@ rule merge_all_CpG_beds:
 rule sort_all_CpG_beds:
     input:
         merged_bed=rules.merge_all_CpG_beds.output.merged,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
     log:
@@ -183,7 +183,7 @@ rule make_noCpG_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_bed="results/" + REF_NAME + ".no{CpG_method}.bed",
     threads: 2
@@ -221,7 +221,7 @@ rule merge_CpG_repeats_beds:
 rule sort_CpG_repeats_beds:
     input:
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
     log:
@@ -238,7 +238,7 @@ rule make_noCpG_repma_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
         merged_bed=rules.merge_CpG_repeats_beds.output.merged,
-        genomefile=rules.genome_file.output.genomefile,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
     threads: 2
