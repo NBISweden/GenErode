@@ -188,7 +188,7 @@ rule FROH_min_2Mb_table:
     Calculate the proportion of the genome in runs of homozygosity, for ROHs >= 2Mb
     """
     input:
-        genomefile=rules.samtools_fasta_index.output.fai
+        genomefile=rules.samtools_fasta_index.output.fai,
         ROH=all_ROH_outputs,
     output:
         table=report("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_table.txt",
