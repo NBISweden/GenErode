@@ -237,7 +237,7 @@ rule sort_CpG_repeats_beds:
 rule make_noCpG_repma_bed:
     input:
         ref_bed=rules.make_reference_bed.output,
-        merged_bed=rules.merge_CpG_repeats_beds.output.merged,
+        sorted_bed=rules.sort_CpG_repeats_beds.output.sorted_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
@@ -248,6 +248,6 @@ rule make_noCpG_repma_bed:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.merged_bed} \
+        bedtools subtract -a {input.ref_bed} -b {input.sorted_bed} \
         -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2> {log}
         """

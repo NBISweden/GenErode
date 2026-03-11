@@ -96,6 +96,7 @@ set-threads:
   sort_vcfs: 40
   make_noCpG_bed: 20
   merge_noCpG_noRepeats_beds: 20
+  sort_CpG_repeats_beds: 20
   make_noCpG_repma_bed: 20
   intersect_sexchr_repma_beds: 20
   intersect_autos_repma_beds: 20
@@ -240,6 +241,7 @@ set-resources:
   - make_noCpG_bed:runtime=300
   - merge_noCpG_noRepeats_beds:runtime=300
   - make_noCpG_repma_bed:runtime=300
+  - sort_CpG_repeats_beds:runtime=300
   - make_autosomes_bed:runtime=300
   - intersect_sexchr_repma_beds:runtime=300
   - intersect_autos_repma_beds:runtime=300
