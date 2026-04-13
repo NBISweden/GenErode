@@ -230,21 +230,36 @@ def all_GERP_outputs(wildcards):
 
 # snakemake rules
 localrules:
+    rename_ref_bed,
     split_ref_bed,
     fasta_to_fa,
     fna_to_fa,
     split_chunk_bed_files,
     relative_mutational_load_plot,
 
+rule rename_ref_bed:
+    """Rename the reference bed file to be able to split the 
+    correct file into chunks for GERP"""
+    input:
+        ref_bed=rules.make_reference_bed.output,
+    output:
+        ref_bed=REF_DIR + "/" + REF_NAME + ".genome.bed",
+    log:
+        "results/logs/13_GERP/rename_ref_bed.log",
+    shell:
+        """
+        cp {input.ref_bed} {output.ref_bed} 2> {log}
+        """
+
 rule split_ref_bed:
     """Split bed files to run the analysis in chunks."""
     input:
-        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
+        ref_bed=REF_DIR + "/" + REF_NAME + ".{chr}.bed",
     output:
         chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
             chr=CHR, chunk=CHUNKS,),
     params:
-        chunk_bed_dir=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/", chr=CHR,),
+        chunk_bed_dir=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}", chr=CHR,),
         chunks=config["gerp_chunks"],
         prefix="chunk",
     log:
