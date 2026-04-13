@@ -254,7 +254,7 @@ rule rename_ref_bed:
 rule split_ref_bed:
     """Split bed files to run the analysis in chunks."""
     input:
-        ref_bed=REF_DIR + "/" + REF_NAME + ".{chr}.bed",
+        ref_bed=expand(REF_DIR + "/" + REF_NAME + ".{chr}.bed", chr=CHR,),
     output:
         chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
             chr=CHR, chunk=CHUNKS,),
