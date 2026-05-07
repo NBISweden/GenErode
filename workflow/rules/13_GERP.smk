@@ -241,7 +241,7 @@ rule rename_ref_bed:
     """Rename the reference bed file to be able to split the 
     correct file into chunks for GERP"""
     input:
-        ref_bed=rules.make_reference_bed.output,
+        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
     output:
         ref_bed=REF_DIR + "/" + REF_NAME + ".genome.bed",
     log:
