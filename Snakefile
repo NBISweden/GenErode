@@ -293,6 +293,7 @@ if config["gerp"]:
         include: "workflow/rules/13_GERP.smk"
     else:
         include: "workflow/rules/0.1_reference_genome_preps.smk"
+        include: "workflow/rules/0.2_repeat_identification.smk"
         include: "workflow/rules/6_autosome_sexchromosome_bed_files.smk"
         include: "workflow/rules/13_GERP.smk"
 ###
