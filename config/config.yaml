@@ -516,9 +516,11 @@ gtf_path: ""
 gerp: False
 
 # Number of genome chunks for parallelization of GERP step. 
-# In case the assembly consists of 200 contigs/scaffolds or less,
-# set this number to a smaller value than the number of contigs/scaffolds. 
-gerp_chunks: 200 # default: 200
+# Set this number to the same or a smaller value than the number of 
+# contigs/scaffolds in the reference genome. Contigs/scaffolds can be 
+# excluded by providing a file listing them under "sexchromosomes" at 
+# the top of this config file.
+gerp_chunks: 30 
 
 # Full path to directory containing reference genomes of outgroup species in 
 # FASTA format for GERP++ score estimation.

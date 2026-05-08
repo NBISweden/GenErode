@@ -116,28 +116,58 @@ def all_GERP_outputs(wildcards):
 
 # snakemake rules
 localrules:
+    rename_ref_bed,
     split_ref_bed,
     fasta_to_fa,
     fna_to_fa,
     split_chunk_bed_files,
     relative_mutational_load_plot,
 
+rule rename_ref_bed:
+    """Rename the reference bed file to be able to split the 
+    correct file into chunks for GERP"""
+    input:
+        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
+    output:
+        ref_bed=REF_DIR + "/" + REF_NAME + ".genome.bed",
+    log:
+        "results/logs/13_GERP/rename_ref_bed.log",
+    shell:
+        """
+        cp {input.ref_bed} {output.ref_bed} 2> {log}
+        """
+
 rule split_ref_bed:
     """Split bed files to run the analysis in chunks."""
     input:
-        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
+        ref_bed=expand(REF_DIR + "/" + REF_NAME + ".{chr}.bed", chr=CHR,),
     output:
         chunk_bed=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed", 
             chr=CHR, chunk=CHUNKS,),
     params:
-        chunk_bed_dir=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/", chr=CHR,),
+        chunk_bed_dir=expand(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}", chr=CHR,),
         chunks=config["gerp_chunks"],
         prefix="chunk",
     log:
         "results/logs/13_GERP/split_ref_bed.log",
     shell:
         """
-        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.chunk_bed_dir}/{params.prefix}
+        nrows=$(grep -c '.' < {input.ref_bed})
+        if [ {params.chunks} -lt $nrows ]; then
+            split --number=l/{params.chunks} --numeric-suffixes=1 \
+            --additional-suffix=.bed {input.ref_bed} \
+            {params.chunk_bed_dir}/{params.prefix} 2> {log}
+        elif [ {params.chunks} -eq $nrows ]; then
+            split -l 1 --numeric-suffixes=1 \
+            --additional-suffix=.bed {input.ref_bed} \
+            {params.chunk_bed_dir}/{params.prefix} 2> {log}
+        else
+            echo "!!!\nWarning [GenErode pipeline]: \n\
+            The number of genome chunks is larger than the \n\
+            number of chromosomes/scaffolds in the reference \n\
+            genome. Choose a smaller number of chunks in the \n\
+            config file.\n!!!" >> {log}
+        fi
         """
 
 rule fasta_to_fa:
