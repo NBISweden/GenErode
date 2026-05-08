@@ -266,14 +266,14 @@ rule split_ref_bed:
         "results/logs/13_GERP/split_ref_bed.log",
     shell:
         """
-        nrows=$(wc -l < {input.ref_bed})
+        nrows=$(grep -c '.' < {input.ref_bed})
         if [ {params.chunks} -lt $nrows ]; then
             split --number=l/{params.chunks} --numeric-suffixes=1 \
             --additional-suffix=.bed {input.ref_bed} \
             {params.chunk_bed_dir}/{params.prefix} 2> {log}
         elif [ {params.chunks} -eq $nrows ]; then
-            split --number=l/{params.chunks} --numeric-suffixes=1 \
-            -l 1 --additional-suffix=.bed {input.ref_bed} \
+            split -l 1 --numeric-suffixes=1 \
+            --additional-suffix=.bed {input.ref_bed} \
             {params.chunk_bed_dir}/{params.prefix} 2> {log}
         else
             echo "!!!\nWarning [genome erosion workflow]: \n\
