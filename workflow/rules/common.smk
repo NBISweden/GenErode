@@ -452,7 +452,7 @@ ALL_SAMPLES = list(hist_sm + mod_sm)
 
 ###
 # mlRho, merge VCFs: sex chromosomal scaffolds
-sexchromosomeList = []  # fill the list with scaffold/contig names from the list of sex chromosome-linked scaffolds/contigs, if available
+sexchromosomeList = []  # fill the list with scaffold/chromosome names from the list of sex chromosome-linked scaffolds/chromosomes, if available
 if os.path.exists(config["sexchromosomes"]):
     with open(config["sexchromosomes"], "r") as file:
         for line in file:

@@ -1,5 +1,5 @@
 ##########################################################################
-### 9. Merge VCF files and filter for biallelic sites, missingness and sex-chromosomal contigs/scaffolds
+### 9. Merge VCF files and filter for biallelic sites, missingness and sex-chromosomal scaffolds/chromosomes
 
 # Code collecting output files from this part of the pipeline
 merge_vcf_outputs=[]
@@ -308,7 +308,7 @@ rule remove_chromosomes:
         index="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.autos.vcf.gz.csi",
     threads: 2
     params:
-        exclude = ",".join(sexchromosomeList) # parse list with contigs/scaffolds to exclude and convert to format chr1,chr2,chr3 for removal with bcftools view
+        exclude = ",".join(sexchromosomeList) # parse list with scaffolds/chromosomes to exclude and convert to format chr1,chr2,chr3 for removal with bcftools view
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.autos_remove_chromosomes.log",
     singularity:

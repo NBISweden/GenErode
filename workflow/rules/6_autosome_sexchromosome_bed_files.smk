@@ -21,7 +21,7 @@ if len(sexchromosomeList) > 0:
 localrules: rename_genome_bed, rename_noCpG_genome_beds
 
 rule make_sexchr_bed:
-    """Generate a bed file of sex chromosome-linked contigs/scaffolds"""
+    """Generate a bed file of sex chromosome-linked scaffolds/chromosomes"""
     input:
         fai=config["ref_path"] + ".fai",
     output:
@@ -37,7 +37,7 @@ rule make_sexchr_bed:
 
 
 rule make_autosomes_bed:
-    """Generate a bed file of autosomal contigs/scaffolds"""
+    """Generate a bed file of autosomal scaffolds/chromosomes"""
     input:
         ref_bed=rules.make_reference_bed.output,
         sexchr_bed=rules.make_sexchr_bed.output,
