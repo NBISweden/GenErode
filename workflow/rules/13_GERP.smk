@@ -266,7 +266,18 @@ rule split_ref_bed:
         "results/logs/13_GERP/split_ref_bed.log",
     shell:
         """
-        split --number=l/{params.chunks} --numeric-suffixes=1 --additional-suffix=.bed {input.ref_bed} {params.chunk_bed_dir}/{params.prefix}
+        nrows=$(wc -l < {input.ref_bed})
+        if [ {params.chunks} -le $nrows ]; then
+            split --number=l/{params.chunks} --numeric-suffixes=1 \
+            --additional-suffix=.bed {input.ref_bed} \
+            {params.chunk_bed_dir}/{params.prefix} 2> {log}
+        else
+            echo "!!!\nWarning [genome erosion workflow]: \
+            The number of genome chunks is larger than the \
+            number of chromosomes/scaffolds in the reference \
+            genome. Choose a smaller number of chunks in the \
+            config file.\n!!!" >> {log}
+        fi
         """
 
 rule fasta_to_fa:
