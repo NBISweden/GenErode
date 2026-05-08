@@ -267,9 +267,13 @@ rule split_ref_bed:
     shell:
         """
         nrows=$(wc -l < {input.ref_bed})
-        if [ {params.chunks} -le $nrows ]; then
+        if [ {params.chunks} -lt $nrows ]; then
             split --number=l/{params.chunks} --numeric-suffixes=1 \
             --additional-suffix=.bed {input.ref_bed} \
+            {params.chunk_bed_dir}/{params.prefix} 2> {log}
+        elif[ {params.chunks} -eg $nrows ]; then
+            split --number=l/{params.chunks} --numeric-suffixes=1 \
+            -l 1 --additional-suffix=.bed {input.ref_bed} \
             {params.chunk_bed_dir}/{params.prefix} 2> {log}
         else
             echo "!!!\nWarning [genome erosion workflow]: \n\
