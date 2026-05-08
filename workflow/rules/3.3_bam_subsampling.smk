@@ -52,7 +52,7 @@ rule subsample_bams:
         then
             samtools view -h -b -s $frac -@ {threads} -o {output.subsam} {input.bam} 2> {log}
         else
-            echo "!!!\nWarning [genome erosion workflow]: The sample {input.bam} has a lower average depth than the target depth for subsampling. \
+            echo "!!!\nWarning [GenErode pipeline]: The sample {input.bam} has a lower average depth than the target depth for subsampling. \
             Remove the sample from the subsampling list in the config file or choose a lower target depth.\n!!!" >> {log}
         fi
         """

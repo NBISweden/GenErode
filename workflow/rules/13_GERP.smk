@@ -276,7 +276,7 @@ rule split_ref_bed:
             --additional-suffix=.bed {input.ref_bed} \
             {params.chunk_bed_dir}/{params.prefix} 2> {log}
         else
-            echo "!!!\nWarning [genome erosion workflow]: \n\
+            echo "!!!\nWarning [GenErode pipeline]: \n\
             The number of genome chunks is larger than the \n\
             number of chromosomes/scaffolds in the reference \n\
             genome. Choose a smaller number of chunks in the \n\
