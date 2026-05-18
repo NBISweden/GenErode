@@ -2,11 +2,12 @@
 ### 0.1 Preparation of the reference genome for downstream analyses
 
 # Code collecting output files from this part of the pipeline
-all_outputs.append(expand("{ref_path}.{ext}", 
+ref_prep_outputs=[]
+ref_prep_outputs.append(expand("{ref_path}.{ext}", 
     ref_path=config["ref_path"], 
     ext=["amb", "ann", "bwt", "pac", "sa", "fai"]))
-all_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
-    ext=["dict", "genome", "bed"]))
+ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}", 
+    ext=["dict", "bed"]))
 
 # snakemake rules
 localrules: make_reference_bed
@@ -25,8 +26,6 @@ rule bwa_index_reference:
         dir=REF_DIR,
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_bwa_index.log",
-    group:
-        "reference_prep_group"
     singularity:
         bwa_container
     shell:
@@ -45,8 +44,6 @@ rule samtools_fasta_index:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
         + "_samtools_fasta_index.log",
-    group:
-        "reference_prep_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -65,29 +62,11 @@ rule picard_fasta_dict:
         mem="4g",
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_picard_fasta_dict.log",
-    group:
-        "reference_prep_group"
     singularity:
         picard_container
     shell:
         """
         picard CreateSequenceDictionary -Xmx{params.mem} R={input.ref} O={output.fdict} 2> {log}
-        """
-
-
-rule genome_file:
-    """Create a genome file for filtering of VCF and BAM files"""
-    input:
-        fai=rules.samtools_fasta_index.output,
-    output:
-        genomefile=REF_DIR + "/" + REF_NAME + ".genome",
-    log:
-        "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_genome_file.log",
-    group:
-        "reference_prep_group"
-    shell:
-        """
-        awk -v OFS='\t' '{{print $1, $2}}' {input.fai} > {output.genomefile} 2> {log}
         """
 
 

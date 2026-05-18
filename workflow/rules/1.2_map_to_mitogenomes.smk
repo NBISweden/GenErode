@@ -2,8 +2,10 @@
 ### 1.2 OPTIONAL Mapping of historical reads to human and animal mitochondrial genomes
 
 # Code collecting output files from this part of the pipeline
+map_mito_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        map_mito_outputs.append("results/historical/mitogenomes_mapping/stats/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline
@@ -38,11 +40,11 @@ def historical_mapped_reads_ratios_species_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
         species = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_" + MITO_NAME + ".sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],)
     elif config["map_unmerged_reads"] == False:
         species = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_" + MITO_NAME + ".sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],)
     return species
 
@@ -50,11 +52,11 @@ def historical_mapped_reads_ratios_other_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
         other = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{{mitoref}}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],)
     elif config["map_unmerged_reads"] == False:
         other = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{{mitoref}}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],)
     return other
 
@@ -75,8 +77,7 @@ def historical_mito_bams_merge_files_inputs(wildcards):
 
 def merge_hist_mito_bams_per_sample_inputs(wildcards):
     """Input for merge_historical_mitogenome_bams_per_sample"""
-    SAMPLE = "{}".format(wildcards.sample)
-    SAMPLEIDXLN_LIST = hist_sample_dict[SAMPLE]
+    SAMPLEIDXLN_LIST = hist_mito_sample_dict[wildcards.sample]
     return expand("results/historical/mitogenomes_mapping/{sampleindexlane}_merged_{{mitoref}}.sorted.bam",
         sampleindexlane=SAMPLEIDXLN_LIST,)
 
@@ -84,50 +85,50 @@ def historical_mito_bams_multiqc_inputs(wildcards):
     """Input for historical_mito_bams_multiqc and all"""
     if config["map_unmerged_reads"] == True:
         quali_report = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         summary = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/genome_results.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         stats = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged", "unmerged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_and_unmerged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
         merged_bam_stats = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_quali_report = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_summary = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/genome_results.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         outlist = (quali_report + summary + stats + ratios + merged_bam_stats + merged_bam_quali_report + merged_bam_summary)
     elif config["map_unmerged_reads"] == False:
         quali_report = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         summary = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.qualimap/genome_results.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         stats = expand("results/historical/mitogenomes_mapping/stats/{sampleindexlane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,
             reads=["merged"],
             mitoref=[MITO_NAME, HUMAN_NAME, CHICK_NAME, COW_NAME, PIG_NAME, MOUSE_NAME],)
         ratios = ["results/historical/mitogenomes_mapping/stats/ratios_of_merged_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt"]
         merged_bam_stats = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_quali_report = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/qualimapReport.html",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         merged_bam_summary = expand("results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/genome_results.txt",
-            sample=hist_sm,
+            sample=hist_pipeline_bam_sm,
             mitoref=[MITO_NAME],)
         outlist = (quali_report + summary + stats + ratios + merged_bam_stats + merged_bam_quali_report + merged_bam_summary)
     return outlist
@@ -174,8 +175,10 @@ rule bwa_index_mito_ref:
 
 
 rule map_historical_merged_to_mito:
-    """Map merged reads from historical samples to mitochondrial genomes."""
-    """BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015"""
+    """
+    Map merged reads from historical samples to mitochondrial genomes.
+    BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015.
+    """
     input:
         ref=MITO_DIR + "{mitoref}.fasta",
         index=rules.bwa_index_mito_ref.output,
@@ -184,18 +187,22 @@ rule map_historical_merged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
+    params:
+        scratch=scratch_dir,
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
-        bwa samse {input.ref} - {input.merged} | samtools sort - > {output.bam} 2> {log}
+        bwa samse {input.ref} - {input.merged} | samtools sort -T {params.scratch} - > {output.bam} 2> {log}
         """
 
 
 rule map_historical_unmerged_to_mito:
-    """Map unmerged reads from historical samples to mitochondrial genomes."""
-    """BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015"""
+    """
+    Map unmerged reads from historical samples to mitochondrial genomes.
+    BWA aln for short Illumina reads, parameters according to Palkopoulou et al. 2015.
+    """
     input:
         ref=MITO_DIR + "{mitoref}.fasta",
         index=rules.bwa_index_mito_ref.output,
@@ -207,13 +214,15 @@ rule map_historical_unmerged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_unmerged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
+    params:
+        scratch=scratch_dir,
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
-        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort - > {output.bam} 2>> {log}
+        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort -T {params.scratch} - > {output.bam} 2>> {log}
         """
 
 
@@ -223,8 +232,6 @@ rule mitogenome_bam_stats:
         bam="results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam",
     output:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.stats.txt",
-    group:
-        "historical_mito_bams_group"
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
     singularity:
@@ -247,8 +254,6 @@ rule historical_mito_bams_qualimap:
         outdir="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.qualimap/",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_historical_mito_bams_qualimap.log",
-    group:
-        "historical_mito_bams_group"
     threads: 1
     resources:
         mem_mb=8000,
@@ -342,8 +347,6 @@ rule merged_mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merged_mitogenome_bam_stats.log",
-    group:
-        "historical_merged_mito_bams_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -365,8 +368,6 @@ rule historical_merged_mito_bams_qualimap:
         outdir="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.qualimap/",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_historical_merged_mito_bams_qualimap.log",
-    group:
-        "historical_merged_mito_bams_group"
     threads: 1
     resources:
         mem_mb=8000,

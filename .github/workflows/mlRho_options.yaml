@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
+      - 'workflow/utilities'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
       - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
@@ -19,7 +20,7 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
-      - 'workflow/docker'
+      - 'workflow/utilities'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
       - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'

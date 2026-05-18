@@ -2,145 +2,72 @@
 ### 8.1 Removal of CpG-prone sites from VCF files
 
 # Code collecting output files from this part of the pipeline
+vcf_CpG_filt_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
     if len(HIST_CpG_SAMPLES) > 0:
-        all_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
+        vcf_CpG_filt_outputs.append("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    if len(MODERN_CpG_SAMPLES) > 0:
-        all_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
+    if len(MOD_CpG_SAMPLES) > 0:
+        vcf_CpG_filt_outputs.append("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc/multiqc_report.html")
 
 
 # Functions used by rules of this part of the pipeline
 def historical_CpG_filtered_multiqc_inputs(wildcards):
     """Input for historical_CpG_filtered_multiqc"""
     if config["CpG_from_vcf"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_ref.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
-        rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        not_rescaled_not_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.rescaled.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        not_rescaled_subsampled_CpG = expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=HIST_NOT_RESCALED_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = (rescaled_not_subsampled_CpG + not_rescaled_not_subsampled_CpG + rescaled_subsampled_CpG + not_rescaled_subsampled_CpG)
-    return outlist
+        return expand("results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.bcf.stats.txt",
+            sample=HIST_CpG_SAMPLES,)
 
 def modern_CpG_filtered_multiqc_inputs(wildcards):
     """Input for modern_CpG_filtered_multiqc"""
     if config["CpG_from_vcf"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcf.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcf.bcf.stats.txt",
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_ref.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_ref.bcf.stats.txt",
+            sample=MOD_CpG_SAMPLES,)
     elif config["CpG_from_vcf_and_reference"] == True:
-        not_subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=MODERN_NOT_SUBSAMPLED_CpG_SAMPLES,)
-        subsampled_CpG = expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.realn.mapped_q30.subs_dp{DP}.Q30.sorted.noCpG_vcfref.bcf.stats.txt",
-            sample=MODERN_SUBSAMPLED_CpG_SAMPLES,
-            DP=config["subsampling_depth"],)
-        outlist = not_subsampled_CpG + subsampled_CpG
-    return outlist
+        return expand("results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.noCpG_vcfref.bcf.stats.txt",
+            sample=MOD_CpG_SAMPLES,)
 
 
 # snakemake rules
-rule sorted_bcf2vcf_CpG_removal:
-    """Convert bcf format to vcf.gz for removal of sites"""
-    input:
-        bcf=rules.sort_vcfs.output.sort,
-    output:
-        vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.CpG_rm.vcf.gz"),
-    log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}_sorted_bcf2vcf_CpG_removal.log",
-    singularity:
-        bcftools_container
-    shell:
-        """
-        bcftools convert -O z -o {output.vcf} {input.bcf} 2> {log}
-        """
-
-
 rule remove_CpG_vcf:
     """Remove CpG-prone sites from vcf file"""
     input:
-        vcf=rules.sorted_bcf2vcf_CpG_removal.output.vcf,
+        bcf=rules.sort_vcfs.output.sort,
+        csi=rules.index_sorted_vcfs.output.index,
         bed=rules.make_noCpG_bed.output.no_CpG_bed,
-        genomefile=rules.genome_file.output.genomefile,
     output:
-        filtered=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.vcf.gz"),
+        filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf",
     threads: 6
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_remove_CpG_vcf.log",
-    singularity:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools intersect -a {input.vcf} -b {input.bed} -header -sorted -g {input.genomefile} | bgzip -c > {output.filtered} 2> {log}
-        """
-
-
-rule CpG_vcf2bcf:
-    """Convert vcf back to bcf"""
-    input:
-        filtered=rules.remove_CpG_vcf.output.filtered,
-    output:
-        bcf="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf",
-    threads: 2
-    log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_vcf2bcf.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_remove_CpG_vcf.log",
     singularity:
         bcftools_container
     shell:
         """
-        bcftools convert -O b -o {output.bcf} {input.filtered} 2> {log}
+        bcftools view --threads {threads} -O b \
+        -o {output.filtered} {input.bcf} -R {input.bed} 2> {log}
         """
 
 
 rule index_CpG_bcf:
     """Index the bcf file"""
     input:
-        bcf=rules.CpG_vcf2bcf.output.bcf,
+        bcf=rules.remove_CpG_vcf.output.filtered,
     output:
-        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf.csi",
-    group:
-        "CpG_bcf_group"
+        index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.csi",
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_index_CpG_bcf.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_index_CpG_bcf.log",
     singularity:
         bcftools_container
     shell:
@@ -152,14 +79,12 @@ rule index_CpG_bcf:
 rule CpG_filtered_vcf_stats:
     """Obtain summary stats of vcf files filtered for CpG sites"""
     input:
-        bcf=rules.CpG_vcf2bcf.output.bcf,
+        bcf=rules.remove_CpG_vcf.output.filtered,
         index=rules.index_CpG_bcf.output.index,
     output:
-        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.merged.rmdup.merged.{processed}.Q30.sorted.no{CpG_method}.bcf.stats.txt",
-    group:
-        "CpG_bcf_group"
+        stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.stats.txt",
     log:
-        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.{processed}.no{CpG_method}_CpG_filtered_vcf_stats.log",
+        "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_filtered_vcf_stats.log",
     singularity:
         bcftools_container
     shell:

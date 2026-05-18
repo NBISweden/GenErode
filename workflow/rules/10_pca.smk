@@ -2,27 +2,29 @@
 ### 10. Plot PCAs for historical, modern, and all samples combined
 
 # Code collecting output files from this part of the pipeline
+pca_outputs=[]
+
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+    pca_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
-    all_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+    pca_outputs.append(expand("results/historical/pca/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+    pca_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
-    all_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+    pca_outputs.append(expand("results/modern/pca/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
 
 if os.path.exists(config["historical_samples"]) and os.path.exists(config["modern_samples"]):
-    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+    pca_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
-    all_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+    pca_outputs.append(expand("results/all/pca/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
         fmiss=config["f_missing"],
         chr=CHR,))
 

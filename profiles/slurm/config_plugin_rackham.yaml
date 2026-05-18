@@ -10,14 +10,12 @@ software-deployment-method: apptainer
 default-resources: 
   slurm_account: XXX-XX-XXX # update this to your slurm account
   threads: 1 # number of threads (=cpus/cores), corresponds to 6.4 GB RAM
-  mem_mb: f"{threads*6400}" # calculate available memory in MB for specific number of threads
   runtime: 120 # default runtime in minutes
 
 ## set-threads: map rule names to threads
 set-threads:
   repeatmodeler: 20
   repeatmasker: 20
-  historical_fastq_before_group: 2
   fastqc_historical_raw: 2
   fastqc_modern_raw: 2
   fastp_historical: 5
@@ -41,17 +39,16 @@ set-threads:
   indel_realigner_targets: 10
   indel_realigner: 10
   realigned_bam_qualimap: 10
-  realigned_bam_group: 2
+  realigned_bam_depth: 2
+  userprovided_bam_fastqc: 2
+  userprovided_bam_qualimap: 10
+  userprovided_bam_depth: 2
   rescale_historical: 5
   rescaled_bam_qualimap: 10
-  rescaled_bam_group: 2
   subsample_bams: 2
   subsampled_bam_qualimap: 6
   variant_calling: 3
-  CpG_genotype_bed_formatting_group: 5
-  all_CpG_bed_formatting_group: 2
   make_noCpG_bed: 2
-  CpG_repeats_bed_formatting_group: 2
   merge_noCpG_noRepeats_beds: 2
   make_noCpG_repma_bed: 2
   intersect_sexchr_repma_beds: 2
@@ -59,17 +56,14 @@ set-threads:
   intersect_sexchr_CpG_repma_beds: 2
   intersect_autos_CpG_repma_beds: 2
   remove_CpG_vcf: 6
-  CpG_vcf2bcf: 2
   remove_snps_near_indels: 2
   filter_vcfs_qual_dp: 2
   filter_vcfs_allelic_balance: 2
   remove_repeats_vcf: 6
-  filtered_vcf2bcf: 2
   merge_all_vcfs: 6
   filter_vcf_biallelic: 2
   filter_vcf_missing: 2
   remove_chromosomes: 2
-  repmasked_bcf2vcf: 2
   filter_biallelic_missing_vcf: 6
   vcf2plink_pca: 2
   plink_eigenvec: 1
@@ -95,7 +89,6 @@ set-threads:
 set-resources:
   - repeatmodeler:runtime=10080
   - repeatmasker:runtime=10080
-  - historical_fastq_before_group:runtime=600
   - fastp_historical:runtime=600
   - fastp_modern:runtime=600
   - map_historical:runtime=10080
@@ -107,6 +100,7 @@ set-resources:
   - merged_index_bam_qualimap:runtime=5760
   - rmdup_historical_bams:runtime=4400
   - rmdup_modern_bams:runtime=4400
+  - rmdup_modern_bams:mem_mb=40000
   - rmdup_bam_qualimap:runtime=5760
   - merge_historical_bams_per_sample:runtime=2880
   - merge_modern_bams_per_sample:runtime=2880
@@ -114,22 +108,19 @@ set-resources:
   - indel_realigner_targets:runtime=7200
   - indel_realigner:runtime=7200
   - realigned_bam_qualimap:runtime=5760
-  - realigned_bam_group:runtime=2880
+  - realigned_bam_depth:runtime=2880
+  - userprovided_bam_fastqc:runtime=300
+  - userprovided_bam_qualimap:runtime=5760
+  - userprovided_bam_depth:runtime=2880
   - rescale_historical:runtime=4400
   - rescaled_bam_qualimap:runtime=5760
-  - rescaled_bam_group:runtime=600
   - filter_bam_mapped_mq:runtime=1440
   - subsample_bams:runtime=5760
   - subsampled_bam_qualimap:runtime=5760
-  - subsampled_bam_group:runtime=2880
   - variant_calling:runtime=2880
   - sort_vcfs:runtime=1440
-  - sorted_bcf2vcf:runtime=300
   - make_CpG_genotype_bed:runtime=1440
-  - CpG_genotype_bed_formatting_group:runtime=1440
-  - all_CpG_bed_formatting_group:runtime=1440
   - make_noCpG_bed:runtime=300
-  - CpG_repeats_bed_formatting_group:runtime=1440
   - merge_noCpG_noRepeats_beds:runtime=300
   - make_noCpG_repma_bed:runtime=300
   - make_autosomes_bed:runtime=300
@@ -141,19 +132,16 @@ set-resources:
   - bam2pro_sexchr:runtime=1440
   - bam2pro_all:runtime=1440
   - remove_CpG_vcf:runtime=300
-  - CpG_vcf2bcf:runtime=300
   - remove_snps_near_indels:runtime=300
   - filter_vcfs_qual_dp:runtime=300
   - filter_vcfs_allelic_balance:runtime=300
   - remove_repeats_vcf:runtime=300
-  - filtered_vcf2bcf:runtime=300
   - merge_all_vcfs:runtime=4400
   - filter_vcf_biallelic:runtime=1440
   - filter_vcf_missing:runtime=1440
   - remove_chromosomes:runtime=1440
   - extract_historical_samples:runtime=300
   - extract_modern_samples:runtime=300
-  - repmasked_bcf2vcf:runtime=300
   - filter_biallelic_missing_vcf:runtime=1440
   - vcf2plink_pca:runtime=300
   - filter_vcf_hwe:runtime=300

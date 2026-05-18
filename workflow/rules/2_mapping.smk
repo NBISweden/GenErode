@@ -2,11 +2,14 @@
 ### 2. Mapping
 
 # Code collecting output files from this part of the pipeline
+mapping_outputs=[]
 if os.path.exists(config["historical_samples"]):
-    all_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    if len(hist_pipeline_bam_sm_idx_ln) > 0:
+        mapping_outputs.append("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 if os.path.exists(config["modern_samples"]):
-    all_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
+    if len(mod_pipeline_bam_sm_idx_ln) > 0:
+        mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 
 localrules:
@@ -61,13 +64,15 @@ rule sai2bam:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
+    params:
+        scratch=scratch_dir,
     threads: 8
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -90,8 +95,10 @@ rule readgroup_ID_modern:
 
 
 rule map_modern:
-    """Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads"""
-    """Shorter split hits are marked as secondary for Picard"""
+    """
+    Map trimmed reads from modern samples to reference using BWA mem for long Illumina reads.
+    Shorter split hits are marked as secondary for Picard.
+    """
     input:
         ref=config["ref_path"],
         index=rules.bwa_index_reference.output,
@@ -102,13 +109,15 @@ rule map_modern:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
+    params:
+        scratch=scratch_dir,
     threads: 8
     singularity:
         bwa_samtools_container
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -119,8 +128,6 @@ rule index_sorted_bams:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam.bai",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_index_sorted_bams.log",
-    group:
-        "sorted_bam_stats_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -138,8 +145,6 @@ rule sorted_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.stats.txt",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_stats.log",
-    group:
-        "sorted_bam_stats_group"
     singularity:
         bwa_samtools_container
     shell:
@@ -178,9 +183,9 @@ rule historical_raw_bam_multiqc:
     """Summarize all stats results from all historical bam files after mapping"""
     input:
         stats=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.stats.txt",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
         qualimap=expand("results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=hist_sm_idx_ln,),
+            sampleindexlane=hist_pipeline_bam_sm_idx_ln,),
     output:
         "results/historical/mapping/"+ REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html",
     params:
@@ -200,9 +205,9 @@ rule modern_raw_bam_multiqc:
     """Summarize all stats results from all modern bam files after mapping"""
     input:
         stats=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.stats.txt",
-            sampleindexlane=mod_sm_idx_ln,),
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,),
         qualimap=expand("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/{sampleindexlane}.sorted.bam.qualimap/qualimapReport.html",
-            sampleindexlane=mod_sm_idx_ln,),
+            sampleindexlane=mod_pipeline_bam_sm_idx_ln,),
     output:
         "results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html",
     params:
