@@ -1,5 +1,4 @@
 # Configuration file for slurm plugin (Snakemake >8.0.0) for Arrhenius cluster at NAISS
-# Updated for github actions test data (in .test/data)
 # snakemake CLI flags
 executor: slurm
 jobs: 100
@@ -10,143 +9,50 @@ apptainer-prefix: "/nobackup/proj/disk/.../apptainer" # update this to a directo
 apptainer-args: ""
 
 # slurm resources
+# Updated for github actions test data (in .test/data)
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
 # Arrhenius: do not set "nodes" (-N) unless you need a full node
-default-resources: 
-  slurm_account: naissXXXX-X-XX-cpu # update this to your slurm account, must end with -cpu
-  slurm_partition: cpu # use Arrhenius CPU partition
-  ntasks: 1 # number of concurrent tasks / ranks
-  threads: 2 # number of threads per task, corresponds to cpus-per-task or cores. Arrhenius: 2.7 GB RAM per core.
-  runtime: 10 # default runtime in minutes
-  tmpdir: /scratch/local # do not use tmp/, var/tmp, or /dev/shm on Arrhenius due to limited size
+default-resources:
+  - slurm_account=naissXXXX-X-XX-cpu # update this to your slurm account, must end with -cpu
+  - slurm_partition=cpu # use Arrhenius CPU partition
+  - ntasks=1 # number of concurrent tasks / ranks
+  - threads=2 # number of threads per task, corresponds to cpus-per-task or cores
+  - "mem_mb=(threads*2700)" # memory in MB: 2700 MB per thread on Arrhenius
+  - runtime=10 # default runtime in minutes (same as in the Rackham profile)
+  - tmpdir=/scratch/local # do not use tmp/, var/tmp, or /dev/shm on Arrhenius due to limited size
 
 ## set-threads: map rule names to cpus-per-task
 # Arrhenius: 2.7 GB RAM per core
 set-threads:
   repeatmodeler: 4
   repeatmasker: 4
-  fastqc_historical_raw: 2
-  fastqc_modern_raw: 2
-  fastp_historical: 2
-  fastp_modern: 2
-  fastqc_historical_merged: 2
-  fastqc_historical_unmerged: 2
-  fastqc_modern_trimmed: 2
-  historical_mito_bams_qualimap: 2
-  historical_merged_mito_bams_qualimap: 2
   map_historical: 4
   sai2bam: 4
   map_modern: 4
   sorted_bam_qualimap: 4
-  merge_historical_bams_per_index: 2
-  merge_modern_bams_per_index: 2
   merged_index_bam_qualimap: 4
   rmdup_historical_bams: 4
   rmdup_modern_bams: 1
   rmdup_bam_qualimap: 4
-  merge_historical_bams_per_sample: 2
-  merge_modern_bams_per_sample: 2
   merged_sample_bam_qualimap: 4
   indel_realigner_targets: 4
   indel_realigner: 4
   realigned_bam_qualimap: 4
-  realigned_bam_depth: 2
-  userprovided_bam_fastqc: 2
   userprovided_bam_qualimap: 4
-  userprovided_bam_depth: 2
-  rescale_historical: 2
   rescaled_bam_qualimap: 4
-  filter_bam_mapped_mq: 2
-  subsample_bams: 2
   subsampled_bam_qualimap: 4
-  variant_calling: 2
-  sort_vcfs: 2
-  make_noCpG_bed: 2
-  make_noCpG_repma_bed: 2
-  intersect_sexchr_repma_beds: 2
-  intersect_autos_repma_beds: 2
-  intersect_sexchr_CpG_repma_beds: 2
-  intersect_autos_CpG_repma_beds: 2
-  remove_CpG_vcf: 4
-  remove_snps_near_indels: 2
-  filter_vcfs_qual_dp: 2
-  filter_vcfs_allelic_balance: 2
-  remove_repeats_vcf: 4
   merge_all_vcfs: 4
-  filter_vcf_biallelic: 2
-  filter_vcf_missing: 2
-  remove_chromosomes: 2
-  filter_biallelic_missing_vcf: 4
-  vcf2plink_pca: 2
-  plink_eigenvec: 2
-  filter_vcf_hwe: 2
-  vcf2plink_hwe: 2
-  build_snpEff_db: 2
-  annotate_vcf: 2
-  outgroups2fastq: 2
-  outgroup_fastqc: 2
   align2target: 4
-  bam2fasta: 2
-  concatenate_fasta_per_contig: 2
-  compute_gerp: 2
-  gerp2coords: 2
-  get_ancestral_state: 2
-  produce_contig_out: 2
-  merge_gerp_per_chunk: 2
-  merge_gerp_gz: 2
-  gerp_derived_alleles: 2
-  merge_gerp_alleles_per_chunk: 2
-  merge_gerp_alleles_gz: 2
-  relative_mutational_load_per_sample: 2
-
 
 ## set-resources: map rule names to resources in general
 set-resources:
   # runtime
-  - repeatmodeler:runtime=240
-  - repeatmasker:runtime=240
-  - map_historical:runtime=120
-  - sai2bam:runtime=120
-  - map_modern:runtime=120
-  - subsample_bams:runtime=120
-  - gerp_derived_alleles:runtime=120
+  - repeatmodeler:runtime=60
+  - repeatmasker:runtime=60
+  - map_historical:runtime=30
+  - sai2bam:runtime=30
+  - map_modern:runtime=30
+  - subsample_bams:runtime=30
+  - gerp_derived_alleles:runtime=30
   # memory
-  - repeatmodeler:mem_mb=10800
-  - repeatmasker:mem_mb=10800
-  - fastqc_historical_raw:mem_mb=5400
-  - fastqc_modern_raw:mem_mb=5400
-  - fastp_historical:mem_mb=5400
-  - fastp_modern:mem_mb=5400
-  - fastqc_historical_merged:mem_mb=5400
-  - fastqc_historical_unmerged:mem_mb=5400
-  - fastqc_modern_trimmed:mem_mb=5400
-  - map_historical_merged_to_mito:mem_mb=5400
-  - map_historical_unmerged_to_mito:mem_mb=5400
-  - historical_mito_bams_qualimap:mem_mb=5400
-  - historical_merged_mito_bams_qualimap:mem_mb=5400
-  - map_historical:mem_mb=10800
-  - sai2bam:mem_mb=10800
-  - map_modern:mem_mb=10800
-  - sorted_bam_qualimap:mem_mb=10800
-  - merged_index_bam_qualimap:mem_mb=10800
-  - rmdup_modern_bams:mem_mb=10800
-  - rmdup_historical_bams:mem_mb=10800
-  - rmdup_bam_qualimap:mem_mb=10800
-  - merged_sample_bam_qualimap:mem_mb=10800
-  - indel_realigner_targets:mem_mb=10800
-  - indel_realigner:mem_mb=10800
-  - realigned_bam_qualimap:mem_mb=10800
-  - realigned_bam_fastqc:mem_mb=5400
-  - userprovided_bam_fastqc:mem_mb=5400
-  - userprovided_bam_qualimap:mem_mb=10800
-  - rescaled_bam_qualimap:mem_mb=10800
-  - rescaled_bam_fastqc:mem_mb=5400
-  - filter_bam_mapped_mq:mem_mb=5400
-  - subsample_bams:mem_mb=5400
-  - subsampled_bam_qualimap:mem_mb=5400
-  - variant_calling:mem_mb=5400
-  - remove_snps_near_indels:mem_mb=5400
-  - filter_vcfs_qual_dp:mem_mb=5400
-  - plink_eigenvec:mem_mb=5400
-  - outgroup_fastqc:mem_mb=5400
-  - align2target:mem_mb=10800
+  - rmdup_modern_bams:mem_mb=5400
