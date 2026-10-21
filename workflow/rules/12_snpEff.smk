@@ -88,6 +88,7 @@ def all_snpEff_outputs(wildcards):
 # snakemake rules
 localrules:
     prepare_db_build,
+    update_snpEff_config,
     snpEff_variant_impact_plot,
 
 

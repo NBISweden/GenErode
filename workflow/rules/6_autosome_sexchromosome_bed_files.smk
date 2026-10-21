@@ -18,7 +18,7 @@ if len(sexchromosomeList) > 0:
 
 
 # snakemake rules
-localrules: rename_genome_bed, rename_noCpG_genome_beds
+localrules: rename_genome_bed, rename_noCpG_genome_beds, make_sexchr_bed
 
 rule make_sexchr_bed:
     """Generate a bed file of sex chromosome-linked scaffolds/chromosomes"""

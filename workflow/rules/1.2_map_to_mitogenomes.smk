@@ -135,7 +135,7 @@ def historical_mito_bams_multiqc_inputs(wildcards):
 
 
 # snakemake rules
-localrules: symlink_mito_genome, merge_read_ratio_files
+localrules: symlink_mito_genome, merge_read_ratio_files, mapped_reads_ratios
 
 rule symlink_mito_genome:
     """Create a symbolic link of the mitochondrial genome fasta file of the target species"""
