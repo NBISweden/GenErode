@@ -18,7 +18,7 @@ default-resources:
   - threads=2 # number of threads per task, corresponds to cpus-per-task or cores
   - "mem_mb=(threads*2700)" # memory in MB: 2700 MB per thread on Arrhenius
   - runtime=120 # default runtime in minutes (same as in the Rackham profile)
-  - tmpdir=/scratch/local # do not use tmp/, var/tmp, or /dev/shm on Arrhenius due to limited size
+  - tmpdir=/scratch/local # do not use tmp/, var/tmp, or /dev/shm on Arrhenius due to limited size. Causes an error for localrules if run on the login node.
 
 ## set-threads: map rule names to cpus-per-task
 set-threads:
