@@ -12,7 +12,8 @@ Snakefile:
 chmod 755 Snakefile
 ```
 
-2) Install Miniconda in your home directory. 
+2) Install Miniconda in your home directory if you haven't 
+done so yet. 
 
 Note that conda environments and packages take a lot of 
 storage space. You can configure conda and set storage 
@@ -27,19 +28,20 @@ pkgs_dirs:
 ```
 
 Create the GenErode conda environment, or update an earlier 
-version. The latest conda environment contains the Snakemake 
-executor plugin for slurm.
+version. 
 
 ```
 conda env create -f environment.yml -n generode
 ```
 
-> If you do not want to set the location for all packages 
-> and environments via `.condarc`, you can alternatively 
-> specify a storage location for the GenErode conda 
-> environment when creating it using the command
+> If you do not want to set a common location for all packages 
+> and environments via `.condarc`, you can specify a storage 
+> location for the GenErode conda environment when creating 
+> it using the command
 > `conda env create -f environment.yml --prefix /nobackup/proj/disk/.../conda-envs/generode` 
-> instead of the command above.
+> instead of the command above. In that case, you need to 
+> provide the full path to the conda environment when activating 
+> it (see below). 
 
 3) Adjust the configuration file `profiles/arrhenius/config.yaml` 
 according to your compute resource needs. This file specifies 
@@ -47,16 +49,26 @@ Snakemake and apptainer parameters that are used to run the pipeline,
 as well as compute resources for each rule or group jobs to be run 
 on Arrhenius. When you start the pipeline on the command line with 
 `--profile profiles/arrhenius` (as described below), it expects the file 
-`config.yaml` in the folder `profiles/arrhenius`. Please make sure 
-to add your slurm compute project ID in `profiles/arrhenius/config.yaml` 
-(`slurm_account`). 
+`config.yaml` in the folder `profiles/arrhenius`. 
 
-> If a rule or group job fails due to too little memory or run time,
-> their compute resources can be updated in `profiles/arrhenius/config.yaml`. 
-> Rule or group jobs are using `default-resources` unless more threads
-> (corresponding to cpus-per-task), more memory, or longer run times 
-> are required, which are specified per rule or group job under `set-threads`
-> or `set-resources`, respectively. 
+- Please make sure to add your slurm compute project ID to `slurm_account` 
+in `profiles/arrhenius/config.yaml`. 
+- Specify a directory in which to store container `*.simg` 
+image files using the parameter `apptainer-prefix` in 
+`profiles/arrhenius/config.yaml`. 
+
+> Note that in case you are starting the pipeline from within 
+> an interactive job, Snakemake downloads the container images 
+> per default to `/scratch/local`, which is deleted after the 
+> interactive job has ended. 
+
+- If a rule or group job fails due to too little memory or 
+run time, their compute resources can be updated in 
+`profiles/arrhenius/config.yaml` as follows. Rule or group 
+jobs are using `default-resources` unless more threads 
+(corresponding to cpus-per-task), more memory, or longer 
+run times are required, which are specified per rule or 
+group job under `set-threads` or `set-resources`, respectively. 
 
 > Note that Java tools like `Picard` can be optimized by providing a 
 > small number of threads and a large amount of memory, but this will 
@@ -67,8 +79,6 @@ to add your slurm compute project ID in `profiles/arrhenius/config.yaml`
 
 - Open a tmux session (alternatively, you can use screen)
 
-- Start an interactive job
-
 - Activate the GenErode conda environment:
 
 ```
@@ -78,22 +88,23 @@ conda activate generode
 - Start the dry run:
 
 ```
-snakemake --profile slurm -n &YYMMDD_dry.out
+snakemake --profile profiles/arrhenius -n &> YYMMDD_dry.out
 ```
 
-> If you notice that jobs would be re-run that should not 
-> be triggered, try the flag `--rerun-triggers mtime`.
+> If you notice that jobs would be run that were already 
+> complete and should not be re-run, try to add the flag 
+> `--rerun-triggers mtime`.
 
 - Start the main run:
 
 ```
-snakemake --profile slurm &YYMMDD_main.out
+snakemake --profile profiles/arrhenius &> YYMMDD_main.out
 ```
 
 > Useful flags for running the pipeline: `--ri` to re-run 
 > incomplete jobs and `-k` to keep going in case a job fails. 
 
-# Cache location
+# Snakemake cache location
 
 The Snakemake cache is stored per default in your home directory
 that can run out of storage space. There are two ways to set a 
@@ -113,12 +124,3 @@ directory on Arrhenius):
 `snakemake --profile slurm --directory /nobackup/proj/disk/.../.../GenErode/`. 
 This will set the GenErode directory as the working directory 
 and will also store the cache there. 
-
-Apptainer (former singularity) will also store its cache per 
-default in your home directory. You can set the cache directory 
-to a directory in your storage project, adding this line to 
-your `~/.bashrc` (replacing the path to an existing directory 
-in your storage project):
-`export APPTAINER_CACHEDIR=/nobackup/proj/disk/.../.../apptainer-cache` 
-Alternatively, set `apptainer-prefix` in the slurm profile to the 
-desired storage location. 

@@ -6,14 +6,14 @@ jobs: 100
 printshellcmds: true
 software-deployment-method: apptainer
 use-apptainer: True
-apptainer-prefix: "" # directory in which apptainer/singularity images will be stored
+apptainer-prefix: "/nobackup/proj/disk/.../apptainer" # update this to a directory in which apptainer images are stored
 apptainer-args: ""
 
 # slurm resources
 ## default-resources: applied to all jobs, overruled by resources defined below for jobs
 # Arrhenius: do not set "nodes" (-N) unless you need a full node
 default-resources: 
-  slurm_account: XXX-XX-XXX # update this to your slurm account, must end with -cpu
+  slurm_account: naissXXXX-X-XX-cpu # update this to your slurm account, must end with -cpu
   slurm_partition: cpu # use Arrhenius CPU partition
   ntasks: 1 # number of concurrent tasks / ranks
   threads: 2 # number of threads per task, corresponds to cpus-per-task or cores. Arrhenius: 2.7 GB RAM per core.
