@@ -6,7 +6,7 @@ printshellcmds: true
 software-deployment-method: apptainer
 use-apptainer: True
 apptainer-prefix: "/nobackup/proj/disk/.../apptainer" # update this to a directory in which apptainer images are stored
-apptainer-args: ""
+apptainer-args: "-B /nobackup/proj/disk/..." # mount your project directory to the container, so that Snakemake can access input/output files
 
 # slurm resources
 # Updated for github actions test data (in .test/data)
