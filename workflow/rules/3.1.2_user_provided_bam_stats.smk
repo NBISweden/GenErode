@@ -177,6 +177,7 @@ rule plot_userprovided_bam_dp_hist:
             category="BAM file processing",),
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_plot_userprovided_bam_dp_hist.log",
+    container: shell_container
     script:
         "../scripts/dp_hist_plot.py"
 

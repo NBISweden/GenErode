@@ -206,6 +206,7 @@ rule mlRho_table:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + ".{dataset}.mlRho_table.log",
     message:
         "The following files are concatenated: {input}"
+    container: shell_container
     script:
         "../scripts/mlRho_table.py"
 
@@ -222,5 +223,6 @@ rule mlRho_theta_plot:
             category="mlRho",),
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + ".{dataset}.mlRho_theta_plot.log",
+    container: shell_container
     script:
         "../scripts/mlRho_theta_plot.py"

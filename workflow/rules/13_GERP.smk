@@ -132,6 +132,7 @@ rule rename_ref_bed:
         ref_bed=REF_DIR + "/" + REF_NAME + ".genome.bed",
     log:
         "results/logs/13_GERP/rename_ref_bed.log",
+    container: shell_container
     shell:
         """
         cp {input.ref_bed} {output.ref_bed} 2> {log}
@@ -150,6 +151,7 @@ rule split_ref_bed:
         prefix="chunk",
     log:
         "results/logs/13_GERP/split_ref_bed.log",
+    container: shell_container
     shell:
         """
         nrows=$(grep -c '.' < {input.ref_bed})
@@ -178,6 +180,7 @@ rule fasta_to_fa:
         ref=GERP_REF_PATH + "/{gerpref}.fa.gz",
     log:
         "results/logs/13_GERP/fastq/{gerpref}_fasta_to_fa.log",
+    container: shell_container
     shell:
         """
         mv {input} {output} 2> {log}
@@ -192,6 +195,7 @@ rule fna_to_fa:
         ref=GERP_REF_PATH + "/{gerpref}.fa.gz",
     log:
         "results/logs/13_GERP/fastq/{gerpref}_fna_to_fa.log",
+    container: shell_container
     shell:
         """
         mv {input} {output} 2> {log}
@@ -206,6 +210,7 @@ rule outgroups2fastq:
         fastq=temp("results/gerp/fastq_files/{gerpref}.fq.gz"),
     log:
         "results/logs/13_GERP/fastq/{gerpref}_outgroups2fastq.log",
+    container: shell_container
     shell:
         """
         python3 workflow/scripts/fa2fq.py {input.fasta} {output.fastq} 2> {log}
@@ -625,6 +630,7 @@ rule merge_gerp_gz:
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chr}.merge_gerp_gz.log",
     threads: 2
+    container: shell_container
     shell:
         """
         cat {input.gerp_chunks_merged} | gzip - > {output.gerp_out} 2> {log}
@@ -642,6 +648,7 @@ rule plot_gerp_hist:
     threads: 2
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chr}.plot_gerp_hist.log",
+    container: shell_container
     script:
         "../scripts/gerp_hist_plot.py"
 
@@ -696,6 +703,7 @@ rule gerp_derived_alleles:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_gerp_derived_alleles.log",
     threads: 4
+    container: shell_container
     shell:
         """
         if [ ! -d {output.gerp_alleles_dir} ]; then 
@@ -750,6 +758,7 @@ rule merge_gerp_alleles_gz:
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.merge_gerp_alleles_gz.log",
     threads: 4
+    container: shell_container
     shell:
         """
         awk 'FNR>1 || NR==1' {input.gerp_chunks_merged} | gzip - > {output.gerp_out} 2> {log}
@@ -768,6 +777,7 @@ rule relative_mutational_load_per_sample:
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
     threads: 2
+    container: shell_container
     shell:
         """
         python3 workflow/scripts/gerp_rel_mut_load_sample.py {input.gerp_out} {params.min_gerp} {params.max_gerp} {output.mut_load} 2> {log}
@@ -785,6 +795,7 @@ rule relative_mutational_load_table:
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load_table.gerp_{minGERP}_{maxGERP}.log",
     threads: 4
+    container: shell_container
     script:
         "../scripts/gerp_rel_mut_load_table.py"
 
@@ -799,5 +810,6 @@ rule relative_mutational_load_plot:
             category="GERP",),
     log:
         "results/logs/13_GERP/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.relative_mutational_load_plot.gerp_{minGERP}_{maxGERP}.log",
+    container: shell_container
     script:
         "../scripts/gerp_rel_mut_load_plot.py"

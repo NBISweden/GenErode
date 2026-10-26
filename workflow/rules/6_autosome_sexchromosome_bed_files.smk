@@ -30,6 +30,7 @@ rule make_sexchr_bed:
         sexchr=sexchromosomeList,  # list of sex chromosomal scaffold names created from file provided by user
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_sexchr_bed.log",
+    container: shell_container
     shell:
         """
         for i in {params.sexchr}; do grep -w $i {input.fai} | awk 'BEGIN {{FS="\t"}}; {{print $1 FS "0" FS $2}}' >> {output.sexchr_bed} 2>> {log}; done
@@ -146,6 +147,7 @@ rule rename_genome_bed:
         "results/" + REF_NAME + ".repma.genome.bed",
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".rename_genome_bed.log",
+    container: shell_container
     shell:
         """
         cp {input} {output} 2> {log}
@@ -158,6 +160,7 @@ rule rename_noCpG_genome_beds:
         "results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_rename_noCpG_genome_beds.log",
+    container: shell_container
     shell:
         """
         cp {input} {output} 2> {log}

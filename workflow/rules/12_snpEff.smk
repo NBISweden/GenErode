@@ -107,6 +107,7 @@ rule prepare_db_build:
         abs_ref_out=lambda wildcards, output: os.path.abspath(output.ref),
     log:
         "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
+    container: shell_container
     shell:
         """
         ln -s {params.abs_gtf_in} {params.abs_gtf_out} 2> {log} &&
@@ -269,6 +270,7 @@ rule snpEff_variant_impact_table:
             category="snpEff",),
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.log",
+    container: shell_container
     script:
         "../scripts/snpEff_variant_impact_table.py"
 
@@ -283,5 +285,6 @@ rule snpEff_variant_impact_plot:
             category="snpEff",),
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.log",
+    container: shell_container
     script:
         "../scripts/snpEff_variant_impact_plot.py"

@@ -72,6 +72,7 @@ rule make_CpG_genotype_bed:
         bed=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG.bed"),
     log:
         "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}_make_CpG_genotype_bed.log",
+    container: shell_container
     shell:
         """
         python workflow/scripts/find_CpG_genotypes.py {input.vcf} {output.bed} 2> {log}
@@ -88,6 +89,7 @@ rule make_CpG_reference_bed:
         refdirbed=REF_DIR + "/" + REF_NAME + ".CpG_ref",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_make_CpG_reference_bed.log",
+    container: shell_container
     shell:
         """
         python workflow/scripts/find_CpG_ref_sites.py {input.ref} {params.refdirbed} 2> {log} &&

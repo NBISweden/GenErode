@@ -148,6 +148,7 @@ rule symlink_mito_genome:
         abs_out=lambda wildcards, output: os.path.abspath(output.ref),
     log:
         "results/logs/1.2_map_to_mitogenomes/symlink_mito_genome.log",
+    container: shell_container
     shell:
         """
         ln -s {params.abs_in} {params.abs_out} 2> {log}
@@ -307,6 +308,7 @@ rule merge_read_ratio_files:
         finaltable="results/historical/mitogenomes_mapping/stats/ratios_of_{reads}_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{reads}_merge_read_ratio_files.log",
+    container: shell_container
     shell:
         """
         echo "reference_comparison sample ratio_of_mapped_reads" > {output.finaltable} && 

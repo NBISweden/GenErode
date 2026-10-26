@@ -680,6 +680,7 @@ rule plot_dp_hist:
             category="BAM file processing",),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_plot_dp_hist.log",
+    container: shell_container
     script:
         "../scripts/dp_hist_plot.py"
 

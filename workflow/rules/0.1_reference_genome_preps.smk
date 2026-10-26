@@ -80,6 +80,7 @@ rule make_reference_bed:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
         + "_make_reference_bed.log",
+    container: shell_container
     shell:
         """
         awk -v OFS='\t' '{{print $1, "0", $2}}' {input.fai} > {output.ref_bed} 2> {log}

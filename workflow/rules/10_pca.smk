@@ -99,6 +99,7 @@ rule plot_pc1_pc2:
             category="PCA",),
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc2.log",
+    container: shell_container
     script:
         "../scripts/pc1_vs_pc2_plot.py"
 
@@ -114,5 +115,6 @@ rule plot_pc1_pc3:
             category="PCA",),
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc3.log",
+    container: shell_container
     script:
         "../scripts/pc1_vs_pc3_plot.py"

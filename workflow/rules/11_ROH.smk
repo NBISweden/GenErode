@@ -196,6 +196,7 @@ rule FROH_min_2Mb_table:
             category="ROH",),
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_table.log",
+    container: shell_container
     script:
         "../scripts/FROH_min_2Mb_table.py"
 
@@ -210,5 +211,6 @@ rule FROH_min_2Mb_plot:
             category="ROH",),
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.log",
+    container: shell_container
     script:
         "../scripts/FROH_min_2Mb_plot.py"

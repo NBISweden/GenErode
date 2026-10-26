@@ -16,6 +16,7 @@ rule ref_upper:
         ref_upper=REF_DIR + "/" + REF_NAME + ".upper.fasta",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
+    container: shell_container
     shell:
         """
         awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
