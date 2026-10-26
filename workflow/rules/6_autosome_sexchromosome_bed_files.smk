@@ -23,7 +23,7 @@ rule split_sexchr_autosomes_bed:
     a bed file of sex chromosome-linked scaffolds/chromosomes"""
     input:
         fai=config["ref_path"] + ".fai",
-        ref_bed=rules.make_reference_bed.output,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sexchr_bed=REF_DIR + "/" + REF_NAME + ".sexchr.bed",

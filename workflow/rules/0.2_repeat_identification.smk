@@ -115,7 +115,7 @@ rule sort_repeats_bed:
 
 rule make_no_repeats_bed:
     input:
-        ref_bed=rules.make_reference_bed.output,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
         sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:

@@ -183,7 +183,7 @@ rule sort_all_CpG_beds:
 
 rule make_noCpG_bed:
     input:
-        ref_bed=rules.make_reference_bed.output,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
@@ -238,7 +238,7 @@ rule sort_CpG_repeats_beds:
 
 rule make_noCpG_repma_bed:
     input:
-        ref_bed=rules.make_reference_bed.output,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
         sorted_bed=rules.sort_CpG_repeats_beds.output.sorted_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
