@@ -131,7 +131,7 @@ rule build_snpEff_db:
     input:
         gtf=rules.prepare_db_build.output.gtf,
         ref=rules.prepare_db_build.output.ref,
-        config=rules.update_snpEff_config.output.config,
+        config=rules.prepare_db_build.output.config,
     output:
         db=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEffectPredictor.bin",
     threads: 1
@@ -180,7 +180,7 @@ rule annotate_vcf:
     input:
         vcf=rules.biallelic_missing_bcf2vcf.output.vcf,
         db=rules.build_snpEff_db.output.db,
-        config=rules.update_snpEff_config.output.config,
+        config=rules.prepare_db_build.output.config,
     output:
         ann="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ann.vcf",
         csv="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
