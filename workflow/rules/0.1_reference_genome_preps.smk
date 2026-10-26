@@ -10,7 +10,6 @@ ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}",
     ext=["dict", "bed"]))
 
 # snakemake rules
-#localrules: make_reference_bed
 
 rule bwa_index_reference:
     """Index the reference genome using bwa"""
@@ -40,6 +39,7 @@ rule samtools_fasta_index:
         ref=config["ref_path"],
     output:
         fai=config["ref_path"] + ".fai",
+        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
     log:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
@@ -48,7 +48,8 @@ rule samtools_fasta_index:
         bwa_samtools_container
     shell:
         """
-        samtools faidx {input.ref} 2> {log}
+        samtools faidx {input.ref} 2> {log} &&
+        awk -v OFS='\t' '{{print $1, "0", $2}}' {output.fai} > {output.ref_bed} 2>> {log}
         """
 
 
@@ -67,21 +68,4 @@ rule picard_fasta_dict:
     shell:
         """
         picard CreateSequenceDictionary -Xmx{params.mem} R={input.ref} O={output.fdict} 2> {log}
-        """
-
-
-rule make_reference_bed:
-    """Generate a BED file with all genome regions"""
-    input:
-        fai=rules.samtools_fasta_index.output,
-    output:
-        ref_bed=REF_DIR + "/" + REF_NAME + ".bed",
-    log:
-        "results/logs/0.1_reference_genome_preps/"
-        + REF_NAME
-        + "_make_reference_bed.log",
-    container: shell_container
-    shell:
-        """
-        awk -v OFS='\t' '{{print $1, "0", $2}}' {input.fai} > {output.ref_bed} 2> {log}
         """

@@ -86,11 +86,12 @@ def all_snpEff_outputs(wildcards):
 
 
 # snakemake rules
-#localrules: prepare_db_build, update_snpEff_config, snpEff_variant_impact_plot,
+#localrules: prepare_db_build, snpEff_variant_impact_plot,
 
 
 rule prepare_db_build:
-    """Prepare file structure and files to build database for snpEff annotation"""
+    """Prepare file structure and files to build database for snpEff annotation
+    and update the snpEff config file"""
     input:
         gtf=config["gtf_path"],
         ref=config["ref_path"],
@@ -102,22 +103,6 @@ rule prepare_db_build:
         abs_gtf_out=lambda wildcards, output: os.path.abspath(output.gtf),
         abs_ref_in=lambda wildcards, input: os.path.abspath(input.ref),
         abs_ref_out=lambda wildcards, output: os.path.abspath(output.ref),
-    log:
-        "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
-    container: shell_container
-    shell:
-        """
-        ln -s {params.abs_gtf_in} {params.abs_gtf_out} 2> {log} &&
-        ln -s {params.abs_ref_in} {params.abs_ref_out} 2>> {log}
-        """
-
-
-rule update_snpEff_config:
-    """Edit snpEff config file to build database"""
-    input:
-        gtf=rules.prepare_db_build.output.gtf,
-        ref=rules.prepare_db_build.output.ref,
-    output:
         config=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEff.config",
     params:
         config="/usr/local/share/snpeff-4.3.1t-3/snpEff.config",
@@ -126,11 +111,15 @@ rule update_snpEff_config:
         abs_ref=lambda wildcards, input: os.path.abspath(input.ref),
         abs_config=lambda wildcards, output: os.path.abspath(output.config),
     log:
-        "results/logs/12_snpEff/" + REF_NAME + "_update_snpEff_config.log",
-    container:
-        snpeff_container
+        "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
+    container: snpeff_container
     shell:
         """
+        # prepare symlinks
+        ln -s {params.abs_gtf_in} {params.abs_gtf_out} 2> {log} &&
+        ln -s {params.abs_ref_in} {params.abs_ref_out} 2>> {log} &&
+
+        # update config
         cp {params.config} {params.abs_config} 2> {log} &&
         echo '#{params.ref_name} genome, version {params.ref_name}' >> {params.abs_config} 2>> {log} &&
         echo '{params.ref_name}.genome : {params.ref_name}' >> {params.abs_config} 2>> {log}

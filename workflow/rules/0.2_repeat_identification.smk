@@ -8,26 +8,12 @@ repeat_id_outputs.append(REF_DIR + "/" + REF_NAME + ".repma.bed")
 
 
 # snakemake rules
-rule ref_upper:
-    """Reference assembly file preparation for RepeatModeler and RepeatMasker: change all lowercase bases to uppercase"""
+rule repeatmodeler:
+    """RepeatModeler for de novo repeat prediction from a reference assembly"""
     input:
         ref=config["ref_path"],
     output:
         ref_upper=REF_DIR + "/" + REF_NAME + ".upper.fasta",
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
-    container: shell_container
-    shell:
-        """
-        awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
-        """
-
-
-rule repeatmodeler:
-    """RepeatModeler for de novo repeat prediction from a reference assembly"""
-    input:
-        ref_upper=rules.ref_upper.output,
-    output:
         repmo=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/consensi.fa.classified",
         stk=REF_DIR + "/repeatmodeler/" + REF_NAME + "/RM_raw.out/families-classified.stk",
     params:
@@ -44,8 +30,11 @@ rule repeatmodeler:
         """
         cd {params.dir}
 
+        # Convert reference fasta bases to upper case
+        awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
+
         # Build repeat database
-        BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2> {log} &&
+        BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2>> {log} &&
 
         # Run RepeatModeler
         RepeatModeler -engine ncbi -threads {threads} -database {params.name} -quick 2>> {log} &&
@@ -65,7 +54,7 @@ rule repeatmodeler:
 rule repeatmasker:
     """Repeat mask the full genome assembly using raw de novo predicted repeats"""
     input:
-        ref_upper=rules.ref_upper.output,
+        ref_upper=rules.repeatmodeler.output.ref_upper,
         repmo=rules.repeatmodeler.output.repmo,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
@@ -131,6 +120,7 @@ rule make_no_repeats_bed:
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
+        no_rep_bed_local="results/" + REF_NAME + ".repma.genome.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     container:
@@ -138,5 +128,6 @@ rule make_no_repeats_bed:
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} \
-        -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log}
+        -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log} &&
+        cp {output.no_rep_bed} {output.no_rep_bed_local} 2>> {log}
         """

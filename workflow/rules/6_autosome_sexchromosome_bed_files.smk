@@ -18,40 +18,28 @@ if len(sexchromosomeList) > 0:
 
 
 # snakemake rules
-#localrules: rename_genome_bed, rename_noCpG_genome_beds, make_sexchr_bed
-
-rule make_sexchr_bed:
-    """Generate a bed file of sex chromosome-linked scaffolds/chromosomes"""
+rule split_sexchr_autosomes_bed:
+    """Generate a bed file of autosomal scaffolds/chromosomes and
+    a bed file of sex chromosome-linked scaffolds/chromosomes"""
     input:
         fai=config["ref_path"] + ".fai",
+        ref_bed=rules.make_reference_bed.output,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sexchr_bed=REF_DIR + "/" + REF_NAME + ".sexchr.bed",
+        autosome_bed=REF_DIR + "/" + REF_NAME + ".autos.bed",
     params:
         sexchr=sexchromosomeList,  # list of sex chromosomal scaffold names created from file provided by user
     log:
-        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_sexchr_bed.log",
-    container: shell_container
-    shell:
-        """
-        for i in {params.sexchr}; do grep -w $i {input.fai} | awk 'BEGIN {{FS="\t"}}; {{print $1 FS "0" FS $2}}' >> {output.sexchr_bed} 2>> {log}; done
-        """
-
-
-rule make_autosomes_bed:
-    """Generate a bed file of autosomal scaffolds/chromosomes"""
-    input:
-        ref_bed=rules.make_reference_bed.output,
-        sexchr_bed=rules.make_sexchr_bed.output,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        autosome_bed=REF_DIR + "/" + REF_NAME + ".autos.bed",
-    log:
-        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_autosomes_bed.log",
+        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_split_sexchr_autosomes_bed.log",
     container:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.sexchr_bed} \
+        # sex chromosome bed file
+        for i in {params.sexchr}; do grep -w $i {input.fai} | awk 'BEGIN {{FS="\t"}}; {{print $1 FS "0" FS $2}}' >> {output.sexchr_bed} 2>> {log}; done &&
+        # autosomal bed file
+        bedtools subtract -a {input.ref_bed} -b {output.sexchr_bed} \
         -sorted -g {input.genomefile} > {output.autosome_bed} 2> {log}
         """
 
@@ -59,7 +47,7 @@ rule make_autosomes_bed:
 rule intersect_sexchr_repma_beds:
     input:
         no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
-        sexchr_bed=rules.make_sexchr_bed.output,
+        sexchr_bed=rules.split_sexchr_autosomes_bed.output.sexchr_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         repma_sex_chr="results/" + REF_NAME + ".repma.sexchr.bed",
@@ -101,7 +89,7 @@ rule intersect_autos_repma_beds:
 rule intersect_sexchr_noCpG_repma_beds:
     input:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
-        sexchr_bed=rules.make_sexchr_bed.output,
+        sexchr_bed=rules.split_sexchr_autosomes_bed.output.sexchr_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_sexchr="results/" + REF_NAME + ".no{CpG_method}.repma.sexchr.bed",
@@ -137,31 +125,4 @@ rule intersect_autos_noCpG_repma_beds:
         """
         bedtools intersect -a {input.no_CpG_repma_bed} -b {input.autosome_bed} \
         -sorted -g {input.genomefile} > {output.no_CpG_repma_autos} 2> {log}
-        """
-
-
-rule rename_genome_bed:
-    input:
-        REF_DIR + "/" + REF_NAME + ".repma.bed",
-    output:
-        "results/" + REF_NAME + ".repma.genome.bed",
-    log:
-        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".rename_genome_bed.log",
-    container: shell_container
-    shell:
-        """
-        cp {input} {output} 2> {log}
-        """
-
-rule rename_noCpG_genome_beds:
-    input:
-        "results/" + REF_NAME + ".no{CpG_method}.repma.bed",
-    output:
-        "results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
-    log:
-        "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_rename_noCpG_genome_beds.log",
-    container: shell_container
-    shell:
-        """
-        cp {input} {output} 2> {log}
         """

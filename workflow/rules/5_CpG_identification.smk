@@ -82,7 +82,7 @@ rule make_CpG_genotype_bed:
 rule make_CpG_reference_bed:
     """Make a bed file of CpG sites found in the reference genome"""
     input:
-        ref=rules.ref_upper.output,
+        ref=rules.repeatmodeler.output.ref_upper,
     output:
         bed="results/" + REF_NAME + ".CpG_ref.bed",
     params:
@@ -243,6 +243,7 @@ rule make_noCpG_repma_bed:
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
+        no_CpG_repma_bed_local="results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
     threads: 2
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
@@ -251,5 +252,6 @@ rule make_noCpG_repma_bed:
     shell:
         """
         bedtools subtract -a {input.ref_bed} -b {input.sorted_bed} \
-        -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2> {log}
+        -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2> {log} &&
+        cp {output.no_CpG_repma_bed} {output.no_CpG_repma_bed_local} 2>> {log}
         """
