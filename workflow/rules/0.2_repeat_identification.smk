@@ -103,13 +103,9 @@ rule make_repeats_bed:
         rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.bed",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repeats_bed.log"),
-    run:
-        with open(input.rep_out, "r") as f, open(output.rep_bed, "w") as b:
-            for line in f:
-                edited = line.strip().split()
-                if len(edited) > 6 and edited[0].isdigit():
-                    start = str(int(edited[5]) - 1)
-                    b.write(edited[4] + "\t" + start + "\t" + edited[6] + "\n")
+    container: shell_container
+    script:
+        "../scripts/make_repeats_bed.py"
 
 
 rule sort_repeats_bed:

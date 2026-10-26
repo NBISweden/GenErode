@@ -25,16 +25,18 @@ rule fastq_historical_symbolic_links:
         fastq_r1="data/raw_reads_symlinks/historical/{sample}_{index}_{lane}_R1.fastq.gz",
         fastq_r2="data/raw_reads_symlinks/historical/{sample}_{index}_{lane}_R2.fastq.gz",
     params:
+        src_r1=lambda wildcards: hist_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R1"],
+        src_r2=lambda wildcards: hist_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R2"],
         abs_fastq_r1=lambda wildcards, output: os.path.abspath(output.fastq_r1),
         abs_fastq_r2=lambda wildcards, output: os.path.abspath(output.fastq_r2),
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastq_historical_symbolic_links.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-        ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
-        ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_fastq_symlinks_dict[FULLSAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_r1} {params.abs_fastq_r1} 2> {log}
+        ln -s {params.src_r2} {params.abs_fastq_r2} 2>> {log}
+        """
 
 
 rule fastqc_historical_raw:
@@ -90,16 +92,18 @@ rule fastq_modern_symbolic_links:
         fastq_r1="data/raw_reads_symlinks/modern/{sample}_{index}_{lane}_R1.fastq.gz",
         fastq_r2="data/raw_reads_symlinks/modern/{sample}_{index}_{lane}_R2.fastq.gz",
     params:
+        src_r1=lambda wildcards: mod_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R1"],
+        src_r2=lambda wildcards: mod_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R2"],
         abs_fastq_r1=lambda wildcards, output: os.path.abspath(output.fastq_r1),
         abs_fastq_r2=lambda wildcards, output: os.path.abspath(output.fastq_r2),
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastq_modern_symbolic_links.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-        ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
-        ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_fastq_symlinks_dict[FULLSAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_r1} {params.abs_fastq_r1} 2> {log}
+        ln -s {params.src_r2} {params.abs_fastq_r2} 2>> {log}
+        """
 
 
 rule fastqc_modern_raw:

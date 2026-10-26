@@ -9,33 +9,6 @@ if os.path.exists(config["historical_samples"]):
 
 
 # Functions used by rules of this part of the pipeline
-def get_mapped_reads(inlist):
-    """
-    Parse the samtools flagstat files from a python list to return a 
-    dictionary containing the filename and the number of mapped reads
-    """
-    readsDict = {}
-    for i in inlist:
-        bn = os.path.basename(i)
-        name = "_".join(bn.split("_", 3)[:3])
-        with open(i, "r") as f:
-            for line in f:
-                if " mapped (" in line:
-                    reads = int(line.strip().split()[0])
-                    if reads == 0:
-                        readsDict[name] = reads + 1
-                    else:
-                        readsDict[name] = reads
-    return readsDict
-
-def ratio_of_mapped_reads(readsDictOtherSpecies, readsDictTargetSpecies):
-    """
-    Take two dictionaries containing the filename and the number of mapped reads for the same set of reads 
-    mapped to a different species and to the target species and return the ratio of mapped reads
-    """
-    ratio = { k: round(readsDictOtherSpecies[k] / readsDictTargetSpecies[k], 2) for k in readsDictTargetSpecies if k in readsDictOtherSpecies }
-    return ratio
-
 def historical_mapped_reads_ratios_species_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
@@ -286,18 +259,8 @@ rule mapped_reads_ratios:
         ratiotables=temp("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}.txt"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_vs_" + MITO_NAME + "_{reads}_mapped_reads_ratios.log",
-    run:
-        with open(output.ratiotables, "w") as out:
-            # Parse the samtools flagstat files from the different input lists to return a dictionary containing the filename and the number of mapped reads for each of them
-            speciesDict = get_mapped_reads(input.species)
-            otherDict = get_mapped_reads(input.other)
-
-            # Calculate the ratios of mapped reads for each species to the target species reference
-            other_species = ratio_of_mapped_reads(otherDict, speciesDict)
-
-            # Write to output file
-            for k, v in other_species.items():
-                out.write("{} {}\n".format(k, v))
+    container: shell_container
+    script: "../scripts/mapped_reads_ratios.py"
 
 
 rule merge_read_ratio_files:

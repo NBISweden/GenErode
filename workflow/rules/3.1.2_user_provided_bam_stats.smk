@@ -23,14 +23,15 @@ rule userprovided_bam_historical_symbolic_links:
     output:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
     params:
+        src_bam=lambda wildcards: hist_user_bam_symlinks_dict[wildcards.sample]["bam"],
         abs_bam=lambda wildcards, output: os.path.abspath(output.bam),
     log:
         "data/logs/3.1.1_user_provided_bams/historical/" + REF_NAME + "/{sample}_userprovided_bam_historical_symbolic_links.log",
-    run:
-        SAMPLENAME = "{}".format(wildcards.sample)
-        shell("""
-        ln -s {bam} {{params.abs_bam}} 2> {{log}}
-        """.format(SAMPLENAME=SAMPLENAME, **hist_user_bam_symlinks_dict[SAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_bam} {params.abs_bam} 2> {log}
+        """
 
 
 rule userprovided_bam_modern_symbolic_links:
@@ -40,14 +41,15 @@ rule userprovided_bam_modern_symbolic_links:
     output:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}.userprovided.bam",
     params:
+        src_bam=lambda wildcards: mod_user_bam_symlinks_dict[wildcards.sample]["bam"],
         abs_bam=lambda wildcards, output: os.path.abspath(output.bam),
     log:
         "data/logs/3.1.1_user_provided_bams/modern/" + REF_NAME + "/{sample}_userprovided_bam_modern_symbolic_links.log",
-    run:
-        SAMPLENAME = "{}".format(wildcards.sample)
-        shell("""
-        ln -s {bam} {{params.abs_bam}} 2> {{log}}
-        """.format(SAMPLENAME=SAMPLENAME, **mod_user_bam_symlinks_dict[SAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_bam} {params.abs_bam} 2> {log}
+        """
 
 
 rule index_userprovided_bams:

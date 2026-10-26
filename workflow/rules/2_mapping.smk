@@ -43,13 +43,19 @@ rule readgroup_ID_historical:
         sai=rules.map_historical.output.sai,
     output:
         rg=temp("results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.readgroup.txt"),
+    params:
+        ID=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["ID"],
+        SM=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["SM"],
+        PL=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["PL"],
+        LB=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["LB"],
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_readgroup_ID_historical.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-            echo '@RG\\tID:{ID}\\tSM:{SM}\\tPL:{PL}\\tLB:{LB}' > {{output.rg}} 2> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_rg_dict[FULLSAMPLENAME]))
+    container:
+        shell_container
+    shell:
+        """
+        printf '%s\n' '@RG\tID:{params.ID}\tSM:{params.SM}\tPL:{params.PL}\tLB:{params.LB}' > {output.rg} 2> {log}
+        """
 
 
 rule sai2bam:
@@ -85,13 +91,19 @@ rule readgroup_ID_modern:
         fastq_mod_R2=rules.fastp_modern.output.R2_trimmed,
     output:
         rg=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.readgroup.txt"),
+    params:
+        ID=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["ID"],
+        SM=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["SM"],
+        PL=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["PL"],
+        LB=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["LB"],
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_readgroup_ID_modern.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-            echo '@RG\\tID:{ID}\\tSM:{SM}\\tPL:{PL}\\tLB:{LB}' > {{output.rg}} 2> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_rg_dict[FULLSAMPLENAME]))
+    container:
+        shell_container
+    shell:
+        """
+        printf '%s\\n' '@RG\\tID:{params.ID}\\tSM:{params.SM}\\tPL:{params.PL}\\tLB:{params.LB}' > {output.rg} 2> {log}
+        """
 
 
 rule map_modern:
