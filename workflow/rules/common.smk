@@ -34,7 +34,7 @@ vcftools_container = "docker://biocontainers/vcftools:v0.1.16-1-deb_cv1"
 snpeff_container = "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
 seqtk_container = "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
 gerp_container = "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
-shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:3da9b5da9b1e30c6"
+shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:be84f8d849f6bdee"
 
 ## Fix path to scratch directory
 if os.path.exists(config["scratch_dir"]):
