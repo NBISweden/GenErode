@@ -12,9 +12,7 @@ if os.path.exists(config["modern_samples"]):
         mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 
-localrules:
-    readgroup_ID_historical,
-    readgroup_ID_modern,
+#localrules: readgroup_ID_historical, readgroup_ID_modern,
 
 
 # snakemake rules

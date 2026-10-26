@@ -15,7 +15,7 @@ if os.path.exists(config["modern_samples"]):
 
 
 # snakemake rules
-localrules: fastq_historical_symbolic_links, fastq_modern_symbolic_links
+#localrules: fastq_historical_symbolic_links, fastq_modern_symbolic_links
 
 rule fastq_historical_symbolic_links:
     """Make symbolic links to the original fastq-files based on a metadata table"""

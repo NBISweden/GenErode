@@ -30,9 +30,7 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
 
 
 # snakemake rules
-localrules:
-    plot_pc1_pc2,
-    plot_pc1_pc3,
+#localrules: plot_pc1_pc2, plot_pc1_pc3,
 
 
 rule vcf2plink_pca:

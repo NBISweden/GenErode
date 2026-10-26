@@ -39,8 +39,7 @@ elif os.path.exists(config["modern_samples"]):
 
 
 # snakemake rules
-localrules:
-    FROH_min_2Mb_plot,
+#localrules: FROH_min_2Mb_plot,
 
 
 rule filter_vcf_hwe:

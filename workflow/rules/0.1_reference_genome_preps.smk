@@ -10,7 +10,7 @@ ref_prep_outputs.append(expand(REF_DIR + "/" + REF_NAME + ".{ext}",
     ext=["dict", "bed"]))
 
 # snakemake rules
-localrules: make_reference_bed
+#localrules: make_reference_bed
 
 rule bwa_index_reference:
     """Index the reference genome using bwa"""

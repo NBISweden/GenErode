@@ -118,9 +118,7 @@ def all_mlRho_outputs(wildcards):
 
 
 # snakemake rules
-localrules:
-    mlRho_table,
-    mlRho_theta_plot,
+#localrules: mlRho_table, mlRho_theta_plot,
 
 
 rule bam2pro:
