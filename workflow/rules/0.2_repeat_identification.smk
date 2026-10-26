@@ -28,10 +28,10 @@ rule repeatmodeler:
         repeatmodeler_container
     shell:
         """
-        cd {params.dir}
-
         # Convert reference fasta bases to upper case
         awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
+
+        cd {params.dir}
 
         # Build repeat database
         BuildDatabase -engine ncbi -name {params.name} {params.ref_upper} 2>> {log} &&
