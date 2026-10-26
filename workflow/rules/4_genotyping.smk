@@ -30,7 +30,7 @@ rule variant_calling:
     threads: 3
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_variant_calling.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -51,7 +51,7 @@ rule sort_vcfs:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sort_vcfs.log",
     params:
         scratch=scratch_dir,
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -67,7 +67,7 @@ rule index_sorted_vcfs:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.bcf.csi",
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_index_sorted_vcfs.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -84,7 +84,7 @@ rule sorted_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_sorted/{sample}.Q30.q30.sorted.vcf.stats.txt",
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sorted_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -104,7 +104,7 @@ rule historical_sorted_vcf_multiqc:
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/",
     log:
         "results/logs/4_genotyping/historical/" + REF_NAME + "/historical_sorted_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -124,7 +124,7 @@ rule modern_sorted_vcf_multiqc:
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_sorted/multiqc/",
     log:
         "results/logs/4_genotyping/modern/" + REF_NAME + "/modern_sorted_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

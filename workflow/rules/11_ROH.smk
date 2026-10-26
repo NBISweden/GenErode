@@ -57,7 +57,7 @@ rule filter_vcf_hwe:
         out="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_filter_vcf_hwe.log",
-    singularity:
+    container:
         vcftools_container
     shell:
         """
@@ -74,7 +74,7 @@ rule compress_roh_vcf:
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
     threads: 2
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -100,7 +100,7 @@ rule vcf2plink_hwe:
         bfile="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_hwe.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
@@ -129,7 +129,7 @@ rule ROHs:
         roh="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}",
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}_ROHs.log",
-    singularity:
+    container:
         plink_container
     shell:
         """

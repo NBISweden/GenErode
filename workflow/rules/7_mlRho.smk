@@ -136,7 +136,7 @@ rule bam2pro:
         pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.pro"),
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}.{chr}_bam2pro.log",
-    singularity:
+    container:
         mlrho_container
     shell:
         """
@@ -172,7 +172,7 @@ rule mlRho:
         db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb",
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_{chr}.log",
-    singularity:
+    container:
         mlrho_container
     shell:
         """

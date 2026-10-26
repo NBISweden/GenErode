@@ -225,7 +225,7 @@ rule outgroup_fastqc:
     log:
         "results/logs/13_GERP/fastq/{gerpref}_outgroup_fastqc.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -247,7 +247,7 @@ rule outgroup_fastqc_multiqc:
         outdir="results/gerp/fastq_files/stats/multiqc/",
     log:
         "results/logs/13_GERP/fastq/outgroup_fastqc_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -277,7 +277,7 @@ rule align2target:
         scratch=scratch_dir,
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -295,7 +295,7 @@ rule index_gerp_bams:
         index=temp("results/gerp/alignment/" + REF_NAME + "/{gerpref}.bam.bai"),
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_index_gerp_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -312,7 +312,7 @@ rule gerp_bam_stats:
         stats="results/gerp/alignment/" + REF_NAME + "/stats/{gerpref}.bam.stats.txt",
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_gerp_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -332,7 +332,7 @@ rule gerp_bam_multiqc:
         outdir="results/gerp/alignment/" + REF_NAME + "/stats/multiqc/",
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/gerp_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -357,7 +357,7 @@ rule bam2fasta:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{chunk}_bam2fasta.log",
     threads: 2
-    singularity:
+    container:
         samtools_python_container
     shell:
         """
@@ -405,7 +405,7 @@ rule split_ref_contigs:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/" + REF_NAME + "_{chunk}_split_ref_contigs.log",
     threads: 1
-    singularity:
+    container:
         seqtk_container
     shell:
         """
@@ -485,7 +485,7 @@ rule compute_gerp:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_compute_gerp.log",
     threads: 4
-    singularity:
+    container:
         gerp_container
     shell:
         """
@@ -657,7 +657,7 @@ rule split_vcf_files:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/vcf/{sample}.{filtered}_fmissing{fmiss}.{chr}.{chunk}_split_vcf_chunks.log",
     threads: 6
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -674,7 +674,7 @@ rule split_chunk_bed_files:
         chunk_win_bed=temp(REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/windows/{chunk}_10Mwindows.bed"),
     log:
         "results/logs/13_GERP/" + REF_NAME + ".{chunk}_{chr}_split_chunk_bed_files.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """

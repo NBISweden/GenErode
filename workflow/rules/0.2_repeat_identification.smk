@@ -37,7 +37,7 @@ rule repeatmodeler:
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
-    singularity:
+    container:
         repeatmodeler_container
     shell:
         """
@@ -79,7 +79,7 @@ rule repeatmasker:
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
-    singularity:
+    container:
         repeatmodeler_container
     shell:
         """
@@ -119,7 +119,7 @@ rule sort_repeats_bed:
         sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -136,7 +136,7 @@ rule make_no_repeats_bed:
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """

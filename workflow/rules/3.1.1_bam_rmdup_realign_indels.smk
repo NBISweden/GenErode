@@ -59,7 +59,7 @@ rule merge_historical_bams_per_index:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_merge_historical_bams_per_index.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -85,7 +85,7 @@ rule merge_modern_bams_per_index:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_merge_modern_bams_per_index.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -107,7 +107,7 @@ rule index_merged_index_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}.merged.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_index_merged_index_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -124,7 +124,7 @@ rule merged_index_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -148,7 +148,7 @@ rule merged_index_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_index/{sample}_{index}.merged.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_merged_index_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -172,7 +172,7 @@ rule historical_merged_index_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_merged_index_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -194,7 +194,7 @@ rule modern_merged_index_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_merged_index/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_merged_index_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -215,7 +215,7 @@ rule rmdup_historical_bams:
     threads: 6
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_{index}_rmdup_historical_bams.log",
-    singularity:
+    container:
         samtools_python_container
     shell:
         """
@@ -237,7 +237,7 @@ rule rmdup_modern_bams:
         mem_mb=16000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_{index}_rmdup_modern_bams.log",
-    singularity:
+    container:
         picard_container
     shell:
         """
@@ -253,7 +253,7 @@ rule index_rmdup_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}.merged.rmdup.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_index_rmdup_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -270,7 +270,7 @@ rule rmdup_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -294,7 +294,7 @@ rule rmdup_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_rmdup/{sample}_{index}.merged.rmdup.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_{index}_rmdup_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -318,7 +318,7 @@ rule historical_rmdup_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_rmdup_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -342,7 +342,7 @@ rule modern_rmdup_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_rmdup/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_rmdup_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -361,7 +361,7 @@ rule merge_historical_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/{sample}_merge_historical_bams_per_sample.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -387,7 +387,7 @@ rule merge_modern_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/{sample}_merge_modern_bams_per_sample.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -409,7 +409,7 @@ rule index_merged_sample_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_index_merged_sample_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -426,7 +426,7 @@ rule merged_sample_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -450,7 +450,7 @@ rule merged_sample_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_merged_sample/{sample}.merged.rmdup.merged.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_merged_sample_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -474,7 +474,7 @@ rule historical_merged_sample_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_merged_sample_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -496,7 +496,7 @@ rule modern_merged_sample_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_merged_sample/multiqc/",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_merged_sample_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -519,7 +519,7 @@ rule indel_realigner_targets:
         mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner_targets.log",
-    singularity:
+    container:
         gatk3_container
     shell:
         """
@@ -544,7 +544,7 @@ rule indel_realigner:
         mem_mb=64000,
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_indel_realigner.log",
-    singularity:
+    container:
         gatk3_container
     shell:
         """
@@ -560,7 +560,7 @@ rule index_realigned_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.merged.rmdup.merged.realn.bam.bai"),
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_index_realigned_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -577,7 +577,7 @@ rule realigned_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.stats.txt",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -598,7 +598,7 @@ rule realigned_bam_fastqc:
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_fastqc.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -622,7 +622,7 @@ rule realigned_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_indels_realigned/{sample}.merged.rmdup.merged.realn.bam.qualimap",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -651,7 +651,7 @@ rule realigned_bam_depth:
         cov=config["zerocoverage"],
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/{dataset}/" + REF_NAME + "/{sample}_realigned_bam_depth.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -706,7 +706,7 @@ rule historical_realigned_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/historical/" + REF_NAME + "/historical_realigned_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -736,7 +736,7 @@ rule modern_realigned_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_indels_realigned/multiqc",
     log:
         "results/logs/3.1_bam_rmdup_realign_indels/modern/" + REF_NAME + "/modern_realigned_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

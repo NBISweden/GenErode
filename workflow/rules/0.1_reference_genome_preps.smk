@@ -26,7 +26,7 @@ rule bwa_index_reference:
         dir=REF_DIR,
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_bwa_index.log",
-    singularity:
+    container:
         bwa_container
     shell:
         """
@@ -44,7 +44,7 @@ rule samtools_fasta_index:
         "results/logs/0.1_reference_genome_preps/"
         + REF_NAME
         + "_samtools_fasta_index.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -62,7 +62,7 @@ rule picard_fasta_dict:
         mem="4g",
     log:
         "results/logs/0.1_reference_genome_preps/" + REF_NAME + "_picard_fasta_dict.log",
-    singularity:
+    container:
         picard_container
     shell:
         """

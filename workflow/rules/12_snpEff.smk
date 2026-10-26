@@ -129,7 +129,7 @@ rule update_snpEff_config:
         abs_config=lambda wildcards, output: os.path.abspath(output.config),
     log:
         "results/logs/12_snpEff/" + REF_NAME + "_update_snpEff_config.log",
-    singularity:
+    container:
         snpeff_container
     shell:
         """
@@ -159,7 +159,7 @@ rule build_snpEff_db:
         abs_data_dir=os.path.abspath(GTF_DIR + "/snpEff/data/"),
     log:
         os.path.abspath("results/logs/12_snpEff/" + REF_NAME + "_build_snpEff_db.log"),
-    singularity:
+    container:
         snpeff_container
     shell:
         """
@@ -180,7 +180,7 @@ rule biallelic_missing_bcf2vcf:
     threads: 6
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_bcf2vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -207,7 +207,7 @@ rule annotate_vcf:
         abs_data_dir=os.path.abspath(GTF_DIR + "/snpEff/data/"),
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_annotate_vcf.log",
-    singularity:
+    container:
         snpeff_container
     shell:
         """
@@ -230,7 +230,7 @@ rule historical_snpEff_multiqc:
         outdir="results/historical/snpEff/" + REF_NAME + "/multiqc/",
     log:
         "results/logs/12_snpEff/historical/" + REF_NAME + "/historical_snpEff_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -251,7 +251,7 @@ rule modern_snpEff_multiqc:
         outdir="results/modern/snpEff/" + REF_NAME + "/multiqc/",
     log:
         "results/logs/12_snpEff/modern/" + REF_NAME + "/modern_snpEff_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

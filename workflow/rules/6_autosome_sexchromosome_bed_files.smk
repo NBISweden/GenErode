@@ -46,7 +46,7 @@ rule make_autosomes_bed:
         autosome_bed=REF_DIR + "/" + REF_NAME + ".autos.bed",
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_make_autosomes_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -67,7 +67,7 @@ rule intersect_sexchr_repma_beds:
         "the input files are: {input}"
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_intersect_sexchr_repma_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -88,7 +88,7 @@ rule intersect_autos_repma_beds:
         "the input files are: {input}"
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + "_intersect_autos_repma_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -109,7 +109,7 @@ rule intersect_sexchr_noCpG_repma_beds:
         "the input files are: {input}"
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_intersect_sexchr_noCpG_repma_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -130,7 +130,7 @@ rule intersect_autos_noCpG_repma_beds:
         "the input files are: {input}"
     log:
         "results/logs/6_autosome_sexchromosome_bed_files/" + REF_NAME + ".no{CpG_method}_intersect_autos_noCpG_repma_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """

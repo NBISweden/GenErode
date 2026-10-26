@@ -51,7 +51,7 @@ rule remove_CpG_vcf:
     threads: 6
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_remove_CpG_vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -68,7 +68,7 @@ rule index_CpG_bcf:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.csi",
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_index_CpG_bcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -85,7 +85,7 @@ rule CpG_filtered_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/{sample}.Q30.q30.sorted.no{CpG_method}.bcf.stats.txt",
     log:
         "results/logs/8.1_vcf_CpG_filtering/{dataset}/" + REF_NAME + "/{sample}.no{CpG_method}_CpG_filtered_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -104,7 +104,7 @@ rule historical_CpG_filtered_vcf_multiqc:
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc",
     log:
         "results/logs/8.1_vcf_CpG_filtering/historical/" + REF_NAME + "/historical_CpG_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -123,7 +123,7 @@ rule modern_CpG_filtered_vcf_multiqc:
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_CpG_filtered/multiqc",
     log:
         "results/logs/8.1_vcf_CpG_filtering/modern/" + REF_NAME + "/modern_CpG_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

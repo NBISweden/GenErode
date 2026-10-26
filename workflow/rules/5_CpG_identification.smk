@@ -53,7 +53,7 @@ rule sorted_bcf2vcf_CpG_id:
         vcf=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.CpG_id.vcf.gz"),
     log:
         "results/logs/5_CpG_identification/{dataset}/" + REF_NAME + "/{sample}_sorted_bcf2vcf_CpG_id.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -105,7 +105,7 @@ rule merge_CpG_genotype_beds:
         "the input files are: {input}"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -129,7 +129,7 @@ rule sort_CpG_genotype_beds:
         sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -147,7 +147,7 @@ rule merge_all_CpG_beds:
         "the input files are: {input}"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -171,7 +171,7 @@ rule sort_all_CpG_beds:
         sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -189,7 +189,7 @@ rule make_noCpG_bed:
     threads: 2
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -209,7 +209,7 @@ rule merge_CpG_repeats_beds:
         "the input files are: {input}"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -226,7 +226,7 @@ rule sort_CpG_repeats_beds:
         sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -244,7 +244,7 @@ rule make_noCpG_repma_bed:
     threads: 2
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """

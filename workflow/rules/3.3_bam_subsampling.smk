@@ -89,7 +89,7 @@ rule filter_bam_mapped_mq:
     threads: 2
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}_filter_bam_mapped_mq.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -109,7 +109,7 @@ rule subsample_bams:
         DP=config["subsampling_depth"],
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsample_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -132,7 +132,7 @@ rule index_subsampled_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.bai"),
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_index_subsampled_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -149,7 +149,7 @@ rule subsampled_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.stats.txt",
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -176,7 +176,7 @@ rule subsampled_bam_depth:
         cov=config["zerocoverage"],
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_depth.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -210,7 +210,7 @@ rule subsampled_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_subsampled/{sample}.{processed}.mapped_q30.subs_dp{DP}.bam.qualimap",
     log:
         "results/logs/3.3_bam_subsampling/{dataset}/" + REF_NAME + "/{sample}.{processed}.subs_dp{DP}_subsampled_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -231,7 +231,7 @@ rule historical_subsampled_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc",
     log:
         "results/logs/3.3_bam_subsampling/historical/historical_subsampled_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -250,7 +250,7 @@ rule modern_subsampled_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_subsampled/multiqc",
     log:
         "results/logs/3.3_bam_subsampling/modern/modern_subsampled_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

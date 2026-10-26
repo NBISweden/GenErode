@@ -166,7 +166,7 @@ rule bwa_index_mito_ref:
         sa=MITO_DIR + "{mitoref}.fasta.sa",
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_bwa_index_mito_ref.log",
-    singularity:
+    container:
         bwa_container
     shell:
         """
@@ -189,7 +189,7 @@ rule map_historical_merged_to_mito:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
     params:
         scratch=scratch_dir,
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -216,7 +216,7 @@ rule map_historical_unmerged_to_mito:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
     params:
         scratch=scratch_dir,
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -234,7 +234,7 @@ rule mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -257,7 +257,7 @@ rule historical_mito_bams_qualimap:
     threads: 1
     resources:
         mem_mb=8000,
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -324,7 +324,7 @@ rule merge_historical_mitogenome_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merge_historical_mitogenome_bams_per_sample.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -347,7 +347,7 @@ rule merged_mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merged_mitogenome_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -371,7 +371,7 @@ rule historical_merged_mito_bams_qualimap:
     threads: 1
     resources:
         mem_mb=8000,
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -401,7 +401,7 @@ rule historical_mito_bams_multiqc:
         outdir="results/historical/mitogenomes_mapping/stats/multiqc/",
     log:
         "results/logs/1.2_map_to_mitogenomes/historical_mito_bams_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

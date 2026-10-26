@@ -57,7 +57,7 @@ rule index_userprovided_bams:
         index=temp("results/{dataset}/mapping/" + REF_NAME + "/{sample}.userprovided.bam.bai"),
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_index_userprovided_bams.log",
-    singularity:
+    container:
         "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
@@ -74,7 +74,7 @@ rule userprovided_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.bam.stats.txt",
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_stats.log",
-    singularity:
+    container:
         "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
@@ -95,7 +95,7 @@ rule userprovided_bam_fastqc:
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_fastqc.log",
     threads: 2
-    singularity:
+    container:
         "docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
     shell:
         """
@@ -119,7 +119,7 @@ rule userprovided_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_user_provided/{sample}.userprovided.bam.qualimap",
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_qualimap.log",
-    singularity:
+    container:
         "oras://community.wave.seqera.io/library/qualimap:2.3--95d781b369b835f2"
     shell:
         """
@@ -148,7 +148,7 @@ rule userprovided_bam_depth:
         cov=config["zerocoverage"],
     log:
         "results/logs/3.1.1_user_provided_bams/{dataset}/" + REF_NAME + "/{sample}_userprovided_bam_depth.log",
-    singularity:
+    container:
         "oras://community.wave.seqera.io/library/bwa_samtools:58df1856e12c14b9"
     shell:
         """
@@ -203,7 +203,7 @@ rule historical_userprovided_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc",
     log:
         "results/logs/3.1.1_user_provided_bams/historical/" + REF_NAME + "/historical_userprovided_bam_multiqc.log",
-    singularity:
+    container:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:
         """
@@ -233,7 +233,7 @@ rule modern_userprovided_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_user_provided/multiqc",
     log:
         "results/logs/3.1.1_user_provided_bams/modern/" + REF_NAME + "/modern_userprovided_bam_multiqc.log",
-    singularity:
+    container:
         "docker://quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0"
     shell:
         """

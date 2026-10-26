@@ -89,7 +89,7 @@ rule remove_snps_near_indels:
     threads: 2
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_snps_near_indels.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -111,7 +111,7 @@ rule filter_vcfs_qual_dp:
     threads: 2
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_qual_dp.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -141,7 +141,7 @@ rule filter_vcfs_allelic_balance:
     threads: 2
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filter_vcfs_allelic_balance.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -158,7 +158,7 @@ rule index_filtered_vcfs:
         index=temp("results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.csi"),
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_filtered_vcfs.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -175,7 +175,7 @@ rule filtered_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.bcf.stats.txt",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_filtered_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -194,7 +194,7 @@ rule historical_quality_filtered_vcf_multiqc:
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/historical/" + REF_NAME + "/historical_quality_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -213,7 +213,7 @@ rule modern_quality_filtered_vcf_multiqc:
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_qual_filtered/multiqc",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/modern/" + REF_NAME + "/modern_quality_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -232,7 +232,7 @@ rule remove_repeats_vcf:
     threads: 6
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_remove_repeats_vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -249,7 +249,7 @@ rule index_repmasked_vcfs:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.csi",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_index_repmasked_vcfs.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -266,7 +266,7 @@ rule repmasked_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_repmasked/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.bcf.stats.txt",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/{dataset}/" + REF_NAME + "/{sample}.{filtered}_repmasked_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -285,7 +285,7 @@ rule historical_repmasked_vcf_multiqc:
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/historical/" + REF_NAME + "/historical_repmasked_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -304,7 +304,7 @@ rule modern_repmasked_vcf_multiqc:
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_repmasked/multiqc",
     log:
         "results/logs/8.2_vcf_qual_repeat_filtering/modern/" + REF_NAME + "/modern_repmasked_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

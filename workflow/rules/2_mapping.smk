@@ -29,7 +29,7 @@ rule map_historical:
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_map_historical.log",
     threads: 8
-    singularity:
+    container:
         bwa_container
     shell:
         """
@@ -67,7 +67,7 @@ rule sai2bam:
     params:
         scratch=scratch_dir,
     threads: 8
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -112,7 +112,7 @@ rule map_modern:
     params:
         scratch=scratch_dir,
     threads: 8
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -128,7 +128,7 @@ rule index_sorted_bams:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam.bai",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_index_sorted_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -145,7 +145,7 @@ rule sorted_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.stats.txt",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -169,7 +169,7 @@ rule sorted_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -193,7 +193,7 @@ rule historical_raw_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/historical_raw_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -215,7 +215,7 @@ rule modern_raw_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/modern_raw_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

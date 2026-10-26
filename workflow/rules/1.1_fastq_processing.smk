@@ -50,7 +50,7 @@ rule fastqc_historical_raw:
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -74,7 +74,7 @@ rule multiqc_historical_raw:
         outdir="data/raw_reads_symlinks/historical/stats/multiqc/",
     log:
         "data/logs/1.1_fastq_processing/historical/multiqc_historical_raw.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -115,7 +115,7 @@ rule fastqc_modern_raw:
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_fastqc_modern_raw.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -139,7 +139,7 @@ rule multiqc_modern_raw:
         outdir="data/raw_reads_symlinks/modern/stats/multiqc/",
     log:
         "data/logs/1.1_fastq_processing/modern/multiqc_modern_raw.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -168,7 +168,7 @@ rule fastp_historical:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastp_historical.log",
     threads: 4
-    singularity:
+    container:
         fastp_container
     shell:
         """
@@ -198,7 +198,7 @@ rule fastp_modern:
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastp_modern.log",
     threads: 4
-    singularity:
+    container:
         fastp_container
     shell:
         """
@@ -220,7 +220,7 @@ rule fastqc_historical_merged:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -241,7 +241,7 @@ rule fastqc_historical_unmerged:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -269,7 +269,7 @@ rule fastqc_modern_trimmed:
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc_modern_trimmed.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -296,7 +296,7 @@ rule multiqc_historical_trimmed:
         outdir="results/historical/trimming/stats/multiqc/",
     log:
         "results/logs/1.1_fastq_processing/historical/multiqc_historical_trimmed.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -320,7 +320,7 @@ rule multiqc_modern_trimmed:
         outdir="results/modern/trimming/stats/multiqc/",
     log:
         "results/logs/1.1_fastq_processing/modern/multiqc_modern_trimmed.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

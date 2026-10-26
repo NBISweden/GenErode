@@ -50,7 +50,7 @@ rule vcf2plink_pca:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_pca.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
@@ -73,7 +73,7 @@ rule plink_eigenvec:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plink_eigenvec.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
