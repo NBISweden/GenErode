@@ -88,7 +88,6 @@ def all_snpEff_outputs(wildcards):
 # snakemake rules
 #localrules: prepare_db_build, snpEff_variant_impact_plot,
 
-
 rule prepare_db_build:
     """Prepare file structure and files to build database for snpEff annotation
     and update the snpEff config file"""
@@ -98,17 +97,14 @@ rule prepare_db_build:
     output:
         gtf=GTF_DIR + "/snpEff/data/" + REF_NAME + "/genes.gtf",
         ref=GTF_DIR + "/snpEff/data/genomes/" + REF_NAME + ".fa",
+        config=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEff.config",
     params:
         abs_gtf_in=lambda wildcards, input: os.path.abspath(input.gtf),
         abs_gtf_out=lambda wildcards, output: os.path.abspath(output.gtf),
         abs_ref_in=lambda wildcards, input: os.path.abspath(input.ref),
         abs_ref_out=lambda wildcards, output: os.path.abspath(output.ref),
-        config=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEff.config",
-    params:
         config="/usr/local/share/snpeff-4.3.1t-3/snpEff.config",
         ref_name=REF_NAME,
-        abs_gtf=lambda wildcards, input: os.path.abspath(input.gtf),
-        abs_ref=lambda wildcards, input: os.path.abspath(input.ref),
         abs_config=lambda wildcards, output: os.path.abspath(output.config),
     log:
         "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
