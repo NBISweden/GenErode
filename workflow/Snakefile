@@ -351,26 +351,3 @@ all_outputs=list(set(all_outputs))
 rule all:
     input:
         all_outputs,
-
-
-##########################################################################
-################################ REPORT ##################################
-##########################################################################
-
-
-if (config["bam_rmdup_realign_indels"]
-    or config["merge_vcfs_per_dataset"]
-    or config["mlRho"]
-    or config["pca"]
-    or config["ROH"]
-    or config["snpEff"]
-    or config["gerp"]):
-
-    if os.path.exists(config["historical_samples"]) or os.path.exists(config["modern_samples"]):
-        onsuccess:
-            shell(
-                r"""
-                snakemake --unlock --cores 1 &&
-                snakemake --report GenErode_pipeline_report.html --cores 1
-                """)
-            all_outputs.append("GenErode_pipeline_report.html")
