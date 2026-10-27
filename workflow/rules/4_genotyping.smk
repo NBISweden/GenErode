@@ -54,7 +54,7 @@ rule sort_vcfs:
         bcftools_container
     shell:
         """
-        bcftools sort -T {params.scratch} -O b -o {output.sort} {input.bcf} 2> {log}
+        bcftools sort -O b -o {output.sort} {input.bcf} 2> {log}
         """
 
 

@@ -75,7 +75,7 @@ rule sai2bam:
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -125,7 +125,7 @@ rule map_modern:
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 

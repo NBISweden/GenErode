@@ -282,7 +282,7 @@ rule align2target:
         """
         bwa mem {params.extra} -t {threads} {input.target} {input.fastq} | \
             samtools view -@ {threads} -h -q 1 -F 4 -F 256 | grep -v XA:Z | grep -v SA:Z | \
-            samtools view -@ {threads} -b - | samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+            samtools view -@ {threads} -b - | samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 
