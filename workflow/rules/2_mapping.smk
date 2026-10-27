@@ -52,7 +52,7 @@ rule readgroup_ID_historical:
         shell_container
     shell:
         """
-        printf '%s\n' '@RG\tID:{params.ID}\tSM:{params.SM}\tPL:{params.PL}\tLB:{params.LB}' > {output.rg} 2> {log}
+        printf '%s\\n' '@RG\\tID:{params.ID}\\tSM:{params.SM}\\tPL:{params.PL}\\tLB:{params.LB}' > {output.rg} 2> {log}
         """
 
 
