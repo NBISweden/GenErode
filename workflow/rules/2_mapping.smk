@@ -68,8 +68,7 @@ rule sai2bam:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
-    params:
-        scratch=scratch_dir,
+    shadow: "minimal"
     threads: 8
     container:
         bwa_samtools_container
@@ -119,8 +118,7 @@ rule map_modern:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
-    params:
-        scratch=scratch_dir,
+    shadow: "minimal"
     threads: 8
     container:
         bwa_samtools_container

@@ -115,13 +115,7 @@ def all_GERP_outputs(wildcards):
 
 
 # snakemake rules
-localrules:
-    rename_ref_bed,
-    split_ref_bed,
-    fasta_to_fa,
-    fna_to_fa,
-    split_chunk_bed_files,
-    relative_mutational_load_plot,
+#localrules: rename_ref_bed, split_ref_bed, fasta_to_fa, fna_to_fa, split_chunk_bed_files, relative_mutational_load_plot,
 
 rule rename_ref_bed:
     """Rename the reference bed file to be able to split the 
@@ -279,7 +273,7 @@ rule align2target:
     threads: 8
     params:
         extra=r"-R '@RG\tID:{gerpref}\tSM:{gerpref}\tPL:ILLUMINA\tPI:330'",
-        scratch=scratch_dir,
+    shadow: "minimal"
     log:
         "results/logs/13_GERP/alignment/" + REF_NAME + "/{gerpref}_align2target.log",
     container:
@@ -431,40 +425,40 @@ rule split_ref_contigs:
 rule concatenate_fasta_per_contig:
     """
     Concatenate fasta files from all outgroup genomes per contig.
-    This analysis is run as one job per genome chunk, but is internally run per contig.
+    Run as one job per genome chunk, looping over the contigs in the chunk BED internally.
     """
     input:
-        gerpref_fasta=expand("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/", chr=CHR, gerpref=GERP_REF_NAMES),
+        gerpref_fasta=expand(
+            "results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/{gerpref}_{{chunk}}/",
+            chr=CHR, gerpref=GERP_REF_NAMES,
+        ),
         ref_fasta=rules.split_ref_contigs.output,
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
     output:
         concatenated_fasta_dir=temp(directory("results/gerp/{chr}_chunks/" + REF_NAME + "/fasta/concatenated_{chunk}/")),
     params:
         fasta_dir="results/gerp/{chr}_chunks/" + REF_NAME + "/fasta",
-        chunk=lambda wildcards: "{wildcards.chunk}",
+        refs=" ".join(ALL_GERP_REF_NAMES),  # includes the target-species reference
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
-    threads: 2
-    run:
-        if not os.path.exists(output.concatenated_fasta_dir):
-            os.makedirs(output.concatenated_fasta_dir)
-        chunk_contigs = []
-        with open(input.chunk_bed, "r") as bed:
-            for line in bed:
-                contigname = line.strip().split("\t")[0]
-                chunk_contigs.append(contigname)
-        for contig in chunk_contigs:  # run the analysis per contig
-            ref_fastas = []
-            for (ref) in (ALL_GERP_REF_NAMES):  # this list includes the reference genome of the target species
-                ref_fastas.append("{fasta_dir}/{ref}_{chunk}/{ref}_{contig}.fasta".format(fasta_dir=params.fasta_dir, ref=ref, chunk=params.chunk, contig=contig,))
-            cat_fastas = " ".join(ref_fastas)
-            shell("""
-                if [ ! -d {{output.concatenated_fasta_dir}} ]; then
-                    mkdir -p {{output.concatenated_fasta_dir}};
-                fi
-                cat {cat_fastas} > {{output.concatenated_fasta_dir}}/{contig}.fasta 2>> {{log}} &&
-                echo "Fasta files concatenated for {contig}" >> {{log}}
-                """.format(cat_fastas=cat_fastas, contig=contig))
+    threads: 1
+    container: shell_container
+    shell:
+        r"""
+        mkdir -p {output.concatenated_fasta_dir}
+
+        while IFS=$'\t' read -r contig _ || [[ -n "$contig" ]]; do
+            [[ -z "$contig" ]] && continue
+
+            files=()
+            for ref in {params.refs}; do
+                files+=("{params.fasta_dir}/${{ref}}_{wildcards.chunk}/${{ref}}_${{contig}}.fasta")
+            done
+
+            cat -- "${{files[@]}}" > "{output.concatenated_fasta_dir}/${{contig}}.fasta"
+            echo "Fasta files concatenated for ${{contig}}"
+        done < {input.chunk_bed}
+        """
 
 
 rule compute_gerp:
