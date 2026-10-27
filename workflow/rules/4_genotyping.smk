@@ -49,7 +49,6 @@ rule sort_vcfs:
         mem_mb=16000,
     log:
         "results/logs/4_genotyping/{dataset}/" + REF_NAME + "/{sample}_sort_vcfs.log",
-    shadow: "minimal"
     container:
         bcftools_container
     shell:
