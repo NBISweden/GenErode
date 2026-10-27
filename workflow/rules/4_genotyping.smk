@@ -53,7 +53,7 @@ rule sort_vcfs:
         bcftools_container
     shell:
         """
-        mem=$((({resources.mem_mb} * 0.75)))
+        mem=$((({resources.mem_mb} / 4 * 3)))
         bcftools sort -m ${{mem}}M -O b -o {output.sort} {input.bcf} 2> {log}
         """
 
