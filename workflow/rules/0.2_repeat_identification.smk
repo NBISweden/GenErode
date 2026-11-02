@@ -100,7 +100,7 @@ rule make_repeats_bed:
     input:
         rep_out=rules.repeatmasker.output.rep_out,
     output:
-        rep_bed=temp(REF_DIR + "/" + REF_NAME + ".repeats.bed"),
+        rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.bed",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repeats_bed.log"),
     container: shell_container
