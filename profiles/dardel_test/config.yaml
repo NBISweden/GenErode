@@ -59,12 +59,8 @@ set-threads:
   subsampled_bam_qualimap: 20
   variant_calling: 10
   sort_vcfs: 10
-  make_noCpG_bed: 10
-  make_noCpG_repma_bed: 10
-  intersect_sexchr_repma_beds: 10
-  intersect_autos_repma_beds: 10
-  intersect_sexchr_CpG_repma_beds: 10
-  intersect_autos_CpG_repma_beds: 10
+  merge_CpG_repeats_beds: 10
+  intersect_sexchr_autos_noCpG_repma_beds: 10
   remove_CpG_vcf: 20
   remove_snps_near_indels: 10
   filter_vcfs_qual_dp: 10
@@ -78,7 +74,6 @@ set-threads:
   vcf2plink_pca: 10
   plink_eigenvec: 10
   filter_vcf_hwe: 10
-  vcf2plink_hwe: 10
   build_snpEff_db: 10
   annotate_vcf: 10
   outgroups2fastq: 10
@@ -108,6 +103,12 @@ set-resources:
   - map_modern:runtime=120
   - subsample_bams:runtime=120
   - gerp_derived_alleles:runtime=120
+  - mlRho_table_plot:runtime=10
+  - plot_pca:runtime=10
+  - FROH_min_2Mb:runtime=10
+  - snpEff_variant_impact_table_plot:runtime=10
+  - relative_mutational_load_table:runtime=10
+  - relative_mutational_load_plot:runtime=10
   # memory
   - repeatmodeler:mem_mb=20000
   - repeatmasker:mem_mb=20000
