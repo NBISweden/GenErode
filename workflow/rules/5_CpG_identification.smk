@@ -83,8 +83,11 @@ rule make_CpG_reference_bed:
     """Make a bed file of CpG sites found in the reference genome"""
     input:
         ref=rules.repeatmodeler.output.ref_upper,
+        genomefile=rules.samtools_fasta_index.output.fai,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
     output:
         bed="results/" + REF_NAME + ".CpG_ref.bed",
+        no_CpG_bed="results/" + REF_NAME + ".noCpG_ref.bed",
     params:
         refdirbed=REF_DIR + "/" + REF_NAME + ".CpG_ref",
     log:
@@ -93,16 +96,24 @@ rule make_CpG_reference_bed:
     shell:
         """
         python workflow/scripts/find_CpG_ref_sites.py {input.ref} {params.refdirbed} 2> {log} &&
-        cp {params.refdirbed}.bed {output.bed} 2>> {log}
+        cp {params.refdirbed}.bed {output.bed} 2>> {log} &&
+
+        # make noCpG BED
+        bedtools subtract -a {input.ref_bed} -b {output.bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2>> {log}
         """
 
 
 rule merge_CpG_genotype_beds:
     input:
         CpG_genotype_bed_files_to_merge,
+        genomefile=rules.samtools_fasta_index.output.fai,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcf.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcf.bed"),
+        sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
+        no_CpG_bed="results/" + REF_NAME + ".noCpG_vcf.bed",
     message:
         "the input files are: {input}"
     log:
@@ -120,33 +131,26 @@ rule merge_CpG_genotype_beds:
             touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
-        """
 
+        # sort the merged BED file
+        bedtools sort -g {input.genomefile} -i {output.merged} > {output.sorted_bed} 2>> {log} &&
 
-rule sort_CpG_genotype_beds:
-    input:
-        merged_bed=rules.merge_CpG_genotype_beds.output.merged,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
-    log:
-        "results/logs/5_CpG_identification/" + REF_NAME + "_sort_CpG_genotype_beds.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
+        # make noCpG BED
+        bedtools subtract -a {input.ref_bed} -b {output.sorted_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2>> {log}
         """
 
 
 rule merge_all_CpG_beds:
     input:
         all_CpG_bed_files_to_merge,
+        genomefile=rules.samtools_fasta_index.output.fai,
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcfref.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcfref.bed"),
-    message:
-        "the input files are: {input}"
+        sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
+        no_CpG_bed="results/" + REF_NAME + ".noCpG_vcfref.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_all_CpG_beds.log",
     container:
@@ -162,53 +166,28 @@ rule merge_all_CpG_beds:
             touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
-        """
 
+        # sort the merged BED
+        bedtools sort -g {input.genomefile} -i {output.merged} > {output.sorted_bed} 2>> {log} &&
 
-rule sort_all_CpG_beds:
-    input:
-        merged_bed=rules.merge_all_CpG_beds.output.merged,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        sorted_bed="results/" + REF_NAME + ".CpG_vcfref.bed",
-    log:
-        "results/logs/5_CpG_identification/" + REF_NAME + "_sort_all_CpG_beds.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
-        """
-
-
-rule make_noCpG_bed:
-    input:
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
-        CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        no_CpG_bed="results/" + REF_NAME + ".no{CpG_method}.bed",
-    threads: 2
-    log:
-        "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_no_CpG_bed.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} \
-        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2> {log}
+        # make noCpG BED
+        bedtools subtract -a {input.ref_bed} -b {output.sorted_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2>> {log}
         """
 
 
 rule merge_CpG_repeats_beds:
     input:
+        ref_bed=rules.samtools_fasta_index.output.ref_bed,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
         sorted_rep_bed=rules.sort_repeats_bed.output,
+        genomefile=rules.samtools_fasta_index.output.fai,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.{CpG_method}.repeats.bed"),
         merged=temp("results/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
-    message:
-        "the input files are: {input}"
+        sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
+        no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
+        no_CpG_repma_bed_local="results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_merge_CpG_repeats_beds.log",
     container:
@@ -217,41 +196,13 @@ rule merge_CpG_repeats_beds:
         """
         cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
         bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
-        """
 
+        # sort the merged BED
+        bedtools sort -g {input.genomefile} -i {output.merged} > {output.sorted_bed} 2>> {log} &&
 
-rule sort_CpG_repeats_beds:
-    input:
-        merged_bed=rules.merge_CpG_repeats_beds.output.merged,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        sorted_bed="results/" + REF_NAME + ".{CpG_method}.repeats.bed",
-    log:
-        "results/logs/5_CpG_identification/" + REF_NAME + ".{CpG_method}_sort_CpG_repeats_beds.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools sort -g {input.genomefile} -i {input.merged_bed} > {output.sorted_bed} 2> {log}
-        """
-
-
-rule make_noCpG_repma_bed:
-    input:
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
-        sorted_bed=rules.sort_CpG_repeats_beds.output.sorted_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
-        no_CpG_repma_bed_local="results/" + REF_NAME + ".no{CpG_method}.repma.genome.bed",
-    threads: 2
-    log:
-        "results/logs/5_CpG_identification/" + REF_NAME + ".no{CpG_method}_make_noCpG_repma_bed.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools subtract -a {input.ref_bed} -b {input.sorted_bed} \
-        -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2> {log} &&
+        # make noCpG repma BED
+        bedtools subtract -a {input.ref_bed} -b {output.sorted_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_repma_bed} 2>> {log} &&
         cp {output.no_CpG_repma_bed} {output.no_CpG_repma_bed_local} 2>> {log}
         """
+

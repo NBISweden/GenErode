@@ -89,7 +89,7 @@ rule make_repeats_bed:
     input:
         rep_out=rules.repeatmasker.output.rep_out,
     output:
-        rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.bed",
+        rep_bed=temp(REF_DIR + "/" + REF_NAME + ".repeats.bed"),
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repeats_bed.log"),
     container: shell_container
@@ -97,37 +97,25 @@ rule make_repeats_bed:
         "../scripts/make_repeats_bed.py"
 
 
-rule sort_repeats_bed:
+rule make_no_repeats_bed:
     input:
         rep_bed=rules.make_repeats_bed.output.rep_bed,
         genomefile=rules.samtools_fasta_index.output.fai,
     output:
         sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
+        no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
+        no_rep_bed_local="results/" + REF_NAME + ".repma.genome.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
     container:
         bedtools_htslib_container
     shell:
         """
-        bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
-        """
+        # sort the repeats bed file
+        bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log} &&
 
-
-rule make_no_repeats_bed:
-    input:
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
-        sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
-        no_rep_bed_local="results/" + REF_NAME + ".repma.genome.bed",
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
-    container:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} \
+        # make repeat mask bed
+        bedtools subtract -a {input.ref_bed} -b {output.sorted_rep_bed} \
         -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log} &&
         cp {output.no_rep_bed} {output.no_rep_bed_local} 2>> {log}
         """
