@@ -86,7 +86,7 @@ def all_snpEff_outputs(wildcards):
 
 
 # snakemake rules
-#localrules: prepare_db_build, snpEff_variant_impact_plot,
+#localrules: prepare_db_build, snpEff_variant_impact_table_plot,
 
 rule prepare_db_build:
     """Prepare file structure and files to build database for snpEff annotation
@@ -242,31 +242,25 @@ rule modern_snpEff_multiqc:
         """
 
 
-rule snpEff_variant_impact_table:
-    """Extract numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
+rule snpEff_variant_impact_table_plot:
+    """Extract and plot numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
     input:
         all_snpEff_outputs,
     output:
         table=report("results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.txt",
             caption="../report/snpEff_variant_impact_table.rst",
             category="snpEff",),
-    log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.log",
-    container: shell_container
-    script:
-        "../scripts/snpEff_variant_impact_table.py"
-
-
-rule snpEff_variant_impact_plot:
-    """Plot numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
-    input:
-        table= "results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.txt",
-    output:
         plot=report("results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
             caption="../report/snpEff_variant_impact_plot.rst",
             category="snpEff",),
     log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.log",
+        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table_plot.log",
     container: shell_container
-    script:
-        "../scripts/snpEff_variant_impact_plot.py"
+    shell:
+        """
+        # Extract numbers of SNPs per impact category
+        python3 workflow/scripts/snpEff_variant_impact_table.py {output.table} {input} 2> {log} &&
+
+        # Plot numbers of SNPs per impact category
+        python3 workflow/scripts/snpEff_variant_impact_plot.py {output.table} {output.plot} 2>> {log}
+        """

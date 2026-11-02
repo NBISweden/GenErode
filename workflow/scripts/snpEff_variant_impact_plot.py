@@ -3,18 +3,20 @@
 """
 Script to plot numbers of variants from different impact categories from snpEff analysis, for historical and modern samples.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 snpEff_variant_impact_plot.py variant_impact_table out_plot
 """
 
+from sys import argv
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-infile=snakemake.input[0] # input files from Snakemake rule. Path has to be structured like so for the script to work: "results/[dataset]/snpEff/[reference]/[sample]*_stats.csv"
-outplot=snakemake.output[0] # output file from Snakemake rule
+infile=argv[1] # input table with variant impact counts for all samples
+outplot=argv[2] # output file
 
 
 # define a function for the subplots

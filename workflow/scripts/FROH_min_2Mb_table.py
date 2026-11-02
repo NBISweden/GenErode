@@ -3,18 +3,21 @@
 """
 Script to calculate FROH, the proportion of the genome in runs of homozygosity (ROH) for ROHs >= 2MB, for historical and modern samples.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 FROH_min_2Mb_table.py genome_fai out_table roh_files...
+
+ROH files are given per dataset as *.hom followed by *.hom.indiv (two files for one dataset, four files for two datasets).
 """
 
+from sys import argv
 import pandas as pd
-import matplotlib.pyplot as plt
 import datetime
 
-ingenfil=snakemake.input.genomefile # input genomefile from Snakemake rule
-inroh=snakemake.input.ROH # input ROH files from Snakemake rule: per dataset, *.hom and *.hom.indiv
-outtable=snakemake.output.table # output file from Snakemake rule
+ingenfil=argv[1] # input genomefile (fasta index)
+outtable=argv[2] # output file
+inroh=argv[3:] # input ROH files: per dataset, *.hom and *.hom.indiv
 
 # read in the genome file and calculate the genome length
 genfil=pd.read_table(ingenfil, header=None)

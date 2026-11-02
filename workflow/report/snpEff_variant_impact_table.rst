@@ -5,4 +5,4 @@ Numbers of SNPs with high, moderate, low, and modifier impact for each sample.
 - LOW: Assumed to be mostly harmless or unlikely to change protein behavior. 	Examples: synonymous_variant  
 - MODIFIER: Usually non-coding variants or variants affecting non-coding genes, where predictions are difficult or there is no evidence of impact. Examples: exon_variant, downstream_gene_variant  
 
-Click on "snpEff_variant_impact_table" to view the Python code used to create the plot.
+Click on "snpEff_variant_impact_table_plot" to view the code used to create the table (Python script workflow/scripts/snpEff_variant_impact_table.py).
