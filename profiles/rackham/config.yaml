@@ -81,6 +81,7 @@ set-threads:
 
 ## set-resources: map rule names to resources in general
 set-resources:
+  - ref_upper:runtime=10
   - repeatmodeler:runtime=10080
   - repeatmasker:runtime=10080
   - fastp_historical:runtime=600
@@ -115,6 +116,7 @@ set-resources:
   - sort_vcfs:runtime=1440
   - make_CpG_genotype_bed:runtime=1440
   - merge_CpG_repeats_beds:runtime=300
+  - make_noCpG_bed:runtime=30
   - make_sexchr_autosomes_bed:runtime=300
   - intersect_sexchr_autos_noCpG_repma_beds:runtime=300
   - bam2pro:runtime=1440

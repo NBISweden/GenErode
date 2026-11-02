@@ -82,12 +82,9 @@ rule make_CpG_genotype_bed:
 rule make_CpG_reference_bed:
     """Make a bed file of CpG sites found in the reference genome"""
     input:
-        ref=rules.repeatmodeler.output.ref_upper,
-        genomefile=rules.index_reference.output.fai,
-        ref_bed=rules.index_reference.output.ref_bed,
+        ref=rules.ref_upper.output,
     output:
         bed="results/" + REF_NAME + ".CpG_ref.bed",
-        no_CpG_bed="results/" + REF_NAME + ".noCpG_ref.bed",
     params:
         refdirbed=REF_DIR + "/" + REF_NAME + ".CpG_ref",
     log:
@@ -96,11 +93,26 @@ rule make_CpG_reference_bed:
     shell:
         """
         python workflow/scripts/find_CpG_ref_sites.py {input.ref} {params.refdirbed} 2> {log} &&
-        cp {params.refdirbed}.bed {output.bed} 2>> {log} &&
+        cp {params.refdirbed}.bed {output.bed} 2>> {log}
+        """
 
-        # make noCpG BED
-        bedtools subtract -a {input.ref_bed} -b {output.bed} \
-        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2>> {log}
+
+rule make_noCpG_bed:
+    """Make a BED file excluding CpG sites found in the reference genome"""
+    input:
+        ref_bed=rules.index_reference.output.ref_bed,
+        CpG_bed=rules.make_CpG_reference_bed.output.bed,
+        genomefile=rules.index_reference.output.fai,
+    output:
+        no_CpG_bed="results/" + REF_NAME + ".noCpG_ref.bed",
+    log:
+        "results/logs/5_CpG_identification/" + REF_NAME + ".noCpG_ref_make_no_CpG_bed.log",
+    container:
+        bedtools_htslib_container
+    shell:
+        """
+        bedtools subtract -a {input.ref_bed} -b {input.CpG_bed} \
+        -sorted -g {input.genomefile} > {output.no_CpG_bed} 2> {log}
         """
 
 
