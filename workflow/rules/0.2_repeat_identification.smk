@@ -100,7 +100,8 @@ rule make_repeats_bed:
 rule make_no_repeats_bed:
     input:
         rep_bed=rules.make_repeats_bed.output.rep_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
+        genomefile=rules.index_reference.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
     output:
         sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",

@@ -23,8 +23,8 @@ rule make_sexchr_autosomes_bed:
     a bed file of sex chromosome-linked scaffolds/chromosomes"""
     input:
         fai=config["ref_path"] + ".fai",
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
+        genomefile=rules.index_reference.output.fai,
         no_rep_bed=rules.make_no_repeats_bed.output.no_rep_bed,
     output:
         sexchr_bed=REF_DIR + "/" + REF_NAME + ".sexchr.bed",
@@ -63,7 +63,7 @@ rule intersect_sexchr_autos_noCpG_repma_beds:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
         sexchr_bed=rules.split_sexchr_autosomes_bed.output.sexchr_bed,
         autosome_bed=rules.split_sexchr_autosomes_bed.output.autosome_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
+        genomefile=rules.index_reference.output.fai,
     output:
         no_CpG_repma_sexchr="results/" + REF_NAME + ".no{CpG_method}.repma.sexchr.bed",
         no_CpG_repma_autos="results/" + REF_NAME + ".no{CpG_method}.repma.autos.bed",

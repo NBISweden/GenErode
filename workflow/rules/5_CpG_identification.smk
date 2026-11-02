@@ -83,8 +83,8 @@ rule make_CpG_reference_bed:
     """Make a bed file of CpG sites found in the reference genome"""
     input:
         ref=rules.repeatmodeler.output.ref_upper,
-        genomefile=rules.samtools_fasta_index.output.fai,
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
+        genomefile=rules.index_reference.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
     output:
         bed="results/" + REF_NAME + ".CpG_ref.bed",
         no_CpG_bed="results/" + REF_NAME + ".noCpG_ref.bed",
@@ -107,8 +107,8 @@ rule make_CpG_reference_bed:
 rule merge_CpG_genotype_beds:
     input:
         CpG_genotype_bed_files_to_merge,
-        genomefile=rules.samtools_fasta_index.output.fai,
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
+        genomefile=rules.index_reference.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcf.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcf.bed"),
@@ -144,8 +144,8 @@ rule merge_CpG_genotype_beds:
 rule merge_all_CpG_beds:
     input:
         all_CpG_bed_files_to_merge,
-        genomefile=rules.samtools_fasta_index.output.fai,
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
+        genomefile=rules.index_reference.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.CpG_vcfref.bed"),
         merged=temp("results/" + REF_NAME + ".merged.CpG_vcfref.bed"),
@@ -178,10 +178,10 @@ rule merge_all_CpG_beds:
 
 rule merge_CpG_repeats_beds:
     input:
-        ref_bed=rules.samtools_fasta_index.output.ref_bed,
+        ref_bed=rules.index_reference.output.ref_bed,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
         sorted_rep_bed=rules.sort_repeats_bed.output,
-        genomefile=rules.samtools_fasta_index.output.fai,
+        genomefile=rules.index_reference.output.fai,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.{CpG_method}.repeats.bed"),
         merged=temp("results/" + REF_NAME + ".merged.{CpG_method}.repeats.bed"),
