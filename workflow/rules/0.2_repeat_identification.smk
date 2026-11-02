@@ -107,7 +107,7 @@ rule make_no_repeats_bed:
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
         no_rep_bed_local="results/" + REF_NAME + ".repma.genome.bed",
     log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
+        "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
     container:
         bedtools_htslib_container
     shell:
@@ -117,6 +117,6 @@ rule make_no_repeats_bed:
 
         # make repeat mask bed
         bedtools subtract -a {input.ref_bed} -b {output.sorted_rep_bed} \
-        -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log} &&
+        -sorted -g {input.genomefile} > {output.no_rep_bed} 2>> {log} &&
         cp {output.no_rep_bed} {output.no_rep_bed_local} 2>> {log}
         """

@@ -180,7 +180,7 @@ rule merge_CpG_repeats_beds:
     input:
         ref_bed=rules.index_reference.output.ref_bed,
         CpG_bed="results/" + REF_NAME + ".{CpG_method}.bed",
-        sorted_rep_bed=rules.sort_repeats_bed.output,
+        sorted_rep_bed=rules.make_no_repeats_bed.output.sorted_rep_bed,
         genomefile=rules.index_reference.output.fai,
     output:
         tmp=temp("results/" + REF_NAME + ".concatenated.{CpG_method}.repeats.bed"),
@@ -194,8 +194,8 @@ rule merge_CpG_repeats_beds:
         bedtools_htslib_container
     shell:
         """
-        cat {input[0]} {input[1]} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
-        bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
+        cat {input.CpG_bed} {input.sorted_rep_bed} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+        bedtools merge -i {output.tmp} > {output.merged} 2>> {log} &&
 
         # sort the merged BED
         bedtools sort -g {input.genomefile} -i {output.merged} > {output.sorted_bed} 2>> {log} &&

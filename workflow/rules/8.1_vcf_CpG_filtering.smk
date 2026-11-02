@@ -45,7 +45,7 @@ rule remove_CpG_vcf:
     input:
         bcf=rules.sort_vcfs.output.sort,
         csi=rules.index_sorted_vcfs.output.index,
-        bed=rules.make_noCpG_bed.output.no_CpG_bed,
+        bed="results/" + REF_NAME + ".no{CpG_method}.bed",
     output:
         filtered="results/{dataset}/vcf/" + REF_NAME + "/{sample}.Q30.q30.sorted.no{CpG_method}.bcf",
     threads: 6
