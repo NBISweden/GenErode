@@ -61,8 +61,8 @@ rule make_sexchr_autosomes_bed:
 rule intersect_sexchr_autos_noCpG_repma_beds:
     input:
         no_CpG_repma_bed="results/" + REF_NAME + ".no{CpG_method}.repma.bed",
-        sexchr_bed=rules.split_sexchr_autosomes_bed.output.sexchr_bed,
-        autosome_bed=rules.split_sexchr_autosomes_bed.output.autosome_bed,
+        sexchr_bed=rules.make_sexchr_autosomes_bed.output.sexchr_bed,
+        autosome_bed=rules.make_sexchr_autosomes_bed.output.autosome_bed,
         genomefile=rules.index_reference.output.fai,
     output:
         no_CpG_repma_sexchr="results/" + REF_NAME + ".no{CpG_method}.repma.sexchr.bed",
