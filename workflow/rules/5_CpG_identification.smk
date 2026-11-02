@@ -106,7 +106,7 @@ rule make_CpG_reference_bed:
 
 rule merge_CpG_genotype_beds:
     input:
-        CpG_genotype_bed_files_to_merge,
+        beds=CpG_genotype_bed_files_to_merge,
         genomefile=rules.index_reference.output.fai,
         ref_bed=rules.index_reference.output.ref_bed,
     output:
@@ -115,20 +115,20 @@ rule merge_CpG_genotype_beds:
         sorted_bed="results/" + REF_NAME + ".CpG_vcf.bed",
         no_CpG_bed="results/" + REF_NAME + ".noCpG_vcf.bed",
     message:
-        "the input files are: {input}"
+        "the input files are: {input.beds}"
     log:
         "results/logs/5_CpG_identification/" + REF_NAME + "_merge_CpG_genotype_beds.log",
     container:
         bedtools_htslib_container
     shell:
         """
-        files=`echo {input} | awk '{{print NF}}'`
+        files=`echo {input.beds} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            cat {input.beds} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
             bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            touch {output.tmp} && cp {input.beds} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
 
@@ -143,7 +143,7 @@ rule merge_CpG_genotype_beds:
 
 rule merge_all_CpG_beds:
     input:
-        all_CpG_bed_files_to_merge,
+        beds=all_CpG_bed_files_to_merge,
         genomefile=rules.index_reference.output.fai,
         ref_bed=rules.index_reference.output.ref_bed,
     output:
@@ -157,13 +157,13 @@ rule merge_all_CpG_beds:
         bedtools_htslib_container
     shell:
         """
-        files=`echo {input} | awk '{{print NF}}'`
+        files=`echo {input.beds} | awk '{{print NF}}'`
         if [ $files -gt 1 ] # check if there are at least 2 files for merging. If there is only one file, copy the sorted bam file.
         then
-            cat {input} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
+            cat {input.beds} | sort -k1,1 -k2,2n > {output.tmp} 2> {log} &&
             bedtools merge -i {output.tmp} > {output.merged} 2>> {log}
         else
-            touch {output.tmp} && cp {input} {output.merged} 2> {log} &&
+            touch {output.tmp} && cp {input.beds} {output.merged} 2> {log} &&
             echo "Only one file present for merging. Copying the input bed file." >> {log}
         fi
 
