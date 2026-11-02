@@ -116,7 +116,7 @@ rule prepare_db_build:
         ln -s {params.abs_ref_in} {params.abs_ref_out} 2>> {log} &&
 
         # update config
-        cp {params.config} {params.abs_config} 2> {log} &&
+        cp {params.config} {params.abs_config} 2>> {log} &&
         echo '#{params.ref_name} genome, version {params.ref_name}' >> {params.abs_config} 2>> {log} &&
         echo '{params.ref_name}.genome : {params.ref_name}' >> {params.abs_config} 2>> {log}
         """

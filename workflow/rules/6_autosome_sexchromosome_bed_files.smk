@@ -54,7 +54,7 @@ rule make_sexchr_autosomes_bed:
 
         # intersect autos repma beds
         bedtools intersect -a {input.no_rep_bed} -b {output.autosome_bed} \
-        -sorted -g {input.genomefile} > {output.repma_autos} 2> {log}
+        -sorted -g {input.genomefile} > {output.repma_autos} 2>> {log}
         """
 
 
