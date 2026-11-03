@@ -412,12 +412,13 @@ rule split_ref_contigs:
             mkdir -p {output.fasta_dir};
         fi
 
+        : > {log}
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
             echo $contig > {output.fasta_dir}/${{contig}}.lst &&
-            seqtk subseq {input.ref} {output.fasta_dir}/${{contig}}.lst | sed "s/$contig/{params.gerpref}/g" | \
-            seqtk seq > {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta 2> {log} &&
-            echo $contig "extracted from reference" >> {log}
+            seqtk subseq {input.ref} {output.fasta_dir}/${{contig}}.lst | sed "/^>/s/$contig/{params.gerpref}/g" | \
+            seqtk seq > {output.fasta_dir}/{params.gerpref}_${{contig}}.fasta 2>> {log} &&
+            echo $contig "extracted from reference" >> {log} || exit 1
         done
         """
 
@@ -425,7 +426,7 @@ rule split_ref_contigs:
 rule concatenate_fasta_per_contig:
     """
     Concatenate fasta files from all outgroup genomes per contig.
-    Run as one job per genome chunk, looping over the contigs in the chunk BED internally.
+    This analysis is run as one job per genome chunk, but is internally run per contig.
     """
     input:
         gerpref_fasta=expand(
@@ -441,23 +442,24 @@ rule concatenate_fasta_per_contig:
         refs=" ".join(ALL_GERP_REF_NAMES),  # includes the target-species reference
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/fasta/{chunk}_concatenate_fasta_per_contig.log",
-    threads: 1
+    threads: 2
     container: shell_container
     shell:
-        r"""
-        mkdir -p {output.concatenated_fasta_dir}
+        """
+        if [ ! -d {output.concatenated_fasta_dir} ]; then
+            mkdir -p {output.concatenated_fasta_dir};
+        fi
 
-        while IFS=$'\t' read -r contig _ || [[ -n "$contig" ]]; do
-            [[ -z "$contig" ]] && continue
-
-            files=()
-            for ref in {params.refs}; do
-                files+=("{params.fasta_dir}/${{ref}}_{wildcards.chunk}/${{ref}}_${{contig}}.fasta")
+        : > {log}
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
+        do
+            files=""
+            for ref in {params.refs}; do # this list includes the reference genome of the target species
+                files="$files {params.fasta_dir}/${{ref}}_{wildcards.chunk}/${{ref}}_${{contig}}.fasta"
             done
-
-            cat -- "${{files[@]}}" > "{output.concatenated_fasta_dir}/${{contig}}.fasta"
-            echo "Fasta files concatenated for ${{contig}}"
-        done < {input.chunk_bed}
+            cat $files > {output.concatenated_fasta_dir}/${{contig}}.fasta 2>> {log} &&
+            echo "Fasta files concatenated for" $contig >> {log} || exit 1
+        done
         """
 
 
@@ -491,11 +493,12 @@ rule compute_gerp:
         if [ ! -d {output.gerp_dir} ]; then 
             mkdir -p {output.gerp_dir}; 
         fi
+        : > {log}
         for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
         do
-            gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2> {log} &&
+            gerpcol -v -f {input.concatenated_fasta_dir}/${{contig}}.fasta -t {input.tree} -a -s 0.001 -e {params.name} 2>> {log} &&
             mv {input.concatenated_fasta_dir}/${{contig}}.fasta.rates {output.gerp_dir} 2>> {log} &&
-            echo "Computed GERP++ scores for" $contig >> {log} 
+            echo "Computed GERP++ scores for" $contig >> {log} || exit 1
         done
         """
 
@@ -517,26 +520,29 @@ rule gerp2coords:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_gerp2coords.log",
     threads: 2
-    run:
-        chunk_contigs = []
-        with open(input.chunk_bed, "r") as file:
-            for line in file:
-                contigname = line.strip().split("\t")[0]
-                chunk_contigs.append(contigname)
-        for contig in chunk_contigs:  # run the analysis per contig
-            shell("""
-                if [ ! -d {{output.gerp_coords_dir}} ]; then 
-                    mkdir -p {{output.gerp_coords_dir}}; 
-                fi
-                python3 workflow/scripts/gerp_to_position.py {{input.concatenated_fasta_dir}}/{contig}.fasta \
-                {{input.gerp_dir}}/{contig}.fasta.rates {{params.name}} 2>> {{log}} &&
-                mv {{input.gerp_dir}}/{contig}.fasta.rates.parsed {{output.gerp_coords_dir}} 2>> {{log}} &&
-                echo "GERP-score coordinates converted for {contig}" >> {{log}}
-                """.format(contig=contig))
+    container: shell_container
+    shell:
+        """
+        if [ ! -d {output.gerp_coords_dir} ]; then
+            mkdir -p {output.gerp_coords_dir};
+        fi
+
+        : > {log}
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
+        do
+            python3 workflow/scripts/gerp_to_position.py {input.concatenated_fasta_dir}/${{contig}}.fasta \
+            {input.gerp_dir}/${{contig}}.fasta.rates {params.name} 2>> {log} &&
+            mv {input.gerp_dir}/${{contig}}.fasta.rates.parsed {output.gerp_coords_dir} 2>> {log} &&
+            echo "GERP-score coordinates converted for" $contig >> {log} || exit 1
+        done
+        """
 
 
 rule get_ancestral_state:
-    """Get the ancestral state of each position in the focal reference genome."""
+    """
+    Get the ancestral state of each position in the focal reference genome.
+    This analysis is run as one job per genome chunk, but is internally run per contig.
+    """
     input:
         concatenated_fasta_dir=rules.concatenate_fasta_per_contig.output,
         chunk_bed=REF_DIR + "/gerp/" + REF_NAME + "/split_bed_files_{chr}/{chunk}.bed",
@@ -547,25 +553,28 @@ rule get_ancestral_state:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_get_ancestral_state.log",
     threads: 2
-    run:
-        chunk_contigs = []
-        with open(input.chunk_bed, "r") as file:
-            for line in file:
-                contigname = line.strip().split("\t")[0]
-                chunk_contigs.append(contigname)
-        for contig in chunk_contigs:  # run the analysis per contig
-            shell("""
-                if [ ! -d {{output.fasta_ancestral_dir}} ]; then 
-                    mkdir -p {{output.fasta_ancestral_dir}}; 
-                fi
-                python3 workflow/scripts/fasta_to_major_allele.py {{input.concatenated_fasta_dir}}/{contig}.fasta {{params.name}} 2>> {{log}} &&
-                mv {{input.concatenated_fasta_dir}}/{contig}.fasta.parsed {{output.fasta_ancestral_dir}} 2>> {{log}} &&
-                echo "Ancestral states obtained for {contig}" >> {{log}}
-                """.format(contig=contig))
+    container: shell_container
+    shell:
+        """
+        if [ ! -d {output.fasta_ancestral_dir} ]; then
+            mkdir -p {output.fasta_ancestral_dir};
+        fi
+
+        : > {log}
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
+        do
+            python3 workflow/scripts/fasta_to_major_allele.py {input.concatenated_fasta_dir}/${{contig}}.fasta {params.name} 2>> {log} &&
+            mv {input.concatenated_fasta_dir}/${{contig}}.fasta.parsed {output.fasta_ancestral_dir} 2>> {log} &&
+            echo "Ancestral states obtained for" $contig >> {log} || exit 1
+        done
+        """
 
 
 rule produce_contig_out:
-    """Merge the ancestral allele and gerp-scores into one file per contig."""
+    """
+    Merge the ancestral allele and gerp-scores into one file per contig.
+    This analysis is run as one job per genome chunk, but is internally run per contig.
+    """
     input:
         fasta_ancestral_dir=rules.get_ancestral_state.output.fasta_ancestral_dir,
         gerp_coords_dir=rules.gerp2coords.output.gerp_coords_dir,
@@ -575,21 +584,21 @@ rule produce_contig_out:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_produce_contig_out.log",
     threads: 2
-    run:
-        chunk_contigs = []
-        with open(input.chunk_bed, "r") as file:
-            for line in file:
-                contigname = line.strip().split("\t")[0]
-                chunk_contigs.append(contigname)
-        for contig in chunk_contigs:  # run the analysis per contig
-            shell("""
-                if [ ! -d {{output.gerp_merged_dir}} ]; then 
-                    mkdir -p {{output.gerp_merged_dir}}; 
-                fi
-                paste {{input.fasta_ancestral_dir}}/{contig}.fasta.parsed {{input.gerp_coords_dir}}/{contig}.fasta.rates.parsed | \
-                sed "s/^/{contig}\t/g" > {{output.gerp_merged_dir}}/{contig}.fasta.parsed.rates 2>> {{log}} &&
-                echo "GERP-scores and ancestral states merged for {contig}" >> {{log}}
-                """.format(contig=contig))
+    container: shell_container
+    shell:
+        """
+        if [ ! -d {output.gerp_merged_dir} ]; then
+            mkdir -p {output.gerp_merged_dir};
+        fi
+
+        : > {log}
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # run the analysis per contig
+        do
+            paste {input.fasta_ancestral_dir}/${{contig}}.fasta.parsed {input.gerp_coords_dir}/${{contig}}.fasta.rates.parsed | \
+            sed "s/^/${{contig}}\t/g" > {output.gerp_merged_dir}/${{contig}}.fasta.parsed.rates 2>> {log} &&
+            echo "GERP-scores and ancestral states merged for" $contig >> {log} || exit 1
+        done
+        """
 
 
 rule merge_gerp_per_chunk:
@@ -602,17 +611,15 @@ rule merge_gerp_per_chunk:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/gerp/{chunk}_merge_gerp_per_chunk.log",
     threads: 2
-    run:
-        chunk_contigs = []
-        with open(input.chunk_bed, "r") as file:
-            for line in file:
-                contigname = line.strip().split("\t")[0]
-                chunk_contigs.append(contigname)
-        contig_rates = []  # collect all file paths for concatenation in a list
-        for contig in chunk_contigs:
-            contig_rates.append("{gerp_merged_dir}/{contig}.fasta.parsed.rates".format(gerp_merged_dir=input.gerp_merged_dir, contig=contig))
-        cat_rates = " ".join(contig_rates)  # concatenate list to a string with whitespace as separator, as input for cat command
-        shell("""cat {cat_rates} > {{output.gerp_chunks_merged}} 2>> {{log}}""".format(cat_rates=cat_rates))
+    container: shell_container
+    shell:
+        """
+        : > {log}
+        for contig in $(awk -F'\t' '{{print $1}}' {input.chunk_bed}) # concatenate the files per contig
+        do
+            cat {input.gerp_merged_dir}/${{contig}}.fasta.parsed.rates 2>> {log}
+        done > {output.gerp_chunks_merged}
+        """
 
 
 rule merge_gerp_gz:
@@ -720,22 +727,16 @@ rule merge_gerp_alleles_per_chunk:
     log:
         "results/logs/13_GERP/{chr}_chunks/" + REF_NAME + "/{dataset}/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.{chunk}_merge_gerp_alleles_per_chunk.log",
     threads: 4
-    run:
-        chunk_windows = []
-        with open(input.chunk_win_bed, "r") as file:
-            for line in file:
-                line_tup = ()
-                contigname = line.strip().split("\t")[0]
-                start = line.strip().split("\t")[1]
-                end = line.strip().split("\t")[2]
-                line_tup = (contigname, start, end)
-                chunk_windows.append(line_tup)
-        window_rates_alleles = []  # collect all file paths for concatenation in a list
-        for window in chunk_windows:
-            window_rates_alleles.append("{gerp_alleles_dir}/{contig}_{start}_{end}.fasta.parsed.rates.derived_alleles".format(
-                gerp_alleles_dir=input.gerp_alleles_dir, contig=window[0], start=window[1], end=window[2]))
-        cat_rates_alleles = " ".join(window_rates_alleles)  # concatenate list to a string with whitespace as separator, as input for awk command
-        shell("""awk 'FNR>1 || NR==1' {cat_rates_alleles} > {{output.gerp_chunks_merged}} 2>> {{log}}""".format(cat_rates_alleles=cat_rates_alleles))  # awk command concatenates all files without their header line, except the first file
+    container: shell_container
+    shell:
+        """
+        files="" # collect all file paths for concatenation, as input for awk command
+        while IFS="\t" read -r contig start end; do
+            files="$files {input.gerp_alleles_dir}/${{contig}}_${{start}}_${{end}}.fasta.parsed.rates.derived_alleles"
+        done < {input.chunk_win_bed}
+        [ -n "$files" ] || {{ echo "No windows in {input.chunk_win_bed}" >> {log}; exit 1; }}
+        awk 'FNR>1 || NR==1' $files > {output.gerp_chunks_merged} 2> {log} # concatenate all files without their header line, except the first file
+        """
 
 
 rule merge_gerp_alleles_gz:
