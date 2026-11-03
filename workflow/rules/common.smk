@@ -35,7 +35,7 @@ bcftools_vcftools_container = "oras://community.wave.seqera.io/library/bcftools_
 snpeff_container = "docker://quay.io/biocontainers/snpeff:4.3.1t--3"
 seqtk_container = "oras://community.wave.seqera.io/library/seqtk:1.4--e75a8dec899d1be8"
 gerp_container = "https://depot.galaxyproject.org/singularity/gerp:2.1--h1b792b2_2"
-shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_python:be84f8d849f6bdee"
+shell_container = "oras://community.wave.seqera.io/library/biopython_matplotlib_numpy_pandas_pruned:935331ff47bd1bbb"
 
 ## Reference assembly variables
 REF_DIR = os.path.dirname(config["ref_path"])
