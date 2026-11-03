@@ -11,6 +11,28 @@ not meaningful due to the small size of the dataset.
 `config/` contains files that are used by the different 
 test steps of GitHub actions.
 
+## Output checksums (`scripts/` and `expected/`)
+
+After each test run, `scripts/check_outputs.sh <test>` computes 
+md5sums of selected plain text result files (e.g. tables and 
+BED files, but no compressed, VCF/BCF or tool statistics files 
+with headers containing dates or paths) and compares them to 
+`expected/<test>.md5`. A difference makes the GitHub actions 
+test fail. Files from mapDamage rescaled BAM files are not 
+included because mapDamage has no seed option for its MCMC, so 
+rescaled quality scores can differ between runs.
+
+If results change on purpose (e.g. after updating a tool or a 
+filter), the manifest has to be updated:
+
+* Download the artifact `checksums-<test>` from the GitHub 
+  actions run, or run 
+  `.test/scripts/check_outputs.sh <test> --update` after a 
+  test run on Linux with `--cores 1` as in the GitHub actions 
+  workflows (`bwa mem` output depends on the number of threads).
+* Copy it to `expected/<test>.md5` and commit it together with 
+  the code change.
+
 ## data/
 
 `data/` contains two different datasets used to test the 

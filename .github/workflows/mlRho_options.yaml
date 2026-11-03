@@ -5,7 +5,9 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
-      - 'workflow/utilities'
+      - 'docs/**'
+      - '.test/README.md'
+      - 'utilities/**'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
       - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
@@ -20,7 +22,9 @@ on:
     paths-ignore:
       - 'README.md'
       - 'LICENSE.md'
-      - 'workflow/utilities'
+      - 'docs/**'
+      - '.test/README.md'
+      - 'utilities/**'
       - 'workflow/rules/1.2_map_to_mitogenomes.smk'
       - 'workflow/rules/8.1_vcf_CpG_filtering.smk'
       - 'workflow/rules/8.2_vcf_qual_repeat_filtering.smk'
@@ -38,6 +42,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Free Up GitHub Actions Ubuntu Runner Disk Space 🔧
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
+          tool-cache: false
+
+          # All of these default to true, but feel free to set to "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
       - uses: actions/checkout@v4
       
       - uses: eWaterCycle/setup-apptainer@v2
@@ -57,25 +74,25 @@ jobs:
           conda info
           conda list
 
-      - name: Free Up GitHub Actions Ubuntu Runner Disk Space 🔧
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
-          tool-cache: false
-
-          # All of these default to true, but feel free to set to "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
-
       - name: mlRho_options_dry
         shell: bash -l {0}
         run: |
-          snakemake -np -k --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
+          snakemake -np -k --configfile .test/config/config_mlRho_options.yaml --cores 1 --sdm apptainer
 
       - name: mlRho_options
         shell: bash -l {0}
         run: |
-          snakemake -k --configfile .test/config/config_mlRho_options.yaml -j 4 --cores 1 --use-singularity
+          snakemake -k --configfile .test/config/config_mlRho_options.yaml --cores 1 --sdm apptainer
+
+      - name: check_outputs
+        shell: bash -l {0}
+        run: |
+          .test/scripts/check_outputs.sh mlRho_options
+
+      - name: upload_checksums
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums-mlRho_options
+          path: results/checksums/
+          if-no-files-found: ignore
