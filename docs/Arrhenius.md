@@ -43,37 +43,67 @@ conda env create -f environment.yml -n generode
 > provide the full path to the conda environment when activating 
 > it (see below). 
 
+> Note that since GenErode version 0.7.1, the Arrhenius profile uses 
+> `software-deployment-method: apptainer`, i.e. the GenErode conda 
+> environment only provides Snakemake and the Snakemake executor 
+> plugin for slurm, while all tools used by the pipeline are run 
+> in apptainer containers. 
+
+> A `pixi.toml` file is provided in the repository so that pixi 
+> can be used as alternative to conda. 
+
 3) Adjust the configuration file `profiles/arrhenius/config.yaml` 
 according to your compute resource needs. This file specifies 
 Snakemake and apptainer parameters that are used to run the pipeline, 
-as well as compute resources for each rule or group jobs to be run 
+as well as compute resources for each jobs to be run 
 on Arrhenius. When you start the pipeline on the command line with 
 `--profile profiles/arrhenius` (as described below), it expects the file 
 `config.yaml` in the folder `profiles/arrhenius`. 
 
-- Please make sure to add your slurm compute project ID to `slurm_account` 
-in `profiles/arrhenius/config.yaml`. 
-- Specify a directory in which to store container `*.simg` 
-image files using the parameter `apptainer-prefix` in 
-`profiles/arrhenius/config.yaml`. 
+The following parameters need to be updated in 
+`profiles/arrhenius/config.yaml` before the first run: 
 
-> Note that in case you are starting the pipeline from within 
-> an interactive job, Snakemake downloads the container images 
-> per default to `/scratch/local`, which is deleted after the 
-> interactive job has ended. 
+- Add your slurm compute project ID to `slurm_account`. 
+On Arrhenius, the account name must end with `-cpu` 
+(e.g. `naissXXXX-X-XX-cpu`). 
+- Specify a directory in your storage project in which to 
+store container `*.simg` image files using the parameter 
+`apptainer-prefix`. 
+- Mount your project directory and the local scratch to 
+the containers using the parameter `apptainer-args` (e.g. 
+`"-B /scratch/local -B /nobackup/proj/disk/..."`), so that 
+the tools run inside the containers can access input and 
+output files. 
 
-- If a rule or group job fails due to too little memory or 
-run time, their compute resources can be updated in 
-`profiles/arrhenius/config.yaml` as follows. Rule or group 
-jobs are using `default-resources` unless more threads 
-(corresponding to cpus-per-task), more memory, or longer 
-run times are required, which are specified per rule or 
-group job under `set-threads` or `set-resources`, respectively. 
+Compute resources are defined as follows in 
+`profiles/arrhenius/config.yaml`: 
+
+- All jobs use `default-resources`, unless more threads 
+(corresponding to cpus-per-task) are specified per job 
+under `set-threads`, or longer run times or more memory 
+are specified under `set-resources`. 
+- Memory is calculated automatically from the number of 
+threads, with 2700 MB per thread (the amount of memory per 
+core on Arrhenius). If a job fails due to too little memory, 
+increase its number of threads under `set-threads`. 
+- If a job fails due to too little run time, increase its 
+`runtime` (in minutes) under `set-resources`. The maximum 
+run time on the Arrhenius `cpu` partition is 4320 minutes 
+(3 days). 
+- Do not set `nodes` (`-N`) unless you need a full node. 
+- Temporary files are written to `/scratch/local` (`tmpdir`), 
+as `/tmp`, `/var/tmp` and `/dev/shm` are limited in size on 
+Arrhenius.
 
 > Note that Java tools like `Picard` can be optimized by providing a 
 > small number of threads and a large amount of memory, but this will 
 > bill the number of CPU hours corresponding to the requested amount 
 > of memory.
+
+> To run GenErode on the small test dataset (in `.test/data`), 
+> use the profile `profiles/arrhenius_test` instead, which uses 
+> shorter run times. The same parameters need to be updated in 
+> `profiles/arrhenius_test/config.yaml` as described above. 
 
 4) Once the setup is complete, start GenErode the following:
 
@@ -121,6 +151,6 @@ your `~/.bashrc` file.
 2) Another option is to start the pipeline run with the following 
 command (replacing the path with the path to your GenErode 
 directory on Arrhenius): 
-`snakemake --profile slurm --directory /nobackup/proj/disk/.../.../GenErode/`. 
+`snakemake --profile profiles/arrhenius --directory /nobackup/proj/disk/.../.../GenErode/`. 
 This will set the GenErode directory as the working directory 
 and will also store the cache there. 
