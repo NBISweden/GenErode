@@ -67,6 +67,7 @@ jobs:
         run: |
           conda info
           conda list
+          conda clean --all -y
 
       - name: pca_roh_dry
         shell: bash -l {0}

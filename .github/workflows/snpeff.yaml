@@ -69,6 +69,7 @@ jobs:
         run: |
           conda info
           conda list
+          conda clean --all -y
 
       - name: snpeff_dry
         shell: bash -l {0}

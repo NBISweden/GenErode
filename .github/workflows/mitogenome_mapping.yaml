@@ -95,6 +95,7 @@ jobs:
         run: |
           conda info
           conda list
+          conda clean --all -y
 
       - name: mitogenome_mapping_dry
         shell: bash -l {0}
