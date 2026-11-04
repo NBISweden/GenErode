@@ -1,7 +1,5 @@
 # GenErode execution on Arrhenius (NAISS)
 
-*Note that this document is still in preparation*
-
 On Arrhenius, Apptainer, tmux and screen are pre-installed 
 and do not have to be loaded with module load.
 
@@ -15,42 +13,27 @@ chmod 755 Snakefile
 2) Install Miniconda in your home directory if you haven't 
 done so yet. 
 
-Note that conda environments and packages take a lot of 
-storage space. You can configure conda and set storage 
-directories for environments and packages by adding the 
-following lines to the `.condarc` file in your home directory: 
-
-```
-envs_dirs: 
-  - /nfs/volume/user/conda_envs  
-pkgs_dirs: 
-  - /nfs/volume/user/conda_pkgs
-```
-
 Create the GenErode conda environment, or update an earlier 
-version. 
+version. Note that since GenErode version 0.7.1, this 
+environment only contains Snakemake and the slurm plugin, 
+so it is much smaller than the conda environment from 
+earlier pipeline versions.
 
 ```
 conda env create -f environment.yml -n generode
 ```
 
-> If you do not want to set a common location for all packages 
-> and environments via `.condarc`, you can specify a storage 
-> location for the GenErode conda environment when creating 
-> it using the command
+> Conda environments and packages take a lot of storage space 
+> in your home directory. You can specify a storage location 
+> for the GenErode conda environment when creating it using 
+> the command
 > `conda env create -f environment.yml --prefix /nobackup/proj/disk/.../conda-envs/generode` 
 > instead of the command above. In that case, you need to 
 > provide the full path to the conda environment when activating 
 > it (see below). 
 
-> Note that since GenErode version 0.7.1, the Arrhenius profile uses 
-> `software-deployment-method: apptainer`, i.e. the GenErode conda 
-> environment only provides Snakemake and the Snakemake executor 
-> plugin for slurm, while all tools used by the pipeline are run 
-> in apptainer containers. 
-
 > A `pixi.toml` file is provided in the repository so that pixi 
-> can be used as alternative to conda. 
+> can be used as an alternative to conda. 
 
 3) Adjust the configuration file `profiles/arrhenius/config.yaml` 
 according to your compute resource needs. This file specifies 
@@ -133,24 +116,3 @@ snakemake --profile profiles/arrhenius &> YYMMDD_main.out
 
 > Useful flags for running the pipeline: `--ri` to re-run 
 > incomplete jobs and `-k` to keep going in case a job fails. 
-
-# Snakemake cache location
-
-The Snakemake cache is stored per default in your home directory
-that can run out of storage space. There are two ways to set a 
-directory in your storage project as cache directory: 
-
-1) by setting the cache with the following commands (replacing 
-the path with the path to your GenErode directory on Arrhenius): 
-`mkdir -p /nobackup/proj/disk/.../.../GenErode/.cache` 
-`export XDG_CACHE_HOME=/nobackup/proj/disk/.../.../GenErode/.cache`. 
-You will have to run the `export` command every time you start a new 
-tmux session. Alternatively, you can add the export command to 
-your `~/.bashrc` file. 
-
-2) Another option is to start the pipeline run with the following 
-command (replacing the path with the path to your GenErode 
-directory on Arrhenius): 
-`snakemake --profile profiles/arrhenius --directory /nobackup/proj/disk/.../.../GenErode/`. 
-This will set the GenErode directory as the working directory 
-and will also store the cache there. 
