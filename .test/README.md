@@ -11,6 +11,21 @@ not meaningful due to the small size of the dataset.
 `config/` contains files that are used by the different 
 test steps of GitHub actions.
 
+## Output checksums (`scripts/` and `expected/`)
+
+After each test run, `scripts/check_outputs.sh <test>` computes 
+md5sums of selected plain text result files (e.g. tables and 
+BED files, but no compressed, VCF/BCF or tool statistics files 
+with headers containing dates or paths) and compares them to 
+`expected/<test>.md5`. A difference makes the GitHub actions 
+test fail. If results change on purpose (e.g. after updating 
+a tool or a filter), the manifest has to be updated:
+
+* Download the artifact `checksums-<test>` from the GitHub 
+  actions run.
+* Copy it to `expected/<test>.md5` and commit it together with 
+  the code change.
+
 ## data/
 
 `data/` contains two different datasets used to test the 
@@ -63,21 +78,17 @@ GenErode pipeline:
   genomes. Compressed FASTA files larger than 50 Mb were removed 
   from the test dataset.
 * The time-calibrated phylogenetic tree was generated on 
-  http://timetree.org from a list of all mammalian species and the 
+  http://timetree.org from a list of the mammalian species and the 
   Sumatran rhinoceros.
 
 #### Mammalian genomes and accession numbers
 
-Suricata_suricatta GCF_006229205.1  
 Hyaena_hyaena GCF_003009895.1  
 Paradoxurus_hermaphroditus GCA_004024585.1  
-Panthera_leo GCA_008795835.1  
-Canis_lupus GCF_014441545.1  
 Procyon_lotor GCA_015708975.1  
 Ailurus_fulgens GCA_002007465.1  
 Spilogale_gracilis GCA_004023965.1  
 Leptonychotes_weddellii GCF_000349705.1  
-Ursus_maritimus GCF_017311325.1  
 Manis_javanica GCF_014570535.1  
 Diceros_bicornis GCA_013634535.1  
 Tapirus_indicus GCA_004024905.1  
@@ -85,13 +96,8 @@ Equus_asinus GCA_016077325.1
 Camelus_dromedarius GCF_000803125.2  
 Hippopotamus_amphibius GCA_004027065.2  
 Balaenoptera_acutorostrata GCF_000493695.1  
-Physeter_catodon GCF_002837175.2  
 Mesoplodon_bidens GCA_004027085.1  
 Lipotes_vexillifer GCF_000442215.1  
-Tursiops_truncatus GCF_011762595.1  
 Tragulus_javanicus GCA_004024965.2  
-Bubalus_bubalis GCF_003121395.1  
-Ovis_aries GCF_002742125.1  
 Antilocapra_americana GCA_007570785.1  
-Cervus_elaphus GCA_002197005.1  
 Catagonus_wagneri GCA_004024745.2  
