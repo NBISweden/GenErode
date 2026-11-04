@@ -1,0 +1,12 @@
+06c1f51669f18af5020a75078b3c90de  results/all/ROH/sumatran_rhino.all.merged.biallelic.fmissing0.9.genome.hwe0.05.homsnp10.homkb1.homwinsnp10.homwinhet10.homwinmis50.homhet999.FROH_min_2Mb_table.txt
+4f6c8d0c2e7148970a5fe6862c03a8c7  results/all/pca/sumatran_rhino.all.merged.biallelic.fmissing0.9.genome.eigenval
+6bb985a8de84519b82c4559aafc60f04  results/all/pca/sumatran_rhino.all.merged.biallelic.fmissing0.9.genome.eigenvec
+33c377a874866e25536e7af633ec757a  results/all/vcf/sumatran_rhino.all.merged.biallelic.fmissing0.9.genome.bed
+0c04acba73570299b813fa5f32146da2  results/historical/ROH/sumatran_rhino.historical.merged.biallelic.fmissing0.9.genome.hwe0.05.homsnp10.homkb1.homwinsnp10.homwinhet10.homwinmis50.homhet999.hom
+00e19f45445e1dc4d10cc38c917fb99c  results/historical/ROH/sumatran_rhino.historical.merged.biallelic.fmissing0.9.genome.hwe0.05.homsnp10.homkb1.homwinsnp10.homwinhet10.homwinmis50.homhet999.hom.indiv
+b6e43fc33e553fb47193c751a6838bd1  results/historical/pca/sumatran_rhino.historical.merged.biallelic.fmissing0.9.genome.eigenval
+9c272a5150f9e24a15263ba7ea83f8ee  results/historical/pca/sumatran_rhino.historical.merged.biallelic.fmissing0.9.genome.eigenvec
+82447df262d539ff7ae416221f24ef43  results/modern/ROH/sumatran_rhino.modern.merged.biallelic.fmissing0.9.genome.hwe0.05.homsnp10.homkb1.homwinsnp10.homwinhet10.homwinmis50.homhet999.hom
+f1a115f94f74cf7d98e22ab662ffa66b  results/modern/ROH/sumatran_rhino.modern.merged.biallelic.fmissing0.9.genome.hwe0.05.homsnp10.homkb1.homwinsnp10.homwinhet10.homwinmis50.homhet999.hom.indiv
+c4da2b805df8425bccc182ad4db8422a  results/modern/pca/sumatran_rhino.modern.merged.biallelic.fmissing0.9.genome.eigenval
+5c78c0321374ac7c2749aa37fc3f6388  results/modern/pca/sumatran_rhino.modern.merged.biallelic.fmissing0.9.genome.eigenvec
