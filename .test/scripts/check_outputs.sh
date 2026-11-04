@@ -31,29 +31,23 @@ case "$test_name" in
     gerp)
         patterns=(
             "results/gerp/**/*relative_mutational_load*_table.txt"
-            "results/all/vcf/*.bed"
         )
         ;;
     mlRho_options)
         patterns=(
             "results/*/mlRho/*/*.mlRho.txt"
-            ".test/data/references/*.repma.bed"
         )
         ;;
     pca_roh)
         patterns=(
-            "results/*/pca/*.eigenval"
-            "results/*/pca/*.eigenvec"
             "results/*/ROH/*.hom"
             "results/*/ROH/*.hom.indiv"
             "results/*/ROH/*FROH_min_2Mb_table.txt"
-            "results/all/vcf/*.bed"
         )
         ;;
     snpeff)
         patterns=(
             "results/*/snpEff/*.snpEff_variant_impact_table.txt"
-            "results/all/vcf/*.bed"
         )
         ;;
     userprovided_bams)
@@ -67,6 +61,7 @@ case "$test_name" in
         ;;
 esac
 
+# Exclude files based on MapDamage2 rescaling
 files=()
 for pattern in "${patterns[@]}"; do
     for f in $pattern; do
