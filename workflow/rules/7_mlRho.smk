@@ -118,9 +118,7 @@ def all_mlRho_outputs(wildcards):
 
 
 # snakemake rules
-localrules:
-    mlRho_table,
-    mlRho_theta_plot,
+#localrules: mlRho_table_plot,
 
 
 rule bam2pro:
@@ -136,7 +134,7 @@ rule bam2pro:
         pro=temp("results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}.pro"),
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}.{chr}_bam2pro.log",
-    singularity:
+    container:
         mlrho_container
     shell:
         """
@@ -172,7 +170,7 @@ rule mlRho:
         db="results/{dataset}/mlRho/" + REF_NAME + "/{sample}.{processed}.{chr}_profileDb",
     log:
         "results/logs/7_mlRho/{dataset}/" + REF_NAME + "/{sample}.{processed}_mlRho_{chr}.log",
-    singularity:
+    container:
         mlrho_container
     shell:
         """
@@ -192,9 +190,9 @@ rule mlRho:
         """
 
 
-rule mlRho_table:
+rule mlRho_table_plot:
     """
-    Concatenate mlRho output files for all samples
+    Concatenate mlRho output files for all samples and plot theta for all samples plus confidence intervals
     """
     input:
         all_mlRho_outputs,
@@ -202,25 +200,19 @@ rule mlRho_table:
         table=report("results/{dataset}/mlRho/" + REF_NAME + ".{dataset}.mlRho_table.txt",
             caption="../report/mlRho_table.rst",
             category="mlRho",),
-    log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + ".{dataset}.mlRho_table.log",
-    message:
-        "The following files are concatenated: {input}"
-    script:
-        "../scripts/mlRho_table.py"
-
-
-rule mlRho_theta_plot:
-    """
-    Plot theta for all samples plus confidence intervals
-    """
-    input:
-        table="results/{dataset}/mlRho/" + REF_NAME + ".{dataset}.mlRho_table.txt",
-    output:
         plot=report("results/{dataset}/mlRho/" + REF_NAME + ".{dataset}.mlRho_theta_plot.pdf",
             caption="../report/mlRho_theta_plot.rst",
             category="mlRho",),
     log:
-        "results/logs/7_mlRho/{dataset}/" + REF_NAME + ".{dataset}.mlRho_theta_plot.log",
-    script:
-        "../scripts/mlRho_theta_plot.py"
+        "results/logs/7_mlRho/{dataset}/" + REF_NAME + ".{dataset}.mlRho_table_plot.log",
+    message:
+        "The following files are concatenated: {input}"
+    container: shell_container
+    shell:
+        """
+        # Concatenate mlRho output files
+        python3 workflow/scripts/mlRho_table.py {output.table} {input} 2> {log} &&
+
+        # Plot theta
+        python3 workflow/scripts/mlRho_theta_plot.py {output.table} {output.plot} 2>> {log}
+        """

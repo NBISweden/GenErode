@@ -16,6 +16,7 @@ rule ref_upper:
         ref_upper=REF_DIR + "/" + REF_NAME + ".upper.fasta",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_ref_upper.log",
+    container: shell_container
     shell:
         """
         awk '{{ if ($0 !~ />/) {{print toupper($0)}} else {{print $0}} }}' {input.ref} > {output.ref_upper} 2> {log}
@@ -37,7 +38,7 @@ rule repeatmodeler:
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmodeler.log"),
     threads: 16
-    singularity:
+    container:
         repeatmodeler_container
     shell:
         """
@@ -64,7 +65,7 @@ rule repeatmodeler:
 rule repeatmasker:
     """Repeat mask the full genome assembly using raw de novo predicted repeats"""
     input:
-        ref_upper=rules.ref_upper.output,
+        ref_upper=rules.ref_upper.output.ref_upper,
         repmo=rules.repeatmodeler.output.repmo,
     output:
         rep_masked=REF_DIR + "/repeatmasker/" + REF_NAME + "/" + REF_NAME + ".upper.fasta.masked",
@@ -79,7 +80,7 @@ rule repeatmasker:
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_repeatmasker.log"),
     threads: 16
-    singularity:
+    container:
         repeatmodeler_container
     shell:
         """
@@ -102,44 +103,31 @@ rule make_repeats_bed:
         rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.bed",
     log:
         os.path.abspath("results/logs/0.2_repeat_identification/" + REF_NAME + "_make_repeats_bed.log"),
-    run:
-        with open(input.rep_out, "r") as f, open(output.rep_bed, "w") as b:
-            for line in f:
-                edited = line.strip().split()
-                if len(edited) > 6 and edited[0].isdigit():
-                    start = str(int(edited[5]) - 1)
-                    b.write(edited[4] + "\t" + start + "\t" + edited[6] + "\n")
-
-
-rule sort_repeats_bed:
-    input:
-        rep_bed=rules.make_repeats_bed.output.rep_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
-    output:
-        sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
-    log:
-        "results/logs/0.2_repeat_identification/" + REF_NAME + "_sort_repeats_bed.log",
-    singularity:
-        bedtools_htslib_container
-    shell:
-        """
-        bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log}
-        """
+    container: shell_container
+    script:
+        "../scripts/make_repeats_bed.py"
 
 
 rule make_no_repeats_bed:
     input:
-        ref_bed=rules.make_reference_bed.output,
-        sorted_rep_bed=rules.sort_repeats_bed.output.sorted_rep_bed,
-        genomefile=rules.samtools_fasta_index.output.fai,
+        rep_bed=rules.make_repeats_bed.output.rep_bed,
+        genomefile=rules.index_reference.output.fai,
+        ref_bed=rules.index_reference.output.ref_bed,
     output:
+        sorted_rep_bed=REF_DIR + "/" + REF_NAME + ".repeats.sorted.bed",
         no_rep_bed=REF_DIR + "/" + REF_NAME + ".repma.bed",
+        no_rep_bed_local="results/" + REF_NAME + ".repma.genome.bed",
     log:
         "results/logs/0.2_repeat_identification/" + REF_NAME + "_make_no_repeats_bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
-        bedtools subtract -a {input.ref_bed} -b {input.sorted_rep_bed} \
-        -sorted -g {input.genomefile} > {output.no_rep_bed} 2> {log}
+        # sort the repeats bed file
+        bedtools sort -g {input.genomefile} -i {input.rep_bed} > {output.sorted_rep_bed} 2> {log} &&
+
+        # make repeat mask bed
+        bedtools subtract -a {input.ref_bed} -b {output.sorted_rep_bed} \
+        -sorted -g {input.genomefile} > {output.no_rep_bed} 2>> {log} &&
+        cp {output.no_rep_bed} {output.no_rep_bed_local} 2>> {log}
         """

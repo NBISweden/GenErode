@@ -15,7 +15,7 @@ if os.path.exists(config["modern_samples"]):
 
 
 # snakemake rules
-localrules: fastq_historical_symbolic_links, fastq_modern_symbolic_links
+#localrules: fastq_historical_symbolic_links, fastq_modern_symbolic_links
 
 rule fastq_historical_symbolic_links:
     """Make symbolic links to the original fastq-files based on a metadata table"""
@@ -25,16 +25,18 @@ rule fastq_historical_symbolic_links:
         fastq_r1="data/raw_reads_symlinks/historical/{sample}_{index}_{lane}_R1.fastq.gz",
         fastq_r2="data/raw_reads_symlinks/historical/{sample}_{index}_{lane}_R2.fastq.gz",
     params:
+        src_r1=lambda wildcards: hist_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R1"],
+        src_r2=lambda wildcards: hist_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R2"],
         abs_fastq_r1=lambda wildcards, output: os.path.abspath(output.fastq_r1),
         abs_fastq_r2=lambda wildcards, output: os.path.abspath(output.fastq_r2),
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastq_historical_symbolic_links.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-        ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
-        ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-        """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_fastq_symlinks_dict[FULLSAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_r1} {params.abs_fastq_r1} 2> {log}
+        ln -s {params.src_r2} {params.abs_fastq_r2} 2>> {log}
+        """
 
 
 rule fastqc_historical_raw:
@@ -50,7 +52,7 @@ rule fastqc_historical_raw:
     log:
         "data/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_fastqc_historical_raw.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -74,7 +76,7 @@ rule multiqc_historical_raw:
         outdir="data/raw_reads_symlinks/historical/stats/multiqc/",
     log:
         "data/logs/1.1_fastq_processing/historical/multiqc_historical_raw.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -90,16 +92,18 @@ rule fastq_modern_symbolic_links:
         fastq_r1="data/raw_reads_symlinks/modern/{sample}_{index}_{lane}_R1.fastq.gz",
         fastq_r2="data/raw_reads_symlinks/modern/{sample}_{index}_{lane}_R2.fastq.gz",
     params:
+        src_r1=lambda wildcards: mod_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R1"],
+        src_r2=lambda wildcards: mod_fastq_symlinks_dict[f"{wildcards.sample}_{wildcards.index}_{wildcards.lane}"]["R2"],
         abs_fastq_r1=lambda wildcards, output: os.path.abspath(output.fastq_r1),
         abs_fastq_r2=lambda wildcards, output: os.path.abspath(output.fastq_r2),
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastq_modern_symbolic_links.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-        ln -s {R1} {{params.abs_fastq_r1}} 2> {{log}}
-        ln -s {R2} {{params.abs_fastq_r2}} 2>> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_fastq_symlinks_dict[FULLSAMPLENAME]))
+    container: shell_container
+    shell:
+        """
+        ln -s {params.src_r1} {params.abs_fastq_r1} 2> {log}
+        ln -s {params.src_r2} {params.abs_fastq_r2} 2>> {log}
+        """
 
 
 rule fastqc_modern_raw:
@@ -115,7 +119,7 @@ rule fastqc_modern_raw:
     log:
         "data/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_fastqc_modern_raw.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -139,7 +143,7 @@ rule multiqc_modern_raw:
         outdir="data/raw_reads_symlinks/modern/stats/multiqc/",
     log:
         "data/logs/1.1_fastq_processing/modern/multiqc_modern_raw.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -168,7 +172,7 @@ rule fastp_historical:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastp_historical.log",
     threads: 4
-    singularity:
+    container:
         fastp_container
     shell:
         """
@@ -198,7 +202,7 @@ rule fastp_modern:
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_fastp_modern.log",
     threads: 4
-    singularity:
+    container:
         fastp_container
     shell:
         """
@@ -220,7 +224,7 @@ rule fastqc_historical_merged:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_fastqc_historical_merged.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -241,7 +245,7 @@ rule fastqc_historical_unmerged:
     log:
         "results/logs/1.1_fastq_processing/historical/{sample}_{index}_{lane}_R{nr}_unmerged_fastqc_historical_unmerged.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -269,7 +273,7 @@ rule fastqc_modern_trimmed:
     log:
         "results/logs/1.1_fastq_processing/modern/{sample}_{index}_{lane}_R{nr}_trimmed_fastqc_modern_trimmed.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -296,7 +300,7 @@ rule multiqc_historical_trimmed:
         outdir="results/historical/trimming/stats/multiqc/",
     log:
         "results/logs/1.1_fastq_processing/historical/multiqc_historical_trimmed.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -320,7 +324,7 @@ rule multiqc_modern_trimmed:
         outdir="results/modern/trimming/stats/multiqc/",
     log:
         "results/logs/1.1_fastq_processing/modern/multiqc_modern_trimmed.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

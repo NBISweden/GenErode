@@ -30,9 +30,7 @@ if os.path.exists(config["historical_samples"]) and os.path.exists(config["moder
 
 
 # snakemake rules
-localrules:
-    plot_pc1_pc2,
-    plot_pc1_pc3,
+#localrules: plot_pca,
 
 
 rule vcf2plink_pca:
@@ -50,7 +48,7 @@ rule vcf2plink_pca:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_pca.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
@@ -73,7 +71,7 @@ rule plink_eigenvec:
         bfile="results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}",
     log:
         "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plink_eigenvec.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
@@ -88,31 +86,23 @@ rule plink_eigenvec:
         """
 
 
-rule plot_pc1_pc2:
-    """Create a pdf of the PCA axes PC1 and PC2"""
+rule plot_pca:
+    """Create pdfs of the PCA axes PC1 and PC2, and PC1 and PC3"""
     input:
         eigenvec=rules.plink_eigenvec.output.eigenvec,
         eigenval=rules.plink_eigenvec.output.eigenval,
     output:
-        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
+        pc1_pc2=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc2.pdf",
             caption="../report/pca_plot_pc1_pc2.rst",
             category="PCA",),
-    log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc2.log",
-    script:
-        "../scripts/pc1_vs_pc2_plot.py"
-
-
-rule plot_pc1_pc3:
-    """Create a pdf of the PCA axes PC1 and PC3"""
-    input:
-        eigenvec=rules.plink_eigenvec.output.eigenvec,
-        eigenval=rules.plink_eigenvec.output.eigenval,
-    output:
-        pdf=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
+        pc1_pc3=report("results/{dataset}/pca/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.pc1_pc3.pdf",
             caption="../report/pca_plot_pc1_pc3.rst",
             category="PCA",),
     log:
-        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pc1_pc3.log",
-    script:
-        "../scripts/pc1_vs_pc3_plot.py"
+        "results/logs/10_pca/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_plot_pca.log",
+    container: shell_container
+    shell:
+        """
+        python3 workflow/scripts/pc1_vs_pc2_plot.py {input.eigenvec} {input.eigenval} {output.pc1_pc2} 2> {log} &&
+        python3 workflow/scripts/pc1_vs_pc3_plot.py {input.eigenvec} {input.eigenval} {output.pc1_pc3} 2>> {log}
+        """

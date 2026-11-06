@@ -86,53 +86,37 @@ def all_snpEff_outputs(wildcards):
 
 
 # snakemake rules
-localrules:
-    prepare_db_build,
-    snpEff_variant_impact_plot,
-
+#localrules: prepare_db_build, snpEff_variant_impact_table_plot,
 
 rule prepare_db_build:
-    """Prepare file structure and files to build database for snpEff annotation"""
+    """Prepare file structure and files to build database for snpEff annotation
+    and update the snpEff config file"""
     input:
         gtf=config["gtf_path"],
         ref=config["ref_path"],
     output:
         gtf=GTF_DIR + "/snpEff/data/" + REF_NAME + "/genes.gtf",
         ref=GTF_DIR + "/snpEff/data/genomes/" + REF_NAME + ".fa",
+        config=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEff.config",
     params:
         abs_gtf_in=lambda wildcards, input: os.path.abspath(input.gtf),
         abs_gtf_out=lambda wildcards, output: os.path.abspath(output.gtf),
         abs_ref_in=lambda wildcards, input: os.path.abspath(input.ref),
         abs_ref_out=lambda wildcards, output: os.path.abspath(output.ref),
-    log:
-        "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
-    shell:
-        """
-        ln -s {params.abs_gtf_in} {params.abs_gtf_out} 2> {log} &&
-        ln -s {params.abs_ref_in} {params.abs_ref_out} 2>> {log}
-        """
-
-
-rule update_snpEff_config:
-    """Edit snpEff config file to build database"""
-    input:
-        gtf=rules.prepare_db_build.output.gtf,
-        ref=rules.prepare_db_build.output.ref,
-    output:
-        config=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEff.config",
-    params:
         config="/usr/local/share/snpeff-4.3.1t-3/snpEff.config",
         ref_name=REF_NAME,
-        abs_gtf=lambda wildcards, input: os.path.abspath(input.gtf),
-        abs_ref=lambda wildcards, input: os.path.abspath(input.ref),
         abs_config=lambda wildcards, output: os.path.abspath(output.config),
     log:
-        "results/logs/12_snpEff/" + REF_NAME + "_update_snpEff_config.log",
-    singularity:
-        snpeff_container
+        "results/logs/12_snpEff/" + REF_NAME + "_prepare_db_build.log",
+    container: snpeff_container
     shell:
         """
-        cp {params.config} {params.abs_config} 2> {log} &&
+        # prepare symlinks
+        ln -s {params.abs_gtf_in} {params.abs_gtf_out} 2> {log} &&
+        ln -s {params.abs_ref_in} {params.abs_ref_out} 2>> {log} &&
+
+        # update config
+        cp {params.config} {params.abs_config} 2>> {log} &&
         echo '#{params.ref_name} genome, version {params.ref_name}' >> {params.abs_config} 2>> {log} &&
         echo '{params.ref_name}.genome : {params.ref_name}' >> {params.abs_config} 2>> {log}
         """
@@ -143,7 +127,7 @@ rule build_snpEff_db:
     input:
         gtf=rules.prepare_db_build.output.gtf,
         ref=rules.prepare_db_build.output.ref,
-        config=rules.update_snpEff_config.output.config,
+        config=rules.prepare_db_build.output.config,
     output:
         db=GTF_DIR + "/snpEff/data/" + REF_NAME + "/snpEffectPredictor.bin",
     threads: 1
@@ -158,7 +142,7 @@ rule build_snpEff_db:
         abs_data_dir=os.path.abspath(GTF_DIR + "/snpEff/data/"),
     log:
         os.path.abspath("results/logs/12_snpEff/" + REF_NAME + "_build_snpEff_db.log"),
-    singularity:
+    container:
         snpeff_container
     shell:
         """
@@ -179,7 +163,7 @@ rule biallelic_missing_bcf2vcf:
     threads: 6
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_bcf2vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -192,7 +176,7 @@ rule annotate_vcf:
     input:
         vcf=rules.biallelic_missing_bcf2vcf.output.vcf,
         db=rules.build_snpEff_db.output.db,
-        config=rules.update_snpEff_config.output.config,
+        config=rules.prepare_db_build.output.config,
     output:
         ann="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.ann.vcf",
         csv="results/{dataset}/snpEff/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}_stats.csv",
@@ -206,7 +190,7 @@ rule annotate_vcf:
         abs_data_dir=os.path.abspath(GTF_DIR + "/snpEff/data/"),
     log:
         "results/logs/12_snpEff/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_annotate_vcf.log",
-    singularity:
+    container:
         snpeff_container
     shell:
         """
@@ -229,7 +213,7 @@ rule historical_snpEff_multiqc:
         outdir="results/historical/snpEff/" + REF_NAME + "/multiqc/",
     log:
         "results/logs/12_snpEff/historical/" + REF_NAME + "/historical_snpEff_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -250,7 +234,7 @@ rule modern_snpEff_multiqc:
         outdir="results/modern/snpEff/" + REF_NAME + "/multiqc/",
     log:
         "results/logs/12_snpEff/modern/" + REF_NAME + "/modern_snpEff_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -258,29 +242,25 @@ rule modern_snpEff_multiqc:
         """
 
 
-rule snpEff_variant_impact_table:
-    """Extract numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
+rule snpEff_variant_impact_table_plot:
+    """Extract and plot numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
     input:
         all_snpEff_outputs,
     output:
         table=report("results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.txt",
             caption="../report/snpEff_variant_impact_table.rst",
             category="snpEff",),
-    log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.log",
-    script:
-        "../scripts/snpEff_variant_impact_table.py"
-
-
-rule snpEff_variant_impact_plot:
-    """Plot numbers of SNPs with high, moderate, low, and modifier impact, for modern and historical samples."""
-    input:
-        table= "results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table.txt",
-    output:
         plot=report("results/{dataset}/snpEff/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.pdf",
             caption="../report/snpEff_variant_impact_plot.rst",
             category="snpEff",),
     log:
-        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_plot.log",
-    script:
-        "../scripts/snpEff_variant_impact_plot.py"
+        "results/logs/12_snpEff/{dataset}/" + REF_NAME + ".{dataset}.fmissing{fmiss}.{chr}.snpEff_variant_impact_table_plot.log",
+    container: shell_container
+    shell:
+        """
+        # Extract numbers of SNPs per impact category
+        python3 workflow/scripts/snpEff_variant_impact_table.py {output.table} {input} 2> {log} &&
+
+        # Plot numbers of SNPs per impact category
+        python3 workflow/scripts/snpEff_variant_impact_plot.py {output.table} {output.plot} 2>> {log}
+        """

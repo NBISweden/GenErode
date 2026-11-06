@@ -39,8 +39,7 @@ elif os.path.exists(config["modern_samples"]):
 
 
 # snakemake rules
-localrules:
-    FROH_min_2Mb_plot,
+#localrules: FROH_min_2Mb,
 
 
 rule filter_vcf_hwe:
@@ -52,59 +51,20 @@ rule filter_vcf_hwe:
         index="results/{dataset}/vcf/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     output:
         vcf=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf"),
+        compressed=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz"),
+        index=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz.tbi"),
     threads: 2
     params:
         out="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_filter_vcf_hwe.log",
-    singularity:
-        vcftools_container
+    container:
+        bcftools_vcftools_container
     shell:
         """
-        vcftools --gzvcf {input.vcf} --hwe 0.05 --recode --recode-INFO-all --out {params.out} 2> {log}
-        """
-
-
-rule compress_roh_vcf:
-    input:
-        vcf=rules.filter_vcf_hwe.output.vcf,
-    output:
-        compressed=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz"),
-        index=temp("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.recode.vcf.gz.tbi"),
-    log:
-        "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_compress_roh_vcf.log",
-    threads: 2
-    singularity:
-        bcftools_container
-    shell:
-        """
-        bcftools view --threads {threads} -Oz -o {output.compressed} {input.vcf} 2> {log} &&
+        vcftools --gzvcf {input.vcf} --hwe 0.05 --recode --recode-INFO-all --out {params.out} 2> {log} &&
+        bcftools view --threads {threads} -Oz -o {output.compressed} {output.vcf} 2>> {log} &&
         bcftools index -f -t {output.compressed} 2>> {log}
-        """
-
-
-rule vcf2plink_hwe:
-    """
-    Convert VCF files to plink format (version 1.9) for ROH
-    """
-    input:
-        vcf=rules.compress_roh_vcf.output.compressed,
-        index=rules.compress_roh_vcf.output.index,
-    output:
-        bed="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.bed",
-        bim="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.bim",
-        fam="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.fam",
-        nosex="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.nosex",
-    threads: 2
-    params:
-        bfile="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
-    log:
-        "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_vcf2plink_hwe.log",
-    singularity:
-        plink_container
-    shell:
-        """
-        plink --vcf {input.vcf} --make-bed --allow-extra-chr --out {params.bfile} 2> {log}
         """
 
 
@@ -113,13 +73,17 @@ rule ROHs:
     Estimate runs of homozygosity for each individual in the merged BCF file using plink1.9
     """
     input:
-        rules.vcf2plink_hwe.output,
+        vcf=rules.filter_vcf_hwe.output.compressed,
+        index=rules.filter_vcf_hwe.output.index,
     output:
+        bed="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.bed",
+        bim="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.bim",
+        fam="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.fam",
+        nosex="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.nosex",
         roh="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.hom",
         indiv="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.hom.indiv",
         summary="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.hom.summary",
     params:
-        bfile="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05",
         homsnp=config["homozyg-snp"],  # Min SNP count per ROH.
         homkb=config["homozyg-kb"],  # Min length of ROH, with min SNP count.
         homwinsnp=config["homozyg-window-snp"],  # Scanning window size.
@@ -129,13 +93,17 @@ rule ROHs:
         roh="results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}",
     log:
         "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}_ROHs.log",
-    singularity:
+    container:
         plink_container
     shell:
         """
-        plink --bfile {params.bfile} --homozyg --homozyg-window-threshold 0.05 --allow-extra-chr \
+        # Convert VCF to plink format
+        plink --vcf {input.vcf} --make-bed --allow-extra-chr --out {params.roh} 2> {log} &&
+
+        # Calculate ROH
+        plink --bfile {params.roh} --homozyg --homozyg-window-threshold 0.05 --allow-extra-chr \
         --homozyg-snp {params.homsnp} --homozyg-kb {params.homkb} --homozyg-window-snp {params.homwinsnp} \
-        --homozyg-window-het {params.homwinhet} --homozyg-window-missing {params.homwinmis} --homozyg-het {params.homhet} --out {params.roh} 2> {log}
+        --homozyg-window-het {params.homwinhet} --homozyg-window-missing {params.homwinmis} --homozyg-het {params.homhet} --out {params.roh} 2>> {log}
         """
 
 
@@ -183,32 +151,28 @@ elif os.path.exists(config["modern_samples"]):
     all_ROH_outputs.append(modern_ROH_outputs)
 
 
-rule FROH_min_2Mb_table:
+rule FROH_min_2Mb:
     """
-    Calculate the proportion of the genome in runs of homozygosity, for ROHs >= 2Mb
+    Calculate and plot the proportion of the genome in runs of homozygosity, for ROHs >= 2Mb
     """
     input:
-        genomefile=rules.samtools_fasta_index.output.fai,
+        genomefile=rules.index_reference.output.fai,
         ROH=all_ROH_outputs,
     output:
         table=report("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_table.txt",
             caption="../report/FROH_min_2Mb_table.rst",
             category="ROH",),
-    log:
-        "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_table.log",
-    script:
-        "../scripts/FROH_min_2Mb_table.py"
-
-
-rule FROH_min_2Mb_plot:
-    """Plot the proportion of the genome in runs of homozygosity, for ROHs >= 2Mb"""
-    input:
-        "results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_table.txt",
-    output:
         plot=report("results/{dataset}/ROH/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.pdf",
             caption="../report/FROH_min_2Mb_plot.rst",
             category="ROH",),
     log:
-        "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb_plot.log",
-    script:
-        "../scripts/FROH_min_2Mb_plot.py"
+        "results/logs/11_ROH/{dataset}/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.hwe0.05.homsnp{homsnp}.homkb{homkb}.homwinsnp{homwinsnp}.homwinhet{homwinhet}.homwinmis{homwinmis}.homhet{homhet}.FROH_min_2Mb.log",
+    container: shell_container
+    shell:
+        """
+        # Calculate FROH
+        python3 workflow/scripts/FROH_min_2Mb_table.py {input.genomefile} {output.table} {input.ROH} 2> {log} &&
+
+        # Plot FROH
+        python3 workflow/scripts/FROH_min_2Mb_plot.py {output.table} {output.plot} 2>> {log}
+        """

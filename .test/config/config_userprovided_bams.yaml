@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-# Configuration settings for the GenErode pipeline 0.7.0        #
+# Configuration settings for the GenErode pipeline 0.7.1        #
 # for ancient or historical samples, and modern samples         #
 #################################################################
 #################################################################
@@ -9,17 +9,6 @@
 #################################################################
 # Check the GitHub WIKI page for the full documentation:        #
 # https://github.com/NBISweden/GenErode/wiki                    #
-#################################################################
-#################################################################
-
-
-#################################################################
-# 0) Path to scratch directory for temporary files from some of  
-# the tools implemented in the pipeline. 
-# If no scratch directory is specified, the pipeline working
-# directory will be used for these temporary files.
-# Currently used for "samtools sort" and "bcftools sort".
-scratch_dir: "/tmp" # For current directory, set to "" or "./". Scratch on HPC cluster Dardel: /cfs/klemming/scratch/first-letter-of-username/username
 #################################################################
 #################################################################
 
@@ -208,7 +197,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: ["S08", "S09"]
+historical_rescaled_samplenames: []
 #####
 
 

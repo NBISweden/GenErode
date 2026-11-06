@@ -1,0 +1,10 @@
+[workspace]
+name        = "generode"
+version     = "0.7.1"
+description = "A pipeline for the analysis of whole-genome sequencing data from historical and modern samples to study patterns of genome erosion"
+channels    = ["conda-forge", "bioconda"]
+platforms   = ["linux-64"]
+
+[dependencies]
+snakemake = "9.4.0.*"
+snakemake-executor-plugin-slurm = "1.3.6.*"

@@ -12,9 +12,7 @@ if os.path.exists(config["modern_samples"]):
         mapping_outputs.append("results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/multiqc_report.html")
 
 
-localrules:
-    readgroup_ID_historical,
-    readgroup_ID_modern,
+#localrules: readgroup_ID_historical, readgroup_ID_modern,
 
 
 # snakemake rules
@@ -29,7 +27,7 @@ rule map_historical:
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_map_historical.log",
     threads: 8
-    singularity:
+    container:
         bwa_container
     shell:
         """
@@ -43,13 +41,19 @@ rule readgroup_ID_historical:
         sai=rules.map_historical.output.sai,
     output:
         rg=temp("results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.readgroup.txt"),
+    params:
+        ID=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["ID"],
+        SM=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["SM"],
+        PL=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["PL"],
+        LB=lambda wildcards: hist_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["LB"],
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_readgroup_ID_historical.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-            echo '@RG\\tID:{ID}\\tSM:{SM}\\tPL:{PL}\\tLB:{LB}' > {{output.rg}} 2> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **hist_rg_dict[FULLSAMPLENAME]))
+    container:
+        shell_container
+    shell:
+        """
+        printf '%s\\n' '@RG\\tID:{params.ID}\\tSM:{params.SM}\\tPL:{params.PL}\\tLB:{params.LB}' > {output.rg} 2> {log}
+        """
 
 
 rule sai2bam:
@@ -64,15 +68,14 @@ rule sai2bam:
         bam="results/historical/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/{sample}_{index}_{lane}_sai2bam.log",
-    params:
-        scratch=scratch_dir,
+    shadow: "minimal"
     threads: 8
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
         bwa samse -r $(cat {input.rg}) {input.ref} {input.sai} {input.fastq_hist} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -85,13 +88,19 @@ rule readgroup_ID_modern:
         fastq_mod_R2=rules.fastp_modern.output.R2_trimmed,
     output:
         rg=temp("results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.readgroup.txt"),
+    params:
+        ID=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["ID"],
+        SM=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["SM"],
+        PL=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["PL"],
+        LB=lambda wildcards: mod_rg_dict["{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)]["LB"],
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_readgroup_ID_modern.log",
-    run:
-        FULLSAMPLENAME = "{}_{}_{}".format(wildcards.sample, wildcards.index, wildcards.lane)
-        shell("""
-            echo '@RG\\tID:{ID}\\tSM:{SM}\\tPL:{PL}\\tLB:{LB}' > {{output.rg}} 2> {{log}}
-            """.format(FULLSAMPLENAME=FULLSAMPLENAME, **mod_rg_dict[FULLSAMPLENAME]))
+    container:
+        shell_container
+    shell:
+        """
+        printf '%s\\n' '@RG\\tID:{params.ID}\\tSM:{params.SM}\\tPL:{params.PL}\\tLB:{params.LB}' > {output.rg} 2> {log}
+        """
 
 
 rule map_modern:
@@ -109,15 +118,14 @@ rule map_modern:
         bam="results/modern/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/{sample}_{index}_{lane}_map_modern.log",
-    params:
-        scratch=scratch_dir,
+    shadow: "minimal"
     threads: 8
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
         bwa mem -M -t {threads} -R $(cat {input.rg}) {input.ref} {input.fastq_mod_R1} {input.fastq_mod_R2} | \
-        samtools sort -T {params.scratch} -@ {threads} - > {output.bam} 2> {log}
+        samtools sort -@ {threads} - > {output.bam} 2> {log}
         """
 
 
@@ -128,7 +136,7 @@ rule index_sorted_bams:
         index="results/{dataset}/mapping/" + REF_NAME + "/{sample}_{index}_{lane}.sorted.bam.bai",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_index_sorted_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -145,7 +153,7 @@ rule sorted_bam_stats:
         stats="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.stats.txt",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -169,7 +177,7 @@ rule sorted_bam_qualimap:
         outdir="results/{dataset}/mapping/" + REF_NAME + "/stats/bams_sorted/{sample}_{index}_{lane}.sorted.bam.qualimap",
     log:
         "results/logs/2_mapping/{dataset}/" + REF_NAME + "/{sample}_{index}_{lane}_sorted_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -193,7 +201,7 @@ rule historical_raw_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/",
     log:
         "results/logs/2_mapping/historical/" + REF_NAME + "/historical_raw_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -215,7 +223,7 @@ rule modern_raw_bam_multiqc:
         outdir="results/modern/mapping/" + REF_NAME + "/stats/bams_sorted/multiqc/",
     log:
         "results/logs/2_mapping/modern/" + REF_NAME + "/modern_raw_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

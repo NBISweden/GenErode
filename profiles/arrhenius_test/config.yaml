@@ -1,0 +1,58 @@
+# Configuration file for slurm plugin (Snakemake >8.0.0) for Arrhenius cluster at NAISS
+# snakemake CLI flags
+executor: slurm
+jobs: 100
+printshellcmds: true
+software-deployment-method: apptainer
+use-apptainer: True
+apptainer-prefix: "/nobackup/proj/disk/.../apptainer" # update this to a directory in which apptainer images are stored
+apptainer-args: "-B /scratch/local -B /nobackup/proj/disk/..." # mount your project directory to the container, so that Snakemake can access input/output files
+
+# slurm resources
+# Updated for github actions test data (in .test/data)
+## default-resources: applied to all jobs, overruled by resources defined below for jobs
+# Arrhenius: do not set "nodes" (-N) unless you need a full node
+default-resources:
+  - slurm_account=naissXXXX-X-XX-cpu # update this to your slurm account, must end with -cpu
+  - slurm_partition=cpu # use Arrhenius CPU partition
+  - ntasks=1 # number of concurrent tasks / ranks
+  - threads=2 # number of threads per task, corresponds to cpus-per-task or cores
+  - "mem_mb=(threads*2700)" # memory in MB: 2700 MB per thread on Arrhenius
+  - runtime=10 # default runtime in minutes (same as in the Rackham profile)
+  - tmpdir=/scratch/local # do not use tmp/, var/tmp, or /dev/shm on Arrhenius due to limited size
+
+## set-threads: map rule names to cpus-per-task
+# Arrhenius: 2.7 GB RAM per core
+set-threads:
+  repeatmodeler: 4
+  repeatmasker: 4
+  map_historical: 4
+  sai2bam: 4
+  map_modern: 4
+  sorted_bam_qualimap: 4
+  merged_index_bam_qualimap: 4
+  rmdup_historical_bams: 4
+  rmdup_modern_bams: 1
+  rmdup_bam_qualimap: 4
+  merged_sample_bam_qualimap: 4
+  indel_realigner_targets: 4
+  indel_realigner: 4
+  realigned_bam_qualimap: 4
+  userprovided_bam_qualimap: 4
+  rescaled_bam_qualimap: 4
+  subsampled_bam_qualimap: 4
+  merge_all_vcfs: 4
+  align2target: 4
+
+## set-resources: map rule names to resources in general
+set-resources:
+  # runtime
+  - repeatmodeler:runtime=60
+  - repeatmasker:runtime=60
+  - map_historical:runtime=30
+  - sai2bam:runtime=30
+  - map_modern:runtime=30
+  - subsample_bams:runtime=30
+  - gerp_derived_alleles:runtime=30
+  # memory
+  - rmdup_modern_bams:mem_mb=5400

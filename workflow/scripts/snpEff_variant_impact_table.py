@@ -3,16 +3,18 @@
 """
 Script to extract numbers of variants of different impact categories from snpEff analysis, for historical and modern samples.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 snpEff_variant_impact_table.py out_table stats_csv1 [stats_csv2 ...]
 """
 
+from sys import argv
 import pandas as pd
 import datetime
 
-infiles=snakemake.input # input files from Snakemake rule. Path has to be structured like so for the script to work: "results/[dataset]/snpEff/[reference]/[sample]*_stats.csv"
-outtable=snakemake.output[0] # output file from Snakemake rule
+outtable=argv[1] # output file
+infiles=argv[2:] # snpEff stats files for all samples. Path has to be structured like so for the script to work: "results/[dataset]/snpEff/[reference]/[sample]*_stats.csv"
 
 # define a function to get the input data
 def impact_dataframe(inputfiles):
