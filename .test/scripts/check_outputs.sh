@@ -35,7 +35,7 @@ case "$test_name" in
         ;;
     mlRho_options)
         patterns=(
-            "results/*/mlRho/*/*.mlRho.txt"
+            "results/modern/mlRho/*/*.mlRho.txt"
         )
         ;;
     pca_roh)
