@@ -40,8 +40,7 @@ case "$test_name" in
         ;;
     pca_roh)
         patterns=(
-            "results/*/ROH/*.hom"
-            "results/*/ROH/*.hom.indiv"
+            "results/*/vcf/*/stats/vcf_merged_missing/*.vcf.stats.txt",
             "results/*/ROH/*FROH_min_2Mb_table.txt"
         )
         ;;
@@ -52,7 +51,8 @@ case "$test_name" in
         ;;
     userprovided_bams)
         patterns=(
-            "results/*/mapping/*/stats/bams_user_provided/*.userprovided.repma.Q30.bam.dpstats.txt"
+            "results/*/mapping/*/stats/bams_user_provided/*.userprovided.repma.Q30.bam.dpstats.txt",
+            "results/*/vcf/*/stats/vcf_merged_missing/*.vcf.stats.txt"
         )
         ;;
     *)
