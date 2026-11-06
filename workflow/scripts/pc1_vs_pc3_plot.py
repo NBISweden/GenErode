@@ -3,11 +3,13 @@
 """
 Script to plot the PCA axes PC1 and PC3.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 pc1_vs_pc3_plot.py eigenvec_file eigenval_file out_pdf
 """
 
+from sys import argv
 import os
 import pandas as pd
 import numpy as np
@@ -17,9 +19,9 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-eigenvec=snakemake.input.eigenvec # input file from Snakemake rule
-eigenval=snakemake.input.eigenval # input file from Snakemake rule
-outplot=snakemake.output[0] # output file from Snakemake rule
+eigenvec=argv[1] # eigenvec file from plink
+eigenval=argv[2] # eigenval file from plink
+outplot=argv[3] # output pdf file
 
 if os.stat(eigenvec).st_size > 0:
     eig_vec = pd.read_table(eigenvec, delim_whitespace=True, header=None)

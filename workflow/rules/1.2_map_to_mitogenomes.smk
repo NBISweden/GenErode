@@ -9,33 +9,6 @@ if os.path.exists(config["historical_samples"]):
 
 
 # Functions used by rules of this part of the pipeline
-def get_mapped_reads(inlist):
-    """
-    Parse the samtools flagstat files from a python list to return a 
-    dictionary containing the filename and the number of mapped reads
-    """
-    readsDict = {}
-    for i in inlist:
-        bn = os.path.basename(i)
-        name = "_".join(bn.split("_", 3)[:3])
-        with open(i, "r") as f:
-            for line in f:
-                if " mapped (" in line:
-                    reads = int(line.strip().split()[0])
-                    if reads == 0:
-                        readsDict[name] = reads + 1
-                    else:
-                        readsDict[name] = reads
-    return readsDict
-
-def ratio_of_mapped_reads(readsDictOtherSpecies, readsDictTargetSpecies):
-    """
-    Take two dictionaries containing the filename and the number of mapped reads for the same set of reads 
-    mapped to a different species and to the target species and return the ratio of mapped reads
-    """
-    ratio = { k: round(readsDictOtherSpecies[k] / readsDictTargetSpecies[k], 2) for k in readsDictTargetSpecies if k in readsDictOtherSpecies }
-    return ratio
-
 def historical_mapped_reads_ratios_species_inputs(wildcards):
     """Input for mapped_reads_ratios"""
     if config["map_unmerged_reads"] == True:
@@ -135,7 +108,7 @@ def historical_mito_bams_multiqc_inputs(wildcards):
 
 
 # snakemake rules
-localrules: symlink_mito_genome, merge_read_ratio_files
+#localrules: symlink_mito_genome, merge_read_ratio_files, mapped_reads_ratios
 
 rule symlink_mito_genome:
     """Create a symbolic link of the mitochondrial genome fasta file of the target species"""
@@ -148,6 +121,7 @@ rule symlink_mito_genome:
         abs_out=lambda wildcards, output: os.path.abspath(output.ref),
     log:
         "results/logs/1.2_map_to_mitogenomes/symlink_mito_genome.log",
+    container: shell_container
     shell:
         """
         ln -s {params.abs_in} {params.abs_out} 2> {log}
@@ -166,7 +140,7 @@ rule bwa_index_mito_ref:
         sa=MITO_DIR + "{mitoref}.fasta.sa",
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_bwa_index_mito_ref.log",
-    singularity:
+    container:
         bwa_container
     shell:
         """
@@ -187,14 +161,13 @@ rule map_historical_merged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_merged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_merged_to_mito.log",
-    params:
-        scratch=scratch_dir,
-    singularity:
+    shadow: "minimal"
+    container:
         bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.merged} | \
-        bwa samse {input.ref} - {input.merged} | samtools sort -T {params.scratch} - > {output.bam} 2> {log}
+        bwa samse {input.ref} - {input.merged} | samtools sort - > {output.bam} 2> {log}
         """
 
 
@@ -214,15 +187,14 @@ rule map_historical_unmerged_to_mito:
         bam=temp("results/historical/mitogenomes_mapping/{sample}_{index}_{lane}_unmerged_{mitoref}.sorted.bam"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{mitoref}_map_historical_unmerged_to_mito.log",
-    params:
-        scratch=scratch_dir,
-    singularity:
+    shadow: "minimal"
+    container:
         bwa_samtools_container
     shell:
         """
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R1_un} > {output.R1_sai} 2> {log} &&
         bwa aln -l 16500 -n 0.01 -o 2 -t {threads} {input.ref} {input.R2_un} > {output.R2_sai} 2>> {log} &&
-        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort -T {params.scratch} - > {output.bam} 2>> {log}
+        bwa samse {input.ref} {output.R1_sai} {output.R2_sai} {input.R1_un} {input.R2_un} | samtools sort - > {output.bam} 2>> {log}
         """
 
 
@@ -234,7 +206,7 @@ rule mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_{index}_{lane}_{reads}_{mitoref}.sorted.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{index}_{lane}_{reads}_{mitoref}_mitogenome_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -257,7 +229,7 @@ rule historical_mito_bams_qualimap:
     threads: 1
     resources:
         mem_mb=8000,
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -285,18 +257,8 @@ rule mapped_reads_ratios:
         ratiotables=temp("results/historical/mitogenomes_mapping/stats/{mitoref}_vs_" + MITO_NAME + "_{reads}.txt"),
     log:
         "results/logs/1.2_map_to_mitogenomes/{mitoref}_vs_" + MITO_NAME + "_{reads}_mapped_reads_ratios.log",
-    run:
-        with open(output.ratiotables, "w") as out:
-            # Parse the samtools flagstat files from the different input lists to return a dictionary containing the filename and the number of mapped reads for each of them
-            speciesDict = get_mapped_reads(input.species)
-            otherDict = get_mapped_reads(input.other)
-
-            # Calculate the ratios of mapped reads for each species to the target species reference
-            other_species = ratio_of_mapped_reads(otherDict, speciesDict)
-
-            # Write to output file
-            for k, v in other_species.items():
-                out.write("{} {}\n".format(k, v))
+    container: shell_container
+    script: "../scripts/mapped_reads_ratios.py"
 
 
 rule merge_read_ratio_files:
@@ -307,6 +269,7 @@ rule merge_read_ratio_files:
         finaltable="results/historical/mitogenomes_mapping/stats/ratios_of_{reads}_mapped_to_various_mitochondrial_genomes_vs_" + MITO_NAME + ".txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{reads}_merge_read_ratio_files.log",
+    container: shell_container
     shell:
         """
         echo "reference_comparison sample ratio_of_mapped_reads" > {output.finaltable} && 
@@ -324,7 +287,7 @@ rule merge_historical_mitogenome_bams_per_sample:
         "the input files are: {input}"
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merge_historical_mitogenome_bams_per_sample.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -347,7 +310,7 @@ rule merged_mitogenome_bam_stats:
         stats="results/historical/mitogenomes_mapping/stats/{sample}_merged_{mitoref}.sorted.merged.bam.stats.txt",
     log:
         "results/logs/1.2_map_to_mitogenomes/{sample}_{mitoref}_merged_mitogenome_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -371,7 +334,7 @@ rule historical_merged_mito_bams_qualimap:
     threads: 1
     resources:
         mem_mb=8000,
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -401,7 +364,7 @@ rule historical_mito_bams_multiqc:
         outdir="results/historical/mitogenomes_mapping/stats/multiqc/",
     log:
         "results/logs/1.2_map_to_mitogenomes/historical_mito_bams_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

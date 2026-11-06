@@ -3,16 +3,18 @@
 """
 Script to combine mlRho results for all samples into one table.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 mlRho_table.py out_table mlRho_file1 [mlRho_file2 ...]
 """
 
+from sys import argv
 import pandas as pd
 import datetime
 
-infiles=snakemake.input # input files from Snakemake rule
-outtable=snakemake.output.table # output file from Snakemake rule
+outtable=argv[1] # output file
+infiles=argv[2:] # mlRho output files for all samples
 
 # define a function to get the input data
 def mlRho_dataframe(inputfiles):

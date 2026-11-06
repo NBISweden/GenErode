@@ -140,7 +140,7 @@ rule merge_all_vcfs:
     threads: 6
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + "_merge_all_vcfs.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -163,7 +163,7 @@ rule index_merged_vcf:
         index="results/all/vcf/" + REF_NAME + ".all.merged.snps.bcf.csi",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_index_merged_vcfs.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -180,7 +180,7 @@ rule merged_vcf_stats:
         stats="results/all/vcf/" + REF_NAME + "/stats/vcf_merged/" + REF_NAME + ".all.merged.snps.bcf.stats.txt",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_merged_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -199,7 +199,7 @@ rule merged_vcf_multiqc:
         outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged/multiqc",
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/merged_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -219,7 +219,7 @@ rule filter_vcf_biallelic:
     threads: 2
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_filter_vcf_biallelic.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -237,7 +237,7 @@ rule biallelic_filtered_vcf_stats:
         stats="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_biallelic/" + REF_NAME + ".all.merged.biallelic.vcf.stats.txt",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_biallelic_filtered_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -256,7 +256,7 @@ rule biallelic_filtered_vcf_multiqc:
         outdir="results/all/vcf/" + REF_NAME + "/stats/vcf_merged_biallelic/multiqc",
     log:
         "results/logs/9_merge_vcfs/all/" + REF_NAME + "/biallelic_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -277,7 +277,7 @@ rule filter_vcf_missing:
         fmiss=config["f_missing"],
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}_filter_vcf_missing.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -311,7 +311,7 @@ rule remove_chromosomes:
         exclude = ",".join(sexchromosomeList) # parse list with scaffolds/chromosomes to exclude and convert to format chr1,chr2,chr3 for removal with bcftools view
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.autos_remove_chromosomes.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -333,7 +333,7 @@ rule filtered_vcf2bed:
         bed="results/all/vcf/" + REF_NAME + ".all.merged.biallelic.fmissing{fmiss}.{chr}.bed",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".all_fmissing{fmiss}.{chr}_filtered_vcf2bed.log",
-    singularity:
+    container:
         bedtools_htslib_container
     shell:
         """
@@ -351,7 +351,7 @@ rule extract_historical_samples:
         index="results/historical/vcf/" + REF_NAME + ".historical.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".historical_fmissing{fmiss}.{chr}_extract_historical_samples.log",
-    singularity:
+    container:
         bcftools_container
     threads: 2
     params:
@@ -385,7 +385,7 @@ rule extract_modern_samples:
         index="results/modern/vcf/" + REF_NAME + ".modern.merged.biallelic.fmissing{fmiss}.{chr}.vcf.gz.csi",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".modern_fmissing{fmiss}.{chr}_extract_modern_samples.log",
-    singularity:
+    container:
         bcftools_container
     threads: 2
     params:
@@ -418,7 +418,7 @@ rule missingness_filtered_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/" + REF_NAME + ".{dataset}.merged.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
     log:
         "results/logs/9_merge_vcfs/" + REF_NAME + ".{dataset}_fmissing{fmiss}.{chr}_missingness_filtered_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -440,7 +440,7 @@ rule missingness_filtered_vcf_multiqc:
         outdir="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_merged_missing/multiqc",
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/missingness_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -461,7 +461,7 @@ rule filter_biallelic_missing_vcf:
     threads: 6
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_filter_biallelic_missing_vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -478,7 +478,7 @@ rule index_biallelic_missing_vcf:
         index="results/{dataset}/vcf/" + REF_NAME + "/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.bcf.csi",
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_index_biallelic_missing_vcf.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -495,7 +495,7 @@ rule biallelic_missing_filtered_vcf_stats:
         stats="results/{dataset}/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/{sample}.{filtered}.snps5.noIndel.QUAL30.dp.AB.repma.biallelic.fmissing{fmiss}.{chr}.vcf.stats.txt",
     log:
         "results/logs/9_merge_vcfs/{dataset}/" + REF_NAME + "/{sample}.{filtered}_fmissing{fmiss}.{chr}_biallelic_missing_filtered_vcf_stats.log",
-    singularity:
+    container:
         bcftools_container
     shell:
         """
@@ -514,7 +514,7 @@ rule historical_biallelic_missing_filtered_vcf_multiqc:
         outdir="results/historical/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/multiqc",
     log:
         "results/logs/9_merge_vcfs/historical/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """
@@ -533,7 +533,7 @@ rule modern_biallelic_missing_filtered_vcf_multiqc:
         outdir="results/modern/vcf/" + REF_NAME + "/stats/vcf_biallelic_missing_{chr}/multiqc",
     log:
         "results/logs/9_merge_vcfs/modern/" + REF_NAME + "/biallelic_missing_{chr}_filtered_vcf_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

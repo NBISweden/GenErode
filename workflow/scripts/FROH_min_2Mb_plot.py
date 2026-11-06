@@ -3,18 +3,20 @@
 """
 Script to plot FROH, the proportion of the genome in runs of homozygosity (ROH) for ROHs >= 2MB, for historical and modern samples.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 FROH_min_2Mb_plot.py froh_table out_plot
 """
 
+from sys import argv
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-intable=snakemake.input[0] # input table from Snakemake rule
-outplot=snakemake.output.plot # output file from Snakemake rule
+intable=argv[1] # input FROH table
+outplot=argv[2] # output plot
 
 # define a function for the subplots
 def froh_plot(dataframe, dataset, ax, color):

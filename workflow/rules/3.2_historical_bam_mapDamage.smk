@@ -71,7 +71,7 @@ rule rescale_historical:
         dir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.bam.mapDamage/",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescale_historical.log",
-    singularity:
+    container:
         mapdamage_container
     shell:
         """
@@ -87,7 +87,7 @@ rule index_rescaled_bams:
         index="results/historical/mapping/" + REF_NAME + "/{sample}.{processed}.rescaled.bam.bai",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/historical/{sample}.{processed}_index_rescaled_bams.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -106,7 +106,7 @@ rule rescaled_bam_stats:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_stats.log",
-    singularity:
+    container:
         bwa_samtools_container
     shell:
         """
@@ -128,7 +128,7 @@ rule rescaled_bam_fastqc:
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_fastqc.log",
     threads: 2
-    singularity:
+    container:
         fastqc_container
     shell:
         """
@@ -152,7 +152,7 @@ rule rescaled_bam_qualimap:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/{sample}.{processed}.rescaled.bam.qualimap",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/{sample}.{processed}_rescaled_bam_qualimap.log",
-    singularity:
+    container:
         qualimap_container
     shell:
         """
@@ -173,7 +173,7 @@ rule rescaled_bam_multiqc:
         outdir="results/historical/mapping/" + REF_NAME + "/stats/bams_rescaled/multiqc",
     log:
         "results/logs/3.2_historical_bam_mapDamage/" + REF_NAME + "/rescaled_bam_multiqc.log",
-    singularity:
+    container:
         multiqc_container
     shell:
         """

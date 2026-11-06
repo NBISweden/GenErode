@@ -3,18 +3,20 @@
 """
 Script to plot theta values estimated in mlRho, for historical and modern samples.
 
-Input and output files refer to Snakemake directives.
-
 Author: Verena Kutschera
+
+Usage:
+python3 mlRho_theta_plot.py mlRho_table out_plot
 """
 
+from sys import argv
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-intable=snakemake.input[0] # input file from Snakemake rule
-outplot=snakemake.output[0] # output file from Snakemake rule
+intable=argv[1] # input table with mlRho results for all samples
+outplot=argv[2] # output file
 
 # define a function for the subplots
 def theta_plot(dataframe, grouped, dataset, genomeregion, ax, color):
