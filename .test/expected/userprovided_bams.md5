@@ -1,2 +1,5 @@
+af7b78ecef846b9a628aed37fc448dca  results/all/vcf/sumatran_rhino/stats/vcf_merged_missing/sumatran_rhino.all.merged.biallelic.fmissing0.9.genome.vcf.stats.txt
 e9f1396241abeedf2336449c3a9cfa26  results/historical/mapping/sumatran_rhino/stats/bams_user_provided/S09.userprovided.repma.Q30.bam.dpstats.txt
+6c5f49c22f024a6d75ee1c00a2f03a2b  results/historical/vcf/sumatran_rhino/stats/vcf_merged_missing/sumatran_rhino.historical.merged.biallelic.fmissing0.9.genome.vcf.stats.txt
 b7caab583548f17dc82612c4876ee60e  results/modern/mapping/sumatran_rhino/stats/bams_user_provided/S04.userprovided.repma.Q30.bam.dpstats.txt
+83eccb5ff9616733e0dbfc1bf2f1afc3  results/modern/vcf/sumatran_rhino/stats/vcf_merged_missing/sumatran_rhino.modern.merged.biallelic.fmissing0.9.genome.vcf.stats.txt
