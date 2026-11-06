@@ -197,7 +197,7 @@ historical_bam_mapDamage: False
 # List has to be left empty ([]) if mapDamage2 is not run.
 # Keep the list of sample names for the entire pipeline run 
 # if rescaled BAM files should be used in downstream analyses.
-historical_rescaled_samplenames: ["S08", "S09"]
+historical_rescaled_samplenames: []
 #####
 
 
